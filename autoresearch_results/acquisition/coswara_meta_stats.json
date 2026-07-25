@@ -1,0 +1,102 @@
+{
+  "artifact": "coswara_meta_stats",
+  "source_file": "data/raw/coswara_meta/combined_data.csv",
+  "source_sha256": "e462c503bee3408214195855975b0eda08dd1188c0d521b494d93d388d60a72d",
+  "repo_commit": "fe9d9ee8ecf1dfa09d44ff2dc161da0548f487f0",
+  "n_rows": 2746,
+  "n_unique_ids": 2746,
+  "id_is_unique_per_row": true,
+  "max_rows_per_id": 1,
+  "n_ids_with_multiple_rows": 0,
+  "n_ids_with_multiple_record_dates": 0,
+  "returning_user_field_rU": {
+    "n": 2003,
+    "y": 63,
+    "": 680
+  },
+  "covid_status_counts": {
+    "healthy": 1433,
+    "positive_mild": 426,
+    "no_resp_illness_exposed": 248,
+    "positive_moderate": 165,
+    "resp_illness_not_identified": 157,
+    "recovered_full": 146,
+    "positive_asymp": 90,
+    "under_validation": 81
+  },
+  "binary_task": {
+    "positive_labels": [
+      "positive_asymp",
+      "positive_mild",
+      "positive_moderate"
+    ],
+    "negative_labels": [
+      "healthy"
+    ],
+    "excluded_labels": [
+      "no_resp_illness_exposed",
+      "recovered_full",
+      "resp_illness_not_identified"
+    ],
+    "n_positive": 681,
+    "n_negative": 1433,
+    "meets_500_per_class": true
+  },
+  "confounds": {
+    "gender_by_class": {
+      "negative": {
+        "male": 1068,
+        "female": 364,
+        "other": 1
+      },
+      "other": {
+        "male": 419,
+        "female": 213
+      },
+      "positive": {
+        "male": 413,
+        "female": 267,
+        "other": 1
+      }
+    },
+    "country_by_class_top": {
+      "negative": {
+        "India": 1266,
+        "United States": 63,
+        "Canada": 12,
+        "France": 10,
+        "Germany": 7
+      },
+      "other": {
+        "India": 582,
+        "United States": 18,
+        "France": 4,
+        "Canada": 3,
+        "Netherlands The": 2
+      },
+      "positive": {
+        "India": 667,
+        "United States": 6,
+        "France": 5,
+        "Bahrain": 3
+      }
+    },
+    "age": {
+      "positive": {
+        "n_with_age": 681,
+        "mean": 39.34,
+        "median": 35.0,
+        "min": 1.0,
+        "max": 86.0
+      },
+      "negative": {
+        "n_with_age": 1433,
+        "mean": 33.29,
+        "median": 30.0,
+        "min": 1.0,
+        "max": 99.0
+      }
+    }
+  },
+  "split_key_verdict": "id is unique per row; rU flags self-declared returning users who are NOT linkable to their prior id, so id-level GroupKFold is the best available grouping but does NOT fully guarantee speaker disjointness."
+}

@@ -93,7 +93,12 @@ of effect size. A rule that is arithmetically unsatisfiable gets silently violat
 which is exactly what happened (the sibling program met its n≥7 contract **zero**
 times in 124 experiments).
 
-- **Evaluation floor: n ≥ 8** (verified: covers families up to m=6).
+- **Evaluation floor: n ≥ 8** (verified: covers families up to m=6) — **but the floor is
+  not the rule.** No fixed floor is safe: the first real pre-registration in this repo
+  has a confirmatory family of **m = 14**, where n=7 *and* n=8 *and* n=9 are all
+  infeasible and **n = 10** is the minimum. **The feasibility must be COMPUTED for the
+  actual family size, every time.** Treat any fixed n as a lower bound, never as
+  sufficient.
 - At pre-registration the runner **computes `min_attainable_p(n) = 2/2ⁿ` against
   `0.05/m` and refuses to launch an under-powered plan.**
 - Families larger than 6 require n ≥ 10, or a pre-declared smaller primary family with

@@ -1,0 +1,105 @@
+{
+  "artifact": "coughvid_meta_stats",
+  "source_zip": "data/raw/coughvid/public_dataset_v3.zip",
+  "source_zip_bytes": 2297542075,
+  "source_zip_sha256": "37544c58ac5a7d79cb68af56fb3d0a690773b100bef8a03aac96570086fea335",
+  "metadata_member": "coughvid_20211012/metadata_compiled.csv",
+  "repo_commit": "fe9d9ee8ecf1dfa09d44ff2dc161da0548f487f0",
+  "n_rows": 34434,
+  "n_unique_uuids": 34434,
+  "uuid_is_unique_per_row": true,
+  "speaker_id_field_present": false,
+  "id_fields_available": [
+    "uuid (per-recording, NOT per-participant)"
+  ],
+  "label_coverage": {
+    "status_self_reported": 20664,
+    "status_SSL": 8331,
+    "age": 19396,
+    "gender": 20664,
+    "respiratory_condition": 20664,
+    "latitude": 19431
+  },
+  "status_counts_all": {
+    "healthy": 15476,
+    "MISSING": 13770,
+    "symptomatic": 3873,
+    "COVID-19": 1315
+  },
+  "cough_detected": {
+    "n_with_value": 34434,
+    "mean": 0.6412,
+    "threshold": 0.8,
+    "n_at_or_above_threshold": 18544,
+    "status_counts_at_threshold": {
+      "healthy": 10132,
+      "MISSING": 5009,
+      "symptomatic": 2683,
+      "COVID-19": 720
+    }
+  },
+  "expert_labelled_subset": {
+    "n_rows_with_any_expert_diagnosis": 2841,
+    "diagnosis_label_counts": {
+      "upper_infection": 883,
+      "healthy_cough": 746,
+      "lower_infection": 732,
+      "COVID-19": 649,
+      "obstructive_disease": 214
+    },
+    "n_with_4_experts": 126
+  },
+  "confounds": {
+    "gender_by_status": {
+      "MISSING": {
+        "MISSING": 13770
+      },
+      "healthy": {
+        "male": 9923,
+        "female": 5471,
+        "other": 82
+      },
+      "COVID-19": {
+        "male": 695,
+        "female": 586,
+        "other": 34
+      },
+      "symptomatic": {
+        "male": 2232,
+        "female": 1625,
+        "other": 16
+      }
+    },
+    "respiratory_condition_by_status": {
+      "MISSING": {
+        "MISSING": 13770
+      },
+      "healthy": {
+        "False": 13491,
+        "True": 1985
+      },
+      "COVID-19": {
+        "False": 864,
+        "True": 451
+      },
+      "symptomatic": {
+        "False": 2752,
+        "True": 1121
+      }
+    },
+    "top_repeated_geolocations": {
+      "46.5,6.6": 269,
+      "46.2,6.1": 258,
+      "41.0,29.1": 153,
+      "41.4,2.2": 104,
+      "46.2,6.2": 104,
+      "41.3,69.3": 99,
+      "48.9,2.4": 92,
+      "40.4,-3.7": 90,
+      "41.4,2.1": 87,
+      "48.8,2.3": 85
+    },
+    "n_distinct_geolocations": 5308
+  },
+  "split_key_verdict": "NO participant identifier exists. uuid is per-recording. Speaker-disjoint splitting is IMPOSSIBLE on COUGHVID; repeat submissions by the same person cannot be detected or grouped. Any published COUGHVID accuracy is therefore an upper bound of unknown tightness."
+}
