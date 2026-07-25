@@ -1,0 +1,17 @@
+{
+  "dataset": "svd",
+  "artifact": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\data\\raw\\svd_meta\\voice_data.csv",
+  "artifact_md5": "2ee9852a19ede31c68107684b97bd308",
+  "n_sessions": 2225,
+  "n_speakers": 1853,
+  "n_pathological": 1356,
+  "n_healthy": 869,
+  "mean_age_healthy": 28.32020882019582,
+  "mean_age_pathological": 51.04732887927813,
+  "auc_age_only": 0.8708684243578384,
+  "auc_sex_only": 0.5172047856180264,
+  "auc_age_sex_speaker_disjoint": 0.8768109854000969,
+  "speakers_with_multiple_sessions": 200,
+  "max_sessions_per_speaker": 24,
+  "published_benchmark": "UAR 85.22 (arXiv:2410.10537) \u2014 different metric, indicative only"
+}
