@@ -1,19 +1,19 @@
 {
   "corpus": "coughvid",
-  "files_found": 200,
-  "files_decoded": 200,
+  "files_found": 13535,
+  "files_decoded": 13535,
   "files_failed": 0,
   "excluded_no_speaker_id": 0,
-  "total_duration_s": 1623.73,
-  "n_speakers": 200,
-  "n_sessions": 200,
+  "total_duration_s": 111411.5,
+  "n_speakers": 13535,
+  "n_sessions": 13535,
   "label_counts": {
-    "healthy": 156,
-    "symptomatic": 34,
-    "COVID-19": 10
+    "healthy": 10132,
+    "symptomatic": 2683,
+    "COVID-19": 720
   },
   "speaker_id_provenance": {
-    "recording_proxy": 200
+    "recording_proxy": 13535
   },
   "speaker_disjoint_split_possible": false,
   "duplicate_audio_sha256": 0
