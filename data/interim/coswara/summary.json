@@ -1,0 +1,20 @@
+{
+  "corpus": "coswara",
+  "files_found": 684,
+  "files_decoded": 610,
+  "files_failed": 74,
+  "excluded_no_speaker_id": 0,
+  "total_duration_s": 6641.61,
+  "n_speakers": 72,
+  "n_sessions": 72,
+  "label_counts": {
+    "healthy": 529,
+    "no_resp_illness_exposed": 45,
+    "resp_illness_not_identified": 36
+  },
+  "speaker_id_provenance": {
+    "participant": 610
+  },
+  "speaker_disjoint_split_possible": true,
+  "duplicate_audio_sha256": 0
+}

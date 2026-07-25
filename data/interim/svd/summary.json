@@ -1,0 +1,19 @@
+{
+  "corpus": "svd",
+  "files_found": 667,
+  "files_decoded": 667,
+  "files_failed": 0,
+  "excluded_no_speaker_id": 0,
+  "total_duration_s": 2685.2,
+  "n_speakers": 49,
+  "n_sessions": 49,
+  "label_counts": {
+    "healthy": 387,
+    "pathological": 280
+  },
+  "speaker_id_provenance": {
+    "participant": 667
+  },
+  "speaker_disjoint_split_possible": true,
+  "duplicate_audio_sha256": 17
+}

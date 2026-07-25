@@ -1,0 +1,75 @@
+file,reason
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/breathing-deep.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/breathing-shallow.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/cough-heavy.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/cough-shallow.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/counting-fast.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/counting-normal.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/vowel-a.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/vowel-e.wav,digital silence
+2XgDqzQkqLX9SbmSHfbqdRxSmRD2/vowel-o.wav,digital silence
+9XKj7fAmvwPUas9GFPZuTpev7T03/breathing-deep.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/breathing-shallow.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/cough-heavy.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/cough-shallow.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/counting-fast.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/counting-normal.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/vowel-a.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/vowel-e.wav,RuntimeError: ffmpeg produced no samples
+9XKj7fAmvwPUas9GFPZuTpev7T03/vowel-o.wav,RuntimeError: ffmpeg produced no samples
+htQzROl26OWQpIYFDzv11F79PLR2/breathing-deep.wav,digital silence
+htQzROl26OWQpIYFDzv11F79PLR2/cough-heavy.wav,digital silence
+htQzROl26OWQpIYFDzv11F79PLR2/cough-shallow.wav,digital silence
+htQzROl26OWQpIYFDzv11F79PLR2/counting-fast.wav,digital silence
+htQzROl26OWQpIYFDzv11F79PLR2/counting-normal.wav,digital silence
+htQzROl26OWQpIYFDzv11F79PLR2/vowel-a.wav,digital silence
+htQzROl26OWQpIYFDzv11F79PLR2/vowel-e.wav,digital silence
+htQzROl26OWQpIYFDzv11F79PLR2/vowel-o.wav,digital silence
+KGWBaTNrJmUgzGZw5Xh2ICSHVu92/breathing-deep.wav,too short (0.085s)
+SY4Ekt5W4VZdeIm5r3iLmjxz9pA2/counting-fast.wav,digital silence
+SY4Ekt5W4VZdeIm5r3iLmjxz9pA2/counting-normal.wav,digital silence
+SY4Ekt5W4VZdeIm5r3iLmjxz9pA2/vowel-a.wav,digital silence
+SY4Ekt5W4VZdeIm5r3iLmjxz9pA2/vowel-e.wav,digital silence
+SY4Ekt5W4VZdeIm5r3iLmjxz9pA2/vowel-o.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/breathing-deep.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/breathing-shallow.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/cough-heavy.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/cough-shallow.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/counting-fast.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/counting-normal.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/vowel-a.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/vowel-e.wav,digital silence
+tiKv850hJFTmpCAvfJOmOOqkeUs1/vowel-o.wav,digital silence
+TRK6gUseEUS7dbF0soG80W1uLm53/breathing-deep.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/breathing-shallow.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/cough-heavy.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/cough-shallow.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/counting-fast.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/counting-normal.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/vowel-a.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/vowel-e.wav,RuntimeError: ffmpeg produced no samples
+TRK6gUseEUS7dbF0soG80W1uLm53/vowel-o.wav,RuntimeError: ffmpeg produced no samples
+U98J2q0NnycYzzUS2BYZpUa55X83/breathing-deep.wav,digital silence
+U98J2q0NnycYzzUS2BYZpUa55X83/cough-heavy.wav,digital silence
+U98J2q0NnycYzzUS2BYZpUa55X83/cough-shallow.wav,digital silence
+U98J2q0NnycYzzUS2BYZpUa55X83/counting-fast.wav,digital silence
+U98J2q0NnycYzzUS2BYZpUa55X83/counting-normal.wav,digital silence
+U98J2q0NnycYzzUS2BYZpUa55X83/vowel-a.wav,digital silence
+U98J2q0NnycYzzUS2BYZpUa55X83/vowel-e.wav,digital silence
+U98J2q0NnycYzzUS2BYZpUa55X83/vowel-o.wav,digital silence
+UiUUhL0PMjWVA6W2dKte1DCE6wG2/breathing-deep.wav,digital silence
+UiUUhL0PMjWVA6W2dKte1DCE6wG2/breathing-shallow.wav,digital silence
+UiUUhL0PMjWVA6W2dKte1DCE6wG2/cough-heavy.wav,digital silence
+UiUUhL0PMjWVA6W2dKte1DCE6wG2/cough-shallow.wav,digital silence
+UiUUhL0PMjWVA6W2dKte1DCE6wG2/counting-fast.wav,digital silence
+UiUUhL0PMjWVA6W2dKte1DCE6wG2/vowel-a.wav,digital silence
+UiUUhL0PMjWVA6W2dKte1DCE6wG2/vowel-e.wav,digital silence
+VcmjCfW6ddgE9lFhDXTO6hDlb452/counting-fast.wav,RuntimeError: ffmpeg produced no samples
+zvXkuEaPb0OEgG4EHx59NqdmamR2/breathing-deep.wav,digital silence
+zvXkuEaPb0OEgG4EHx59NqdmamR2/cough-heavy.wav,digital silence
+zvXkuEaPb0OEgG4EHx59NqdmamR2/cough-shallow.wav,digital silence
+zvXkuEaPb0OEgG4EHx59NqdmamR2/counting-fast.wav,digital silence
+zvXkuEaPb0OEgG4EHx59NqdmamR2/counting-normal.wav,digital silence
+zvXkuEaPb0OEgG4EHx59NqdmamR2/vowel-a.wav,digital silence
+zvXkuEaPb0OEgG4EHx59NqdmamR2/vowel-e.wav,digital silence
+zvXkuEaPb0OEgG4EHx59NqdmamR2/vowel-o.wav,digital silence
