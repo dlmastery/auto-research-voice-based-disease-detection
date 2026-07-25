@@ -1,7 +1,9 @@
 # Data Card — Coswara
 
-**Status:** METADATA FULLY OBTAINED (all labels, all 43 date manifests).
-**Audio NOT yet downloaded — script-ready, 13.00 GB.**
+**Status:** **FULLY OBTAINED** — all labels, all 43 date directories,
+**12.98 GB / 153 audio shards, 196 of 196 files byte-exact against the GitHub
+manifest, zero leftover partial files.** Tarballs not yet untarred
+(`--extract` does that; ~13 GB more disk).
 **Verified:** 2026-07-25, against the GitHub tree API and the downloaded files.
 **Local path:** `data/raw/coswara/` (gitignored).
 

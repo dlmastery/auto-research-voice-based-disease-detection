@@ -1,0 +1,83 @@
+{
+  "artifact": "svd_inventory_analysis",
+  "source_file": "data/raw/svd_meta/svd_inventory.csv",
+  "source_sha256": "476378e2c4f38ec7d10d50ed10e011bf31ec03a7c24ea1ab1c0f121000bab33b",
+  "repo_commit": "a7a09b86484362d1cf51f1b2a1f70c34fb42f14d",
+  "zenodo_doi": "10.5281/zenodo.16874898",
+  "license": "CC-BY-4.0",
+  "n_rows": 2495,
+  "n_unique_sessions_AufnahmeID": 2225,
+  "n_unique_speakers_SprecherID": 1853,
+  "AufnahmeTyp_counts": {
+    "p": 1626,
+    "n": 869
+  },
+  "class_balance": {
+    "healthy_sessions": 869,
+    "pathological_sessions": 1626,
+    "healthy_speakers": 854,
+    "pathological_speakers": 1020,
+    "meets_500_per_class_speakers": true
+  },
+  "LEAKAGE": {
+    "session_id_is_the_zip_folder_name": true,
+    "n_speakers_with_multiple_sessions": 378,
+    "n_sessions_belonging_to_multi_session_speakers": 1020,
+    "max_sessions_per_speaker": 24,
+    "pct_rows_at_risk_if_split_on_session": 40.88,
+    "n_speakers_in_multiple_archives": 306,
+    "n_speakers_on_both_healthy_and_pathological_sides": 21,
+    "example_cross_label_speakers": [
+      "1",
+      "101",
+      "120",
+      "142",
+      "1524",
+      "1695",
+      "1944",
+      "2025",
+      "2126",
+      "2146"
+    ],
+    "example_multi_archive_speakers": {
+      "1887": [
+        "Dysphonie",
+        "Morbus Parkinson"
+      ],
+      "1720": [
+        "Chondrom",
+        "Vox senilis"
+      ],
+      "1636": [
+        "Carcinoma in situ",
+        "Chordektomie",
+        "Dysphonie",
+        "Laryngitis",
+        "Taschenfaltenstimme"
+      ],
+      "1736": [
+        "Dysphonie",
+        "Morbus Down"
+      ],
+      "1543": [
+        "Epiglottiskarzinom",
+        "Laryngitis"
+      ]
+    }
+  },
+  "confounds": {
+    "sex_all": {
+      "w": 1307,
+      "m": 1188
+    },
+    "sex_healthy": {
+      "w": 436,
+      "m": 433
+    },
+    "sex_pathological": {
+      "w": 871,
+      "m": 755
+    }
+  },
+  "split_key_verdict": "Split on SprecherID, never on AufnahmeID. AufnahmeID is the zip folder name, so it is the default grouping any naive loader picks up, and it is NOT speaker-unique."
+}

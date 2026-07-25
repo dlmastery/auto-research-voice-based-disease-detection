@@ -1,0 +1,445 @@
+{
+  "artifact": "svd_inventory_stats",
+  "zenodo_doi": "10.5281/zenodo.16874898",
+  "license": "CC-BY-4.0",
+  "n_archives_processed": 72,
+  "n_archives_failed": 0,
+  "failures": {},
+  "total_speaker_dirs": 2312,
+  "total_nsp_files": 32276,
+  "inventory_rows": 2495,
+  "per_archive": {
+    "Morbus Parkinson": {
+      "archive_bytes": 5523857,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Chondrom": {
+      "archive_bytes": 6501414,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Valleculacyste": {
+      "archive_bytes": 7407564,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Mediale Halscyste": {
+      "archive_bytes": 7593358,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Carcinoma in situ": {
+      "archive_bytes": 7811041,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Papillom": {
+      "archive_bytes": 8459669,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Juvenile Dysphonie": {
+      "archive_bytes": 8628460,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Psychogene Mikrophonie": {
+      "archive_bytes": 8638974,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Morbus Down": {
+      "archive_bytes": 8967085,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Dish-Syndrom": {
+      "archive_bytes": 9228560,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Epiglottiskarzinom": {
+      "archive_bytes": 9641112,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Orofaciale Dyspraxie": {
+      "archive_bytes": 9695206,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Psychogene Aphonie": {
+      "archive_bytes": 10014343,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Internusschwa\u0308che": {
+      "archive_bytes": 10522276,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Dysplastische Dysphonie": {
+      "archive_bytes": 10605905,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Dysplastischer Kehlkopf": {
+      "archive_bytes": 10826394,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Hyperasthenie": {
+      "archive_bytes": 10938677,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Rhinophonie mixta": {
+      "archive_bytes": 11785456,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Rhinophonie clausa": {
+      "archive_bytes": 12703736,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Mesopharynxtumor": {
+      "archive_bytes": 13401968,
+      "n_speaker_dirs": 1,
+      "n_nsp_files": 14,
+      "has_overview_csv": true
+    },
+    "Amyotrophe Lateralsklerose": {
+      "archive_bytes": 14184694,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Granulom": {
+      "archive_bytes": 16901765,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Fibrom": {
+      "archive_bytes": 18377332,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Mutatio": {
+      "archive_bytes": 19888157,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Velopharyngoplastik": {
+      "archive_bytes": 19990356,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Poltersyndrom": {
+      "archive_bytes": 22665539,
+      "n_speaker_dirs": 3,
+      "n_nsp_files": 42,
+      "has_overview_csv": true
+    },
+    "Intubationsschaden": {
+      "archive_bytes": 22740511,
+      "n_speaker_dirs": 3,
+      "n_nsp_files": 42,
+      "has_overview_csv": true
+    },
+    "Non-fluency-Syndrom": {
+      "archive_bytes": 22775118,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Taschenfaltenhyperplasie": {
+      "archive_bytes": 23177000,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Synechie": {
+      "archive_bytes": 23322126,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "N. laryngeus superior Neuralgie": {
+      "archive_bytes": 23424218,
+      "n_speaker_dirs": 3,
+      "n_nsp_files": 42,
+      "has_overview_csv": true
+    },
+    "Sa\u0308ngerstimme": {
+      "archive_bytes": 23563674,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "N. laryngeus superior La\u0308sion": {
+      "archive_bytes": 24188776,
+      "n_speaker_dirs": 3,
+      "n_nsp_files": 42,
+      "has_overview_csv": true
+    },
+    "Bulba\u0308rparalyse": {
+      "archive_bytes": 25480779,
+      "n_speaker_dirs": 2,
+      "n_nsp_files": 28,
+      "has_overview_csv": true
+    },
+    "Monochorditis": {
+      "archive_bytes": 26393349,
+      "n_speaker_dirs": 3,
+      "n_nsp_files": 42,
+      "has_overview_csv": true
+    },
+    "Laryngozele": {
+      "archive_bytes": 27604154,
+      "n_speaker_dirs": 3,
+      "n_nsp_files": 42,
+      "has_overview_csv": true
+    },
+    "GERD": {
+      "archive_bytes": 32647358,
+      "n_speaker_dirs": 3,
+      "n_nsp_files": 42,
+      "has_overview_csv": true
+    },
+    "Intubationsgranulom": {
+      "archive_bytes": 33237346,
+      "n_speaker_dirs": 4,
+      "n_nsp_files": 56,
+      "has_overview_csv": true
+    },
+    "Kehlkopftumor": {
+      "archive_bytes": 36227423,
+      "n_speaker_dirs": 5,
+      "n_nsp_files": 70,
+      "has_overview_csv": true
+    },
+    "Sigmatismus": {
+      "archive_bytes": 36745262,
+      "n_speaker_dirs": 4,
+      "n_nsp_files": 56,
+      "has_overview_csv": true
+    },
+    "Cyste": {
+      "archive_bytes": 37076331,
+      "n_speaker_dirs": 6,
+      "n_nsp_files": 84,
+      "has_overview_csv": true
+    },
+    "Diplophonie": {
+      "archive_bytes": 42185995,
+      "n_speaker_dirs": 5,
+      "n_nsp_files": 70,
+      "has_overview_csv": true
+    },
+    "Hypotone Dysphonie": {
+      "archive_bytes": 45938573,
+      "n_speaker_dirs": 5,
+      "n_nsp_files": 70,
+      "has_overview_csv": true
+    },
+    "Aryluxation": {
+      "archive_bytes": 54166512,
+      "n_speaker_dirs": 6,
+      "n_nsp_files": 84,
+      "has_overview_csv": true
+    },
+    "Hypopharynxtumor": {
+      "archive_bytes": 56907705,
+      "n_speaker_dirs": 6,
+      "n_nsp_files": 84,
+      "has_overview_csv": true
+    },
+    "Phonasthenie": {
+      "archive_bytes": 90324372,
+      "n_speaker_dirs": 10,
+      "n_nsp_files": 140,
+      "has_overview_csv": true
+    },
+    "Mutationsfistelstimme": {
+      "archive_bytes": 91894053,
+      "n_speaker_dirs": 10,
+      "n_nsp_files": 140,
+      "has_overview_csv": true
+    },
+    "Taschenfaltenstimme": {
+      "archive_bytes": 94922042,
+      "n_speaker_dirs": 11,
+      "n_nsp_files": 154,
+      "has_overview_csv": true
+    },
+    "Zentral-laryngale Bewegungssto\u0308rung": {
+      "archive_bytes": 133163619,
+      "n_speaker_dirs": 14,
+      "n_nsp_files": 196,
+      "has_overview_csv": true
+    },
+    "Hypofunktionelle Dysphonie": {
+      "archive_bytes": 136332652,
+      "n_speaker_dirs": 16,
+      "n_nsp_files": 224,
+      "has_overview_csv": true
+    },
+    "Rhinophonie aperta": {
+      "archive_bytes": 142225684,
+      "n_speaker_dirs": 18,
+      "n_nsp_files": 240,
+      "has_overview_csv": true
+    },
+    "Dysarthrophonie": {
+      "archive_bytes": 143813534,
+      "n_speaker_dirs": 19,
+      "n_nsp_files": 266,
+      "has_overview_csv": true
+    },
+    "Balbuties": {
+      "archive_bytes": 161092812,
+      "n_speaker_dirs": 20,
+      "n_nsp_files": 277,
+      "has_overview_csv": true
+    },
+    "Phonationskno\u0308tchen": {
+      "archive_bytes": 165637772,
+      "n_speaker_dirs": 17,
+      "n_nsp_files": 237,
+      "has_overview_csv": true
+    },
+    "Gesangsstimme": {
+      "archive_bytes": 174608284,
+      "n_speaker_dirs": 17,
+      "n_nsp_files": 238,
+      "has_overview_csv": true
+    },
+    "Stimmlippenkarzinom": {
+      "archive_bytes": 199011156,
+      "n_speaker_dirs": 22,
+      "n_nsp_files": 308,
+      "has_overview_csv": true
+    },
+    "Vox senilis": {
+      "archive_bytes": 331841464,
+      "n_speaker_dirs": 40,
+      "n_nsp_files": 548,
+      "has_overview_csv": true
+    },
+    "Frontolaterale Teilresektion": {
+      "archive_bytes": 334466436,
+      "n_speaker_dirs": 35,
+      "n_nsp_files": 490,
+      "has_overview_csv": true
+    },
+    "Leukoplakie": {
+      "archive_bytes": 359098957,
+      "n_speaker_dirs": 41,
+      "n_nsp_files": 574,
+      "has_overview_csv": true
+    },
+    "Stimmlippenpolyp": {
+      "archive_bytes": 385385712,
+      "n_speaker_dirs": 45,
+      "n_nsp_files": 630,
+      "has_overview_csv": true
+    },
+    "Chordektomie": {
+      "archive_bytes": 486826197,
+      "n_speaker_dirs": 59,
+      "n_nsp_files": 826,
+      "has_overview_csv": true
+    },
+    "Spasmodische Dysphonie": {
+      "archive_bytes": 492672059,
+      "n_speaker_dirs": 64,
+      "n_nsp_files": 896,
+      "has_overview_csv": true
+    },
+    "Dysodie": {
+      "archive_bytes": 517591827,
+      "n_speaker_dirs": 56,
+      "n_nsp_files": 784,
+      "has_overview_csv": true
+    },
+    "Reinke O\u0308dem": {
+      "archive_bytes": 576076357,
+      "n_speaker_dirs": 68,
+      "n_nsp_files": 952,
+      "has_overview_csv": true
+    },
+    "Kontaktpachydermie": {
+      "archive_bytes": 618664484,
+      "n_speaker_dirs": 71,
+      "n_nsp_files": 994,
+      "has_overview_csv": true
+    },
+    "Psychogene Dysphonie": {
+      "archive_bytes": 780742039,
+      "n_speaker_dirs": 91,
+      "n_nsp_files": 1274,
+      "has_overview_csv": true
+    },
+    "Dysphonie": {
+      "archive_bytes": 861922001,
+      "n_speaker_dirs": 101,
+      "n_nsp_files": 1414,
+      "has_overview_csv": true
+    },
+    "Funktionelle Dysphonie": {
+      "archive_bytes": 938925325,
+      "n_speaker_dirs": 112,
+      "n_nsp_files": 1568,
+      "has_overview_csv": true
+    },
+    "Laryngitis": {
+      "archive_bytes": 1193637707,
+      "n_speaker_dirs": 140,
+      "n_nsp_files": 1960,
+      "has_overview_csv": true
+    },
+    "Rekurrensparese": {
+      "archive_bytes": 1900446365,
+      "n_speaker_dirs": 213,
+      "n_nsp_files": 2973,
+      "has_overview_csv": true
+    },
+    "Hyperfunktionelle Dysphonie": {
+      "archive_bytes": 1928321725,
+      "n_speaker_dirs": 213,
+      "n_nsp_files": 2980,
+      "has_overview_csv": true
+    },
+    "healthy": {
+      "archive_bytes": 6020018616,
+      "n_speaker_dirs": 687,
+      "n_nsp_files": 9565,
+      "has_overview_csv": true
+    }
+  }
+}

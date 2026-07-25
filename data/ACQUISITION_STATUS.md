@@ -13,7 +13,7 @@ memory. Audio lives under `data/raw/` and is **gitignored** (verified with
 |---|---|---|---|---|
 | **SVD** (Saarbrücken) | **PILOT OBTAINED** | **152 MB** | full speaker metadata (2,225 sessions) + 20 pathology archives | run `fetch_svd.py --per-class` for the full ~20 GB |
 | **COUGHVID** | **FULLY OBTAINED** | **2.30 GB** | `public_dataset_v3.zip`, md5-verified; 34,434 recordings | `--extract`, then decode a sample to fix the sample rate |
-| **Coswara** | **METADATA OBTAINED**, audio in flight | ~1.7 GB and climbing (of 13.00 GB) | all labels for 2,746 participants + 43 date manifests | let `fetch_coswara.py --audio` finish; then `--extract` |
+| **Coswara** | **FULLY OBTAINED** | **12.98 GB** | all labels for 2,746 participants + all 43 date dirs (153 shards), **196/196 files byte-exact vs the GitHub manifest** | `fetch_coswara.py --audio --extract` to untar |
 | **PROCESS-2** | **SCRIPT-READY, BLOCKED ON GATE** | — | repo id resolved | accept the gate at `huggingface.co/datasets/CognoSpeak/PROCESS-2` |
 | **Bridge2AI-Voice v3.1.0** | **BLOCKED ON DUA** (long lead time) | — | access path confirmed | apply for PhysioNet credentialing **now** |
 | **Bridge2AI raw audio** | **BLOCKED ON SEPARATE DUA** | — | — | email `DACO@b2ai-voice.org` in parallel |

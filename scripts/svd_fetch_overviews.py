@@ -28,6 +28,13 @@ OUTDIR = REPO / "data" / "raw" / "svd_meta"
 STATS = REPO / "autoresearch_results" / "acquisition" / "svd_inventory_stats.json"
 
 
+def say(msg: str) -> None:
+    """Print ASCII-safe. The Windows console is cp1252 and the SVD pathology names
+    are German (umlauts, combining diaeresis) - printing them raw raises
+    UnicodeEncodeError and kills the run mid-fetch."""
+    print(msg.encode("ascii", "replace").decode("ascii"), flush=True)
+
+
 def archives() -> list[dict]:
     proc = subprocess.run(
         ["curl", "-sS", "--ssl-no-revoke", "-L", "--max-time", "120",
@@ -76,10 +83,15 @@ def main() -> None:
                     r = {(k or "").strip(): (v or "").strip() for k, v in r.items()}
                     r["_archive"] = label
                     rows_all.append(r)
-            print(f"OK   {label:45s} speakers={len(speaker_dirs):4d} nsp={n_audio:5d}", flush=True)
+            say(f"OK   {label:45s} speakers={len(speaker_dirs):4d} nsp={n_audio:5d}")
         except Exception as exc:  # noqa: BLE001
             failures[label] = f"{type(exc).__name__}: {exc}"
-            print(f"FAIL {label:45s} {type(exc).__name__}", flush=True)
+            say(f"FAIL {label:45s} {type(exc).__name__}")
+
+        # Checkpoint after every archive so a late crash still leaves the data.
+        STATS.write_text(json.dumps(
+            {"partial": True, "per_archive": per_archive, "failures": failures},
+            indent=2), encoding="utf-8")
 
     if rows_all:
         cols: list[str] = []
@@ -105,7 +117,7 @@ def main() -> None:
         "per_archive": per_archive,
     }
     STATS.write_text(json.dumps(stats, indent=2), encoding="utf-8")
-    print(json.dumps({k: v for k, v in stats.items() if k != "per_archive"}, indent=2))
+    say(json.dumps({k: v for k, v in stats.items() if k != "per_archive"}, indent=2))
 
 
 if __name__ == "__main__":

@@ -128,6 +128,35 @@ def central_directory(url: str, size: int) -> list[dict]:
     return entries
 
 
+def extract_many(url: str, entries: list[dict]) -> dict[str, bytes]:
+    """Extract many members with ONE range request.
+
+    Zip members are stored contiguously in the order they were added, so for a
+    block of consecutive speakers the union of their byte ranges is a single span.
+    Fetching that span once turns ~2N latency-bound requests into 1 bandwidth-bound
+    request - the difference between hours and seconds for a 20-speaker pilot.
+    """
+    if not entries:
+        return {}
+    lo = min(e["offset"] for e in entries)
+    # Local header (30 B) + name + extra precedes each member's data; 4 KB of slack
+    # comfortably covers the longest header in this archive.
+    hi = max(e["offset"] + e["csize"] for e in entries) + 4096
+    blob = fetch_range(url, lo, hi)
+
+    out: dict[str, bytes] = {}
+    for e in entries:
+        p = e["offset"] - lo
+        if blob[p:p + 4] != b"PK\x03\x04":
+            continue
+        n_len = struct.unpack("<H", blob[p + 26:p + 28])[0]
+        e_len = struct.unpack("<H", blob[p + 28:p + 30])[0]
+        start = p + 30 + n_len + e_len
+        raw = blob[start:start + e["csize"]]
+        out[e["name"]] = raw if e["method"] == 0 else zlib.decompress(raw, -15)
+    return out
+
+
 def extract_member(url: str, e: dict) -> bytes:
     """Range-fetch one member and decompress it."""
     head = fetch_range(url, e["offset"], e["offset"] + 29)
@@ -190,16 +219,30 @@ def main() -> None:
 
     outdir = Path(args.outdir or ".")
     outdir.mkdir(parents=True, exist_ok=True)
-    picked = sorted((k for k in speakers if k != "UNPARSED"), key=lambda x: int(x))[:args.speakers]
+    # Pick speakers adjacent in archive order so their byte ranges form one span.
+    ordered: list[str] = []
+    for e in entries:
+        sp = speaker_of(Path(e["name"]).name)
+        if sp and sp not in ordered:
+            ordered.append(sp)
+    picked = ordered[:args.speakers]
+
+    wanted = [e for sp in picked for e in speakers[sp]]
+    print(f"fetching {len(wanted)} members for {len(picked)} speakers in one range...",
+          flush=True)
+    blobs = extract_many(url, wanted)
+
     manifest = []
     for sp in picked:
         for e in speakers[sp]:
-            data = extract_member(url, e)
+            data = blobs.get(e["name"])
+            if data is None:
+                print(f"  MISS {e['name']}", flush=True)
+                continue
             dest = outdir / Path(e["name"]).name
             dest.write_bytes(data)
             manifest.append({"speaker": sp, "member": e["name"],
                              "bytes": len(data), "file": dest.name})
-            print(f"  {sp:>5s}  {dest.name}  {len(data)}B", flush=True)
     (outdir / "_pilot_manifest.json").write_text(
         json.dumps({"summary": summary, "speakers": picked, "files": manifest}, indent=2),
         encoding="utf-8")

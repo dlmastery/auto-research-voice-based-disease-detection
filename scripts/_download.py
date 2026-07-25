@@ -42,6 +42,14 @@ def session() -> requests.Session:
     return s
 
 
+def _md5(path: Path) -> str:
+    h = hashlib.md5()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(CHUNK), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def human(n: float) -> str:
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if abs(n) < 1024:
@@ -73,12 +81,27 @@ def download(
 
     if dest.exists():
         if expect_size is None or dest.stat().st_size == expect_size:
-            print(f"  [skip] {dest.name} already complete ({human(dest.stat().st_size)})")
-            return dest
-        print(f"  [warn] {dest.name} exists with wrong size "
-              f"({dest.stat().st_size} != {expect_size}); re-downloading")
-        dest.unlink()
-
+            # A size match alone is NOT proof of integrity, and the file may have
+            # been placed here by something other than this script. If we know the
+            # md5, check it before trusting the file.
+            if expect_md5:
+                got = _md5(dest)
+                if got != expect_md5:
+                    print(f"  [warn] {dest.name} exists but md5 {got} != {expect_md5}; "
+                          f"re-downloading")
+                    dest.unlink()
+                else:
+                    print(f"  [skip] {dest.name} already complete + md5-verified "
+                          f"({human(dest.stat().st_size)})")
+                    return dest
+            else:
+                print(f"  [skip] {dest.name} already complete, size-only check "
+                      f"({human(dest.stat().st_size)}); no checksum available")
+                return dest
+        else:
+            print(f"  [warn] {dest.name} exists with wrong size "
+                  f"({dest.stat().st_size} != {expect_size}); re-downloading")
+            dest.unlink()
     for attempt in range(1, retries + 1):
         have = part.stat().st_size if part.exists() else 0
         headers = {"Range": f"bytes={have}-"} if have else {}
@@ -125,12 +148,9 @@ def download(
             f"{dest.name}: size mismatch, got {part.stat().st_size} expected {expect_size}")
 
     if expect_md5:
-        h = hashlib.md5()
-        with open(part, "rb") as fh:
-            for chunk in iter(lambda: fh.read(CHUNK), b""):
-                h.update(chunk)
-        if h.hexdigest() != expect_md5:
-            raise RuntimeError(f"{dest.name}: md5 mismatch, got {h.hexdigest()} expected {expect_md5}")
+        got = _md5(part)
+        if got != expect_md5:
+            raise RuntimeError(f"{dest.name}: md5 mismatch, got {got} expected {expect_md5}")
 
     part.replace(dest)
     print(f"  [ok] {dest.name} ({human(dest.stat().st_size)})")
