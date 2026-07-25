@@ -123,6 +123,40 @@ Every citation is **mechanically verified** (fetch the abs page; confirm title +
 authors) before it ships. Unverifiable ids are marked `[UNVERIFIED]`. *arXiv ids
 `26MM.NNNNN` are 2026.*
 
+### R11b. Every hill-climb must target an EXTERNAL published number
+**The single strongest predictor of success across the seven prior programs.** Repos
+anchored to an external benchmark with a public number produced real results (dsbench
+beat its target on 83/112 tasks; `image` reached 0.9220 ± 0.018 vs Koh 2021's 0.853).
+Repos climbing a **self-defined composite** produced rising curves and zero information
+— FX made 22 champion advances over 265 experiments to a number (+9.19) that means
+nothing externally; QQQ's +1.32 champion has a 4-seed median of **−0.25**.
+
+> The external number is not what makes the loop *move*. It is what converts motion
+> into a result.
+
+The `image` repo settles it as a natural experiment: same harness, same operator, same
+week — 18 worthless experiments on a self-chosen synthetic task (composite 0.9966), then
+3 valuable ones the moment it was pointed at WILDS-Camelyon17.
+
+**Therefore:** the composite in `COMPOSITE.md` is an *internal ranking device only*.
+Every promotion to `FINDINGS.md` must be expressed as a delta against a **published,
+citable number** (for us: SVD UAR 85.22, Coswara AUC ≈0.92, PROCESS-2 macro-F1 0.59).
+A finding with no external referent is not a finding.
+
+### R11c. Ship the runner before the 300th scaffold
+`darebench` built 324 task scaffolds, a 44-section template, an 11-agent forensic
+auditor and a leaderboard README — and ran **zero** experiments. `dsbench` built the same
+framework and ran 11,871. **Scaffolding is cheap, feels like progress, and produces
+nothing.** No further process artifact may be written once the scaffold is minimally
+sufficient: the next action is always the first real experiment. Track
+`scaffold_files_written / experiments_run` and treat a rising ratio as an alarm.
+
+### R11d. Retraction machinery is mandatory
+The most trustworthy artifacts in the entire prior lineage are
+`_quarantined_reward_hack/WHY_QUARANTINED.md` and `_quarantined_blind_sweep/
+WHY_QUARANTINED.md` — records of results the program **withdrew**. A program that cannot
+retract cannot be believed. Provide `autoresearch_results/_quarantined/` and use it.
+
 ### R11. Novelty decays — re-check late, not once
 Before any result is promoted to "contribution", **re-run the prior-art check**. In
 the sibling program, two of three planned contributions were scooped within six weeks
