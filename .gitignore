@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.venv/
+*.egg-info/
+# never commit clinical audio or PHI
+data/raw/
+data/**/*.wav
+data/**/*.flac
+data/**/*.mp3
+models/
+*.ckpt
+autoresearch_results/*_cache/
