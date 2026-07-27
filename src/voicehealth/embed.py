@@ -208,6 +208,27 @@ def _hf_revision(hf_id: str) -> str:
         return "unknown"
 
 
+def _label_hashes(rows: Sequence[dict[str, Any]]) -> str:
+    """SHA-256 over the LABEL-BEARING fields, in manifest order.
+
+    IMPL_CRITIC finding #1 (INVALIDATES-RESULTS): the cache key previously covered
+    only the audio bytes via ``_source_file_hashes``. Because ``from_npz`` returns
+    labels/speaker ids from the cache, a manifest that was **relabelled** — a fixed
+    label bug, a new task definition, a corrected speaker id, an age correction —
+    hashed identically and got a CACHE HIT that silently returned the OLD labels.
+    Every downstream metric would then be computed against superseded ground truth
+    with no error and no warning.
+
+    Order is preserved (not sorted) because row order is the alignment between
+    embeddings and labels; a permutation is a different cache entry.
+    """
+    parts = []
+    for r in rows:
+        parts.append("|".join(str(r.get(k, "")) for k in
+                              ("speaker_id", "session_id", "label", "sex", "age", "task")))
+    return hashlib.sha256("\n".join(parts).encode()).hexdigest()
+
+
 def build_manifest_dict(
     rows: Sequence[dict[str, Any]],
     spec: BackboneSpec,
@@ -221,6 +242,8 @@ def build_manifest_dict(
         "corpus_id": corpus_id,
         "n_files": len(rows),
         "source_file_hashes": _source_file_hashes(rows),
+        # labels are part of the cache identity — see _label_hashes docstring
+        "label_hashes": _label_hashes(rows),
         "sample_rate": spec.sample_rate,
         "pooling": pooling,
         **PREPROCESS_POLICY,

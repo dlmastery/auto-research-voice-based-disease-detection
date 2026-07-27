@@ -256,3 +256,7 @@ IDEA_TABLE.md                               # the hypothesis registry + status
 *Report generated 2026-07-25 from read-only clones at
 `C:\Users\evija\AppData\Local\Temp\claude\autoresearch-priors\`.
 All seven target repos cloned successfully.*
+
+---
+
+> **Internal QA pass — implementer and critic share a model family; independent external review pending.**
