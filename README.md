@@ -1,82 +1,134 @@
-# auto-research-voice-based-disease-detection
+# Voice-Health AutoResearch
 
-An autonomous, pre-registered, falsification-driven research program on
-**voice / speech as a biomarker of disease** (Parkinson's, Alzheimer's & MCI,
-respiratory disease, laryngeal pathology, depression), run on a single
-RTX 4090 laptop (16 GB) by an LLM agent team.
+**An autonomous, pre-registered audit harness for voice-based disease detection** — Karpathy-style hill-climbing that re-tests *published* voice-health classification claims for speaker leakage, acquisition confounds and cross-corpus collapse, and publishes a transparent ledger of which claims survive.
 
-> **Status: BOOTSTRAPPING (2026-07-25).** Nothing here is a scientific claim yet.
-> The repository currently contains the portable process pack and the scaffold.
-> The first artifact required before any experiment runs is a *validated
-> instrument* — see `CLAUDE.md` §0.
+Eighth instantiation of a portable autoresearch process ([`meta-skills/`](meta-skills), 29 skills) previously run on FX, equities, tabular, medical imaging, [DSBench](https://github.com/dlmastery/autoresearch_dsbench), [DARE-bench](https://github.com/dlmastery/autoresearch_darebench) and activation steering. Runs on a single RTX 4090 laptop (16 GB).
 
 ---
 
-## What this is
+## Goal
 
-This is the **eighth instantiation** of a portable autoresearch process
-(`meta-skills/`, 29 skills) previously run on FX, equities, tabular, medical
-imaging, DSBench, DARE-bench, and activation steering. The process is the
-deliverable as much as the science: a Karpathy-style hill-climbing loop where
+> Beat the published number on every corpus **and** clear the demographic-confound bar on the identical folds, under speaker-disjoint splits — reporting all four numbers every time.
 
-- every experiment is **pre-registered** with a falsifier and a numeric prediction,
-- every claim is **rigor-gated** (n ≥ 7 seeds, paired Wilcoxon, bootstrap CI,
-  Holm correction) before it may be called a result,
-- **negative results are first-class** and published as prominently as wins,
-- and the whole evidence trail is **auditable** from a transparent dashboard.
+That second clause is the whole point. On the Saarbrücken Voice Database, **patient age alone reaches ROC-AUC 0.871** while the published benchmark is **UAR 85.22**. So "beating SOTA" here is achievable by leaning harder on who is old and who is young — a number that dies on first contact with another corpus. Nobody in this field currently reports the margin above the confound baseline. That is the gap this program exists to fill.
 
-## Why voice-based disease detection
+**Every claim carries four numbers:**
 
-The domain is chosen because it is (a) clinically consequential, (b) laptop-scale
-(seconds of audio, not gigapixel volumes), (c) anchored by **public benchmarks
-with published numbers** to hill-climb against, and (d) known to have a
-**replication problem** — published accuracies frequently fail to survive
-speaker-independent splits, device/corpus shortcut audits, and cross-corpus
-transfer. That last property is the opportunity: a rigorous, transparent,
-negative-result-friendly program has something real to contribute here.
+| published SOTA | ours | confound baseline | margin above confound |
+|---|---|---|---|
 
-## The prime directive (learned the hard way)
+A win that does not clear the confound bar is logged **NOT CLEARED**, not announced.
 
-A sibling program in this family produced *124 experiments and zero
-external-ready findings*. The post-mortem is baked into this repository's
-constitution as hard, checkable rules. The three that matter most:
+---
 
-1. **Validate the instrument before measuring anything.** The prior program's
-   judge scored AUC 0.68 against its own ≥0.85 gate; every efficacy number and
-   every null it produced was uninterpretable. **No claim may rest on an
-   uncalibrated instrument — ever.**
-2. **Never run on a substrate where the phenomenon cannot appear.** 74 % of the
-   prior program's experiments ran on a model it had itself shown was incapable
-   of the effect under study.
-3. **A screening run is not a result.** 91 % of prior experiments were n=1, the
-   champion never advanced past experiment 3, and the loop had nothing to climb.
+## Status — honest
 
-See `CLAUDE.md` for the full constitution and `audits/` for the inherited
-post-mortem.
+| | |
+|---|---|
+| Findings | **1** (F1, below) |
+| Benchmark results | **0 measured** — pipeline built, full corpus downloading |
+| Corpora decoded | SVD pilot (49 speakers), Coswara, COUGHVID |
+| Blocking | full SVD corpus (38 GB, in progress) → then embeddings → benchmark |
+
+Nothing here is a clinical claim. This is not a medical device.
+
+---
+
+## F1 — on SVD, age alone reaches ROC-AUC 0.871 without hearing any audio
+
+Using **only** the demographics shipped with the corpus — no audio, no features, no model of speech:
+
+| predictor | ROC-AUC |
+|---|---|
+| **age alone** | **0.8709** |
+| sex alone | 0.5172 |
+| age + sex, logistic, **speaker-disjoint** 5-fold `GroupKFold` | **0.8768** |
+
+n = 2,225 sessions / 1,853 speakers (1,356 pathological / 869 healthy).
+
+**Cause — a recruitment asymmetry:** healthy speakers average **28.3 years**, pathological **51.0**. Young volunteers versus older clinic patients.
+
+**Second finding from the same 167 KB file:** 200 of 1,853 speakers contribute more than one session (max 24). A default `train_test_split` leaks all of them across folds.
+
+**What this does NOT claim:** it does not show any published result is wrong. UAR and ROC-AUC are different metrics and the comparison is indicative, not like-for-like. Some pipelines may already age-match. The audit question is whether the margin above the demographic bar is *reported at all* — recomputing a published pipeline under age-matched, speaker-disjoint splits is the next experiment, not this one.
+
+```bash
+python scripts/audit_demographic_baseline.py --dataset svd   # CPU, seconds
+```
+
+Full write-up: [`FINDINGS.md`](FINDINGS.md) · raw: [`autoresearch_results/F1_demographic_baseline.json`](autoresearch_results/F1_demographic_baseline.json)
+
+---
+
+## Corpora
+
+| corpus | access | speakers | speaker-disjoint possible? | published target |
+|---|---|---|---|---|
+| **Saarbrücken (SVD)** | open, CC-BY-4.0, [Zenodo 38.1 GB](https://zenodo.org/records/16874898) | 1,853 | **yes** (`SprecherID`) | UAR **85.22** ([arXiv:2410.10537](https://arxiv.org/abs/2410.10537)) |
+| **Coswara** | open, `git clone` | participant ids | **yes** | AUC ≈ 0.92 |
+| **COUGHVID** | open, Zenodo | **0 real speaker ids** | **NO — blocker** | (OOD / pretraining only) |
+| PROCESS-2 | fast DUA | 400 | yes | macro-F1 0.59 |
+| Bridge2AI-Voice | slow DUA (PhysioNet) | 833 | yes | — |
+
+COUGHVID is demoted permanently: a "speaker-disjoint" split over recording UUIDs is not speaker-disjoint, because one person may contribute many recordings. It **may never carry an evaluation claim**.
+
+---
+
+## The rules that make this trustworthy
+
+Written against the July-2026 state of the art in autonomous research *and* a forensic post-mortem of a sibling program that produced **124 experiments and zero external-ready findings**. Every rule in [`CLAUDE.md`](CLAUDE.md) is paid for. The load-bearing ones:
+
+- **R1 — no orphan numbers.** Every number carries a pointer to the artifact that produced it.
+- **R3/R4 — validate the instrument before trusting it.** The sibling program ran 124 experiments on a judge scoring AUC 0.68 against its own ≥0.85 bar; every result *and every null* was uninterpretable.
+- **R6 — power must be arithmetically possible.** `n ≥ 7 + Holm` is *unsatisfiable* for families of m ≥ 4 (min p = 2/2ⁿ vs 0.05/m). Feasibility is computed per family; the first pre-registration here needed **n = 10**, not 8.
+- **R7 — falsifiers must be executed**, not merely declared.
+- **R8 — negative results are first-class**, in the same tables, with the same detail.
+- **R11b — every hill-climb targets an external published number.** Across seven prior programs this was the single strongest predictor of success: repos anchored to a public benchmark produced real results; repos climbing a self-defined composite produced rising curves and zero information.
+- **R11c — ship the runner before the 300th scaffold.** A sibling built 324 task scaffolds and ran zero experiments.
+- **R11d — retraction machinery.** [`autoresearch_results/_quarantined/`](autoresearch_results/_quarantined) exists so results can be *withdrawn*.
+
+---
 
 ## Layout
 
-| path | role |
-|---|---|
-| `CLAUDE.md` | the constitution — read cover to cover before any work |
-| `meta-skills/` | the portable, domain-agnostic process pack (29 skills) |
-| `skills/` | domain-specific skills for voice-health research |
-| `src/voicehealth/` | the research harness (data, features, models, eval, runner) |
-| `ideas/<NN>/` | per-hypothesis sub-projects |
-| `autoresearch_results/` | append-only experiment log, champion, reasoning entries |
-| `IDEA_TABLE.md` | hypothesis registry + falsifiers + pre-classification |
-| `EXPERIMENT_LEDGER.md` | promotion / demotion log |
-| `FINDINGS.md` | external-ready findings (rigor-gated only) |
-| `dashboard/`, `docs/dashboard/` | the transparent multi-page dashboard |
-| `audits/` | implementation, science, data-split and meta-process audits |
+```
+CLAUDE.md                  the constitution — read before any work
+meta-skills/               29 portable, domain-agnostic autoresearch skills
+skills/                    6 domain skills (speaker-disjoint splits, confound
+                           baseline, claim audit, dataset onboarding,
+                           embedding extraction, calibration & subgroups)
+corpus/                    citation-verified surveys (datasets, SOTA methods,
+                           autoresearch state of the art)
+audits/                    novelty critique · prior-repo archaeology
+src/voicehealth/           embed.py · features.py · benchmark.py
+scripts/                   fetch_* · preprocess_audio.py · audit_demographic_baseline.py
+data/                      cards, manifests (audio gitignored)
+AXIS_TAXONOMY.md           what "change exactly one thing" means here
+COMPOSITE.md               the Goodhart-resistant internal ranking metric
+IDEA_TABLE.md              hypotheses + falsifiers + required n
+PREREGISTRATION.md         the first experiment, fixed before the run
+FINDINGS.md                rigor-gated findings, positive and negative
+```
 
-## Ethics & data governance
+---
 
-Clinical audio is regulated and often carries a DUA. This repository will
-**never** redistribute restricted corpora, commits no PHI, and makes **no
-clinical claims**. Every dataset is recorded with its license and access path;
-anything requiring credentialed access is used only under its own terms.
+## Quickstart
 
-## License / status
+```bash
+python scripts/fetch_svd.py --metadata-only          # 167 KB, no DUA
+python scripts/audit_demographic_baseline.py --dataset svd
+```
 
-Research artifact. Not a medical device. Not clinical advice.
+Reproduces F1 in seconds on CPU. Full corpus + benchmark: see [`data/ACQUISITION_STATUS.md`](data/ACQUISITION_STATUS.md).
+
+---
+
+## Novelty — stated plainly
+
+The agentic autoresearch loop is **not** novel ([arXiv:2606.20394](https://arxiv.org/abs/2606.20394) published an auditable autoresearch loop in June 2026). Building a better voice detector is **not** the goal — Google HeAR, NIH Bridge2AI and a dozen funded companies own that, and a laptop adds nothing. The claim here is **domain + verdict-ledger**: systematically re-testing published voice-health claims and publishing what survives. See [`audits/NOVELTY_CRITIQUE.md`](audits/NOVELTY_CRITIQUE.md), which argues this case adversarially.
+
+---
+
+## Ethics
+
+No PHI is committed. No restricted corpus is redistributed. No clinical claims are made — this produces no diagnosis and is not therapy or medical care. Every dataset is used under its own licence. Subgroup performance is reported whenever labels permit; a model that works only for one demographic is a finding, not a footnote.
