@@ -1,0 +1,542 @@
+{
+  "schema": "voicehealth.bench/1",
+  "generated_utc": "2026-07-27T05:53:15Z",
+  "elapsed_s": 2131.7,
+  "command": "run_benchmark.py --corpus svd --backbone wavlm --head all --folds 5 --repeats 3",
+  "git_sha": "b2d2b3a382964241afb69a527d2759a04bbc3100",
+  "host": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.3"
+  },
+  "manifest": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\data\\interim\\svd\\manifest.csv",
+  "backend": {
+    "backend": "microsoft/wavlm-base-plus",
+    "evidence": "SpeechDx MRR 0.38 (arXiv:2606.17339); pre-registered headline representation"
+  },
+  "embedding_artifact": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\wavlm\\svd\\b942e8de0a49fd00f8c794ed2c90d6b84d600b51e2b55fb0c99418f3d8f03387.npz",
+  "embedding_manifest": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\wavlm\\svd\\b942e8de0a49fd00f8c794ed2c90d6b84d600b51e2b55fb0c99418f3d8f03387.manifest.json",
+  "embedding_content_hash": "b942e8de0a49fd00f8c794ed2c90d6b84d600b51e2b55fb0c99418f3d8f03387",
+  "config": {
+    "corpus": "svd",
+    "backbone": "wavlm",
+    "pooling": "mean_std",
+    "heads": [
+      "logreg",
+      "linsvm",
+      "mlp",
+      "gbt"
+    ],
+    "n_folds": 5,
+    "n_repeats": 3,
+    "seed": 0,
+    "n_boot": 2000,
+    "positive_label": "pathological",
+    "confound_sets": [
+      "age_only",
+      "sex_only",
+      "age_sex",
+      "duration_only",
+      "intensity_rms_only",
+      "age_sex_duration_rms"
+    ],
+    "embedding_hash": "b942e8de0a49fd00f8c794ed2c90d6b84d600b51e2b55fb0c99418f3d8f03387",
+    "embedding_path": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\wavlm\\svd\\b942e8de0a49fd00f8c794ed2c90d6b84d600b51e2b55fb0c99418f3d8f03387.npz",
+    "notes": ""
+  },
+  "config_hash": "d8ab0b7584b7fdb7",
+  "dataset": {
+    "corpus": "svd",
+    "n_recordings": 667,
+    "n_speakers": 49,
+    "n_positive_recordings": 280,
+    "n_negative_recordings": 387,
+    "n_positive_speakers": 20,
+    "n_negative_speakers": 29,
+    "recordings_per_speaker_mean": 13.612244897959183,
+    "embedding_dim": 1536,
+    "embedding_cache": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\wavlm\\svd\\b942e8de0a49fd00f8c794ed2c90d6b84d600b51e2b55fb0c99418f3d8f03387.npz",
+    "embedding_content_hash": "b942e8de0a49fd00f8c794ed2c90d6b84d600b51e2b55fb0c99418f3d8f03387",
+    "speakers_with_mixed_labels": 0
+  },
+  "power_check_R6": {
+    "n_paired": 3,
+    "family_size": 5,
+    "min_attainable_p": 0.25,
+    "holm_tightest_threshold": 0.01,
+    "feasible": false,
+    "min_n_for_feasibility": 8,
+    "rule": "CLAUDE.md R6 -- paired Wilcoxon min p = 2/2^n vs Holm 0.05/m"
+  },
+  "recording_level": {
+    "logreg": {
+      "roc_auc": 0.5844868955334072,
+      "uar": 0.5750138427464009,
+      "accuracy": 0.5922038980509745,
+      "f1": 0.49063670411985016,
+      "ece": 0.2549290985886988,
+      "roc_auc_ci95": {
+        "lo": 0.4854415054553708,
+        "hi": 0.6764399861810556,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.577233296419343,
+      "per_repeat_auc_std": 0.01074619085673563
+    },
+    "linsvm": {
+      "roc_auc": 0.5652916205241787,
+      "uar": 0.5166389811738649,
+      "accuracy": 0.5892053973013494,
+      "f1": 0.11612903225806452,
+      "ece": 0.04913257293204585,
+      "roc_auc_ci95": {
+        "lo": 0.4581656626058967,
+        "hi": 0.66952027947245,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.5437092408022641,
+      "per_repeat_auc_std": 0.005771274133616188
+    },
+    "mlp": {
+      "roc_auc": 0.6184200812107788,
+      "uar": 0.5931016980435585,
+      "accuracy": 0.6131934032983508,
+      "f1": 0.5038461538461538,
+      "ece": 0.23807139259742507,
+      "roc_auc_ci95": {
+        "lo": 0.5133173943315859,
+        "hi": 0.7189049318104821,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6086901685738896,
+      "per_repeat_auc_std": 0.018034378609665065
+    },
+    "gbt": {
+      "roc_auc": 0.6043373938722776,
+      "uar": 0.5894979697305279,
+      "accuracy": 0.6221889055472264,
+      "f1": 0.46153846153846156,
+      "ece": 0.23404397203274852,
+      "roc_auc_ci95": {
+        "lo": 0.4976315204474537,
+        "hi": 0.7071041175832681,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.5996585455887781,
+      "per_repeat_auc_std": 0.015872527613598374
+    },
+    "ens_rank3": {
+      "roc_auc": 0.6190014765596161,
+      "uar": 0.5829457364341085,
+      "accuracy": 0.5802098950524738,
+      "f1": 0.5454545454545454,
+      "ece": 0.15881243021376948,
+      "roc_auc_ci95": {
+        "lo": 0.5266393770499325,
+        "hi": 0.710407756852741,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6086747877445552,
+      "per_repeat_auc_std": 0.015211899770640719
+    },
+    "confound::age_only": {
+      "roc_auc": 0.7145994832041345,
+      "uar": 0.6664728682170542,
+      "accuracy": 0.6851574212893553,
+      "f1": 0.5945945945945946,
+      "ece": 0.24685562877084818,
+      "roc_auc_ci95": {
+        "lo": 0.5381759550320658,
+        "hi": 0.8746340028639231,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.7152885443583119,
+      "per_repeat_auc_std": 0.0054634853526746175
+    },
+    "confound::sex_only": {
+      "roc_auc": 0.5012919896640827,
+      "uar": 0.5989018087855298,
+      "accuracy": 0.5907046476761619,
+      "f1": 0.5714285714285714,
+      "ece": 0.21761238805460653,
+      "roc_auc_ci95": {
+        "lo": 0.3355514380612654,
+        "hi": 0.6790669367826875,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.5479974160206719,
+      "per_repeat_auc_std": 0.01941433909813939
+    },
+    "confound::age_sex": {
+      "roc_auc": 0.6979328165374677,
+      "uar": 0.7026485788113696,
+      "accuracy": 0.7271364317841079,
+      "f1": 0.6285714285714286,
+      "ece": 0.24294334410182467,
+      "roc_auc_ci95": {
+        "lo": 0.5223008438302269,
+        "hi": 0.868607182830849,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6896210163652023,
+      "per_repeat_auc_std": 0.007726295035887244
+    },
+    "confound::duration_only": {
+      "roc_auc": 0.4590900701365817,
+      "uar": 0.5,
+      "accuracy": 0.5802098950524738,
+      "f1": 0.0,
+      "ece": 0.0013777703283236256,
+      "roc_auc_ci95": {
+        "lo": 0.3209569908923089,
+        "hi": 0.6014457250148681,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.4867940199335548,
+      "per_repeat_auc_std": 0.012441001130568983
+    },
+    "confound::intensity_rms_only": {
+      "roc_auc": 0.4253322259136213,
+      "uar": 0.4974160206718346,
+      "accuracy": 0.5772113943028486,
+      "f1": 0.0,
+      "ece": 0.026310712436831613,
+      "roc_auc_ci95": {
+        "lo": 0.3441623966860857,
+        "hi": 0.5105999605534919,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.43564353389934785,
+      "per_repeat_auc_std": 0.030226444940763153
+    },
+    "confound::age_sex_duration_rms": {
+      "roc_auc": 0.6930878552971577,
+      "uar": 0.6887412329272794,
+      "accuracy": 0.712143928035982,
+      "f1": 0.6129032258064516,
+      "ece": 0.23126541712538107,
+      "roc_auc_ci95": {
+        "lo": 0.5200065586482836,
+        "hi": 0.8606707441319451,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6850590623846436,
+      "per_repeat_auc_std": 0.008172159865636991
+    }
+  },
+  "speaker_level": {
+    "logreg": {
+      "roc_auc": 0.6879310344827586,
+      "uar": 0.6810344827586207,
+      "accuracy": 0.7142857142857143,
+      "f1": 0.5882352941176471,
+      "ece": 0.15849088637836936,
+      "roc_auc_ci95": {
+        "lo": 0.5201646567717997,
+        "hi": 0.8405176754054734,
+        "n_boot": 2000
+      }
+    },
+    "linsvm": {
+      "roc_auc": 0.6224137931034482,
+      "uar": 0.5,
+      "accuracy": 0.5918367346938775,
+      "f1": 0.0,
+      "ece": 0.052625352259932034,
+      "roc_auc_ci95": {
+        "lo": 0.44704963235294115,
+        "hi": 0.7896346719932716,
+        "n_boot": 2000
+      }
+    },
+    "mlp": {
+      "roc_auc": 0.7241379310344828,
+      "uar": 0.6810344827586207,
+      "accuracy": 0.7142857142857143,
+      "f1": 0.5882352941176471,
+      "ece": 0.16495880774249033,
+      "roc_auc_ci95": {
+        "lo": 0.5601837474120083,
+        "hi": 0.8666666666666666,
+        "n_boot": 2000
+      }
+    },
+    "gbt": {
+      "roc_auc": 0.6862068965517241,
+      "uar": 0.5905172413793103,
+      "accuracy": 0.6530612244897959,
+      "f1": 0.37037037037037035,
+      "ece": 0.18912067774762598,
+      "roc_auc_ci95": {
+        "lo": 0.5217348678601875,
+        "hi": 0.8333333333333333,
+        "n_boot": 2000
+      }
+    },
+    "ens_rank3": {
+      "roc_auc": 0.7448275862068965,
+      "uar": 0.6853448275862069,
+      "accuracy": 0.673469387755102,
+      "f1": 0.6521739130434783,
+      "ece": 0.18656466151434756,
+      "roc_auc_ci95": {
+        "lo": 0.5714056776556776,
+        "hi": 0.8924903501516402,
+        "n_boot": 2000
+      }
+    },
+    "confound::age_only": {
+      "roc_auc": 0.7206896551724138,
+      "uar": 0.6715517241379311,
+      "accuracy": 0.6938775510204082,
+      "f1": 0.5945945945945946,
+      "ece": 0.24638746364135483,
+      "roc_auc_ci95": {
+        "lo": 0.5447857368753954,
+        "hi": 0.8826530612244898,
+        "n_boot": 2000
+      }
+    },
+    "confound::sex_only": {
+      "roc_auc": 0.5008620689655172,
+      "uar": 0.6008620689655173,
+      "accuracy": 0.5918367346938775,
+      "f1": 0.5652173913043478,
+      "ece": 0.22221101159789464,
+      "roc_auc_ci95": {
+        "lo": 0.323853780148423,
+        "hi": 0.6707284338599929,
+        "n_boot": 2000
+      }
+    },
+    "confound::age_sex": {
+      "roc_auc": 0.7017241379310344,
+      "uar": 0.7060344827586207,
+      "accuracy": 0.7346938775510204,
+      "f1": 0.6285714285714286,
+      "ece": 0.23725932813741016,
+      "roc_auc_ci95": {
+        "lo": 0.5178939937004454,
+        "hi": 0.8720637497423213,
+        "n_boot": 2000
+      }
+    },
+    "confound::duration_only": {
+      "roc_auc": 0.4758620689655172,
+      "uar": 0.5,
+      "accuracy": 0.5918367346938775,
+      "f1": 0.0,
+      "ece": 0.011973832617948543,
+      "roc_auc_ci95": {
+        "lo": 0.3112104216686674,
+        "hi": 0.6411620337790289,
+        "n_boot": 2000
+      }
+    },
+    "confound::intensity_rms_only": {
+      "roc_auc": 0.4275862068965517,
+      "uar": 0.5,
+      "accuracy": 0.5918367346938775,
+      "f1": 0.0,
+      "ece": 0.07111859256034571,
+      "roc_auc_ci95": {
+        "lo": 0.2672355148956135,
+        "hi": 0.58965007415647,
+        "n_boot": 2000
+      }
+    },
+    "confound::age_sex_duration_rms": {
+      "roc_auc": 0.6965517241379311,
+      "uar": 0.7060344827586207,
+      "accuracy": 0.7346938775510204,
+      "f1": 0.6285714285714286,
+      "ece": 0.22165179733200546,
+      "roc_auc_ci95": {
+        "lo": 0.5113427033492823,
+        "hi": 0.8686990876507005,
+        "n_boot": 2000
+      }
+    }
+  },
+  "per_repeat_auc": {
+    "logreg": [
+      0.5855850867478773,
+      0.5840531561461794,
+      0.5620616463639719
+    ],
+    "linsvm": [
+      0.5363695090439277,
+      0.5442875599852345,
+      0.5504706533776301
+    ],
+    "mlp": [
+      0.6190753045404208,
+      0.623671096345515,
+      0.5833241048357327
+    ],
+    "gbt": [
+      0.6214654854189737,
+      0.5841454411221854,
+      0.5933647102251753
+    ],
+    "ens_rank3": [
+      0.6275562938353636,
+      0.6081626061277224,
+      0.5903054632705795
+    ],
+    "confound::age_only": [
+      0.7229974160206719,
+      0.7109819121447029,
+      0.7118863049095608
+    ],
+    "confound::sex_only": [
+      0.5311369509043927,
+      0.5751937984496125,
+      0.5376614987080104
+    ],
+    "confound::age_sex": [
+      0.6848837209302325,
+      0.7005167958656331,
+      0.6834625322997415
+    ],
+    "confound::duration_only": [
+      0.4697259136212625,
+      0.4916297526762643,
+      0.4990263935031377
+    ],
+    "confound::intensity_rms_only": [
+      0.39649317091177555,
+      0.44035622000738284,
+      0.4700812107788852
+    ],
+    "confound::age_sex_duration_rms": [
+      0.6760428202288666,
+      0.6958287190845329,
+      0.6833056478405316
+    ]
+  },
+  "margins_vs_confound": {
+    "confound_bar_name": "confound::age_only",
+    "confound_bar_auc_recording": 0.7145994832041345,
+    "confound_bar_auc_speaker": 0.7206896551724138,
+    "best_audio_head": "ens_rank3",
+    "per_head": {
+      "logreg": {
+        "recording_level_delta_auc": {
+          "delta": -0.1301125876707273,
+          "lo": -0.29783038752660557,
+          "hi": 0.0426785702764722,
+          "p_gt_zero": 0.0645,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": -0.03275862068965518,
+          "lo": -0.2366683673469387,
+          "hi": 0.16177231237322498,
+          "p_gt_zero": 0.36,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.25
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "linsvm": {
+        "recording_level_delta_auc": {
+          "delta": -0.14930786267995577,
+          "lo": -0.3260604211528917,
+          "hi": 0.033746807996843146,
+          "p_gt_zero": 0.048,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": -0.09827586206896555,
+          "lo": -0.31126160330352864,
+          "hi": 0.10934464219503147,
+          "p_gt_zero": 0.1655,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.25
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "mlp": {
+        "recording_level_delta_auc": {
+          "delta": -0.09617940199335562,
+          "lo": -0.26309334121760386,
+          "hi": 0.07501779674083153,
+          "p_gt_zero": 0.1175,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": 0.0034482758620689724,
+          "lo": -0.19902182444884314,
+          "hi": 0.2007202922525502,
+          "p_gt_zero": 0.523,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.25
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "gbt": {
+        "recording_level_delta_auc": {
+          "delta": -0.11026208933185688,
+          "lo": -0.2727936421606024,
+          "hi": 0.05954988419834262,
+          "p_gt_zero": 0.0915,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": -0.034482758620689724,
+          "lo": -0.22243598426212588,
+          "hi": 0.1508931419457737,
+          "p_gt_zero": 0.344,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.25
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "ens_rank3": {
+        "recording_level_delta_auc": {
+          "delta": -0.09559800664451834,
+          "lo": -0.2614080215515984,
+          "hi": 0.07761501246437874,
+          "p_gt_zero": 0.13,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": 0.024137931034482696,
+          "lo": -0.17833333333333334,
+          "hi": 0.22041142719714132,
+          "p_gt_zero": 0.598,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.25
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      }
+    }
+  },
+  "verdicts": {
+    "logreg": "NOT CLEARED | UNDERPOWERED (R6)",
+    "linsvm": "NOT CLEARED | UNDERPOWERED (R6)",
+    "mlp": "NOT CLEARED | UNDERPOWERED (R6)",
+    "gbt": "NOT CLEARED | UNDERPOWERED (R6)",
+    "ens_rank3": "NOT CLEARED | UNDERPOWERED (R6)"
+  }
+}

@@ -82,3 +82,59 @@ fit (pre-registered in `PREREGISTRATION.md` §A3).
 python scripts/fetch_svd.py --metadata-only
 python scripts/audit_demographic_baseline.py --dataset svd
 ```
+
+---
+
+## F2 — WavLM embeddings do NOT clear the demographic bar on SVD (pilot)
+
+**Status:** SCREENING, and formally **UNDERPOWERED** — the harness refused to certify it.
+**Date:** 2026-07-27 · **Artifact:** `autoresearch_results/bench_svd_wavlm_mean_std.json`
+(config_hash `d8ab0b7584b7fdb7`) · embeddings cached, speaker-disjoint `GroupKFold`,
+3 repeats × 5 folds, scaler fit train-only inside each fold.
+
+### The measurement
+
+667 recordings / **49 speakers** (20 pathological / 29 healthy).
+
+| model | rec-AUC | rec-UAR | spk-AUC | spk-UAR | ECE |
+|---|---|---|---|---|---|
+| ens_rank3 (best audio) | 0.6190 | 0.5829 | **0.7448** | 0.6853 | 0.159 |
+| mlp | 0.6184 | 0.5931 | 0.7241 | 0.6810 | 0.238 |
+| gbt | 0.6043 | 0.5895 | 0.6862 | 0.5905 | 0.234 |
+| logreg | 0.5845 | 0.5750 | 0.6879 | 0.6810 | 0.255 |
+| linsvm | 0.5653 | 0.5166 | 0.6224 | 0.5000 | 0.049 |
+| **confound: age only** | **0.7146** | 0.6665 | **0.7207** | 0.6716 | 0.247 |
+| confound: age+sex | 0.6979 | 0.7026 | 0.7017 | 0.7060 | 0.243 |
+| confound: sex only | 0.5013 | 0.5989 | 0.5009 | 0.6009 | 0.218 |
+| confound: duration only | 0.4591 | 0.5000 | 0.4759 | 0.5000 | 0.001 |
+| confound: intensity (RMS) only | 0.4253 | 0.4974 | 0.4276 | 0.5000 | 0.026 |
+
+### Verdict: NOT CLEARED
+
+**Age alone (rec-AUC 0.7146) beats every audio head (best 0.6190) at the recording
+level.** At speaker level the ensemble leads 0.7448 vs 0.7207 — a margin of **+0.024**
+against speaker-level CIs of roughly **±0.13** (`audits/DATA_SPLIT_AUDIT.md`). That is
+not a result; it is noise around a demographic prior.
+
+The power check refused certification: `n_paired=3, m=5, min_attainable_p=0.25 vs
+Holm α=0.01 → feasible=False`. Every head is labelled **NOT CLEARED | UNDERPOWERED (R6)**.
+
+### Why this is the point of the program
+
+A naive write-up of this same run would report *"WavLM reaches spk-AUC 0.74 on voice
+pathology"* — a number that looks publishable and is, on this corpus, indistinguishable
+from asking the patient's age. The two-bar standard (R11b + the confound baseline on
+identical folds) turned a plausible headline into an honest negative on the program's
+**first** experiment.
+
+Note also what the confound row rules OUT: duration (0.459) and loudness (0.425) are
+*below* chance, so the tell is specifically **age**, not recording length or level.
+
+### Limitations — do not over-read this either
+
+1. **49 speakers.** The full SVD corpus (1,853 speakers) is still downloading. This
+   result may not survive more data, in either direction.
+2. WavLM-base-plus, mean+std pooling, one layer choice. Other backbones
+   (wav2vec2, Whisper-encoder, HeAR) and poolings are untested.
+3. This says nothing about whether voice *carries* pathology signal — only that **these
+   embeddings, on this corpus, at this n, do not beat age.**
