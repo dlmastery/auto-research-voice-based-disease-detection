@@ -1,0 +1,621 @@
+{
+  "schema": "voicehealth.bench/1",
+  "generated_utc": "2026-07-25T23:55:48Z",
+  "elapsed_s": 3461.2,
+  "command": "run_benchmark.py --corpus svd --backbone egemaps --head all --folds 5 --repeats 10",
+  "git_sha": "a640ceb19f59b474daa3daede4a81904cf9e60d2",
+  "host": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.3"
+  },
+  "manifest": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\data\\interim\\svd\\manifest.csv",
+  "backend": {
+    "backend": "opensmile-eGeMAPSv02",
+    "is_real_egemaps": true,
+    "citation": "Eyben, Scherer, Schuller et al., 2016 IEEE T-AFFC 'The Geneva Minimalistic Acoustic Parameter Set (GeMAPS) for Voice Research and Affective Computing' (doi:10.1109/TAFFC.2015.2457417)",
+    "revision": "opensmile-python 2.6.0"
+  },
+  "embedding_artifact": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\egemaps\\svd\\2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7.npz",
+  "embedding_manifest": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\egemaps\\svd\\2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7.manifest.json",
+  "embedding_content_hash": "2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7",
+  "config": {
+    "corpus": "svd",
+    "backbone": "egemaps",
+    "pooling": "functionals",
+    "heads": [
+      "logreg",
+      "linsvm",
+      "mlp",
+      "gbt"
+    ],
+    "n_folds": 5,
+    "n_repeats": 10,
+    "seed": 0,
+    "n_boot": 2000,
+    "positive_label": "pathological",
+    "confound_sets": [
+      "age_only",
+      "sex_only",
+      "age_sex",
+      "duration_only",
+      "intensity_rms_only",
+      "age_sex_duration_rms"
+    ],
+    "embedding_hash": "2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7",
+    "embedding_path": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\egemaps\\svd\\2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7.npz",
+    "notes": ""
+  },
+  "config_hash": "3ffad10ed6634618",
+  "dataset": {
+    "corpus": "svd",
+    "n_recordings": 667,
+    "n_speakers": 49,
+    "n_positive_recordings": 280,
+    "n_negative_recordings": 387,
+    "n_positive_speakers": 20,
+    "n_negative_speakers": 29,
+    "recordings_per_speaker_mean": 13.612244897959183,
+    "embedding_dim": 88,
+    "embedding_cache": "C:\\Users\\evija\\auto-research-voice-based-disease-detection\\cache\\embeddings\\egemaps\\svd\\2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7.npz",
+    "embedding_content_hash": "2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7",
+    "speakers_with_mixed_labels": 0
+  },
+  "power_check_R6": {
+    "n_paired": 10,
+    "family_size": 5,
+    "min_attainable_p": 0.001953125,
+    "holm_tightest_threshold": 0.01,
+    "feasible": true,
+    "min_n_for_feasibility": 8,
+    "rule": "CLAUDE.md R6 -- paired Wilcoxon min p = 2/2^n vs Holm 0.05/m"
+  },
+  "recording_level": {
+    "logreg": {
+      "roc_auc": 0.5708748615725361,
+      "uar": 0.5557170542635659,
+      "accuracy": 0.5847076461769115,
+      "f1": 0.43121149897330596,
+      "ece": 0.1611764800597751,
+      "roc_auc_ci95": {
+        "lo": 0.46384465447943085,
+        "hi": 0.6791621375958035,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.5634865263935032,
+      "per_repeat_auc_std": 0.028364810928994993
+    },
+    "linsvm": {
+      "roc_auc": 0.5313861203396086,
+      "uar": 0.5200212255444814,
+      "accuracy": 0.5937031484257871,
+      "f1": 0.11147540983606558,
+      "ece": 0.01768655621316161,
+      "roc_auc_ci95": {
+        "lo": 0.4331876383149761,
+        "hi": 0.6341971756292895,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.5124243263196752,
+      "per_repeat_auc_std": 0.037589115594859404
+    },
+    "mlp": {
+      "roc_auc": 0.5957641196013289,
+      "uar": 0.569656699889258,
+      "accuracy": 0.5877061469265368,
+      "f1": 0.4821092278719397,
+      "ece": 0.25885861174425423,
+      "roc_auc_ci95": {
+        "lo": 0.4937927642372713,
+        "hi": 0.7033371491543234,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.584653008490218,
+      "per_repeat_auc_std": 0.025164315586034536
+    },
+    "gbt": {
+      "roc_auc": 0.6910022148394241,
+      "uar": 0.6344453672942045,
+      "accuracy": 0.6611694152923538,
+      "f1": 0.5368852459016393,
+      "ece": 0.17796363049774727,
+      "roc_auc_ci95": {
+        "lo": 0.5975683746516898,
+        "hi": 0.788367113310548,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6675987449243264,
+      "per_repeat_auc_std": 0.022296418041184263
+    },
+    "ens_rank3": {
+      "roc_auc": 0.6393872277593209,
+      "uar": 0.6014119601328904,
+      "accuracy": 0.5982008995502249,
+      "f1": 0.564935064935065,
+      "ece": 0.12423204706086585,
+      "roc_auc_ci95": {
+        "lo": 0.5454049955039146,
+        "hi": 0.7378072852689512,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6209140826873385,
+      "per_repeat_auc_std": 0.034412452762493446
+    },
+    "confound::age_only": {
+      "roc_auc": 0.7027131782945737,
+      "uar": 0.6664728682170542,
+      "accuracy": 0.6851574212893553,
+      "f1": 0.5945945945945946,
+      "ece": 0.2438204927633857,
+      "roc_auc_ci95": {
+        "lo": 0.5279680335468102,
+        "hi": 0.8627159312969248,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.7063049095607237,
+      "per_repeat_auc_std": 0.011498533808162773
+    },
+    "confound::sex_only": {
+      "roc_auc": 0.45516795865633075,
+      "uar": 0.6308139534883721,
+      "accuracy": 0.6116941529235382,
+      "f1": 0.6185567010309279,
+      "ece": 0.28840503911410187,
+      "roc_auc_ci95": {
+        "lo": 0.29314273400605334,
+        "hi": 0.6358065158215248,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.5596188630490956,
+      "per_repeat_auc_std": 0.01490335278665163
+    },
+    "confound::age_sex": {
+      "roc_auc": 0.6724806201550388,
+      "uar": 0.7095607235142118,
+      "accuracy": 0.7271364317841079,
+      "f1": 0.6486486486486487,
+      "ece": 0.1907244293510435,
+      "roc_auc_ci95": {
+        "lo": 0.4915198470424929,
+        "hi": 0.8463672474586578,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6756330749354005,
+      "per_repeat_auc_std": 0.022981529222156485
+    },
+    "confound::duration_only": {
+      "roc_auc": 0.4148578811369509,
+      "uar": 0.5,
+      "accuracy": 0.5802098950524738,
+      "f1": 0.0,
+      "ece": 0.0031275569864405595,
+      "roc_auc_ci95": {
+        "lo": 0.27595894330284687,
+        "hi": 0.5590059819147547,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.4899796973052788,
+      "per_repeat_auc_std": 0.00824980617780164
+    },
+    "confound::intensity_rms_only": {
+      "roc_auc": 0.4654946474713917,
+      "uar": 0.5,
+      "accuracy": 0.5802098950524738,
+      "f1": 0.0,
+      "ece": 0.019937941282790212,
+      "roc_auc_ci95": {
+        "lo": 0.3786448991387969,
+        "hi": 0.5503889750344582,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.45915466961978585,
+      "per_repeat_auc_std": 0.03304994850814074
+    },
+    "confound::age_sex_duration_rms": {
+      "roc_auc": 0.6723329641934294,
+      "uar": 0.6965669988925802,
+      "accuracy": 0.7166416791604198,
+      "f1": 0.6286836935166994,
+      "ece": 0.20132174949361614,
+      "roc_auc_ci95": {
+        "lo": 0.49564661299928753,
+        "hi": 0.8452318605078616,
+        "n_boot": 2000
+      },
+      "per_repeat_auc_mean": 0.6726596530084902,
+      "per_repeat_auc_std": 0.022744761652798894
+    }
+  },
+  "speaker_level": {
+    "logreg": {
+      "roc_auc": 0.6172413793103447,
+      "uar": 0.6560344827586206,
+      "accuracy": 0.6938775510204082,
+      "f1": 0.5454545454545454,
+      "ece": 0.2041867047688679,
+      "roc_auc_ci95": {
+        "lo": 0.43682172603225233,
+        "hi": 0.777219950480192,
+        "n_boot": 2000
+      }
+    },
+    "linsvm": {
+      "roc_auc": 0.5258620689655172,
+      "uar": 0.525,
+      "accuracy": 0.6122448979591837,
+      "f1": 0.09523809523809523,
+      "ece": 0.08766436887124109,
+      "roc_auc_ci95": {
+        "lo": 0.35260889292196007,
+        "hi": 0.6969737699576409,
+        "n_boot": 2000
+      }
+    },
+    "mlp": {
+      "roc_auc": 0.6310344827586206,
+      "uar": 0.6560344827586206,
+      "accuracy": 0.6938775510204082,
+      "f1": 0.5454545454545454,
+      "ece": 0.2092344332661009,
+      "roc_auc_ci95": {
+        "lo": 0.4603105658709107,
+        "hi": 0.7909763539282989,
+        "n_boot": 2000
+      }
+    },
+    "gbt": {
+      "roc_auc": 0.7982758620689655,
+      "uar": 0.6655172413793103,
+      "accuracy": 0.7142857142857143,
+      "f1": 0.5333333333333333,
+      "ece": 0.15155924421618086,
+      "roc_auc_ci95": {
+        "lo": 0.6632942326490714,
+        "hi": 0.9251942254174396,
+        "n_boot": 2000
+      }
+    },
+    "ens_rank3": {
+      "roc_auc": 0.7189655172413794,
+      "uar": 0.6448275862068966,
+      "accuracy": 0.6530612244897959,
+      "f1": 0.5853658536585366,
+      "ece": 0.18604491657030006,
+      "roc_auc_ci95": {
+        "lo": 0.5662878787878788,
+        "hi": 0.854845292955892,
+        "n_boot": 2000
+      }
+    },
+    "confound::age_only": {
+      "roc_auc": 0.7086206896551724,
+      "uar": 0.6715517241379311,
+      "accuracy": 0.6938775510204082,
+      "f1": 0.5945945945945946,
+      "ece": 0.24396602763290312,
+      "roc_auc_ci95": {
+        "lo": 0.5330882352941178,
+        "hi": 0.874170918367347,
+        "n_boot": 2000
+      }
+    },
+    "confound::sex_only": {
+      "roc_auc": 0.4568965517241379,
+      "uar": 0.6336206896551724,
+      "accuracy": 0.6122448979591837,
+      "f1": 0.6122448979591837,
+      "ece": 0.2819866006040776,
+      "roc_auc_ci95": {
+        "lo": 0.2861900252525253,
+        "hi": 0.6300128676470588,
+        "n_boot": 2000
+      }
+    },
+    "confound::age_sex": {
+      "roc_auc": 0.6775862068965517,
+      "uar": 0.7137931034482758,
+      "accuracy": 0.7346938775510204,
+      "f1": 0.6486486486486487,
+      "ece": 0.1884176343838119,
+      "roc_auc_ci95": {
+        "lo": 0.49490740740740746,
+        "hi": 0.8529538539553752,
+        "n_boot": 2000
+      }
+    },
+    "confound::duration_only": {
+      "roc_auc": 0.4413793103448276,
+      "uar": 0.5,
+      "accuracy": 0.5918367346938775,
+      "f1": 0.0,
+      "ece": 0.011985959982538708,
+      "roc_auc_ci95": {
+        "lo": 0.28274286987522285,
+        "hi": 0.6059007352941175,
+        "n_boot": 2000
+      }
+    },
+    "confound::intensity_rms_only": {
+      "roc_auc": 0.5155172413793103,
+      "uar": 0.5,
+      "accuracy": 0.5918367346938775,
+      "f1": 0.0,
+      "ece": 0.08721479409522212,
+      "roc_auc_ci95": {
+        "lo": 0.3586165694726166,
+        "hi": 0.6889805097451275,
+        "n_boot": 2000
+      }
+    },
+    "confound::age_sex_duration_rms": {
+      "roc_auc": 0.6758620689655173,
+      "uar": 0.7137931034482758,
+      "accuracy": 0.7346938775510204,
+      "f1": 0.6486486486486487,
+      "ece": 0.1785718468782937,
+      "roc_auc_ci95": {
+        "lo": 0.4945897143477788,
+        "hi": 0.8520555853920515,
+        "n_boot": 2000
+      }
+    }
+  },
+  "per_repeat_auc": {
+    "logreg": [
+      0.5390273163528977,
+      0.5512643041712809,
+      0.617312661498708,
+      0.5850682908822444,
+      0.5096068660022148,
+      0.5423218899963086,
+      0.5863049095607235,
+      0.5674787744555186,
+      0.5671926910299003,
+      0.5692875599852344
+    ],
+    "linsvm": [
+      0.5184016242155778,
+      0.4928571428571429,
+      0.5335363602805463,
+      0.501015134736065,
+      0.4607419712070875,
+      0.5066814322628277,
+      0.5742617201919528,
+      0.44597637504614246,
+      0.5423218899963086,
+      0.5484496124031008
+    ],
+    "mlp": [
+      0.5947766703580657,
+      0.5778792912513843,
+      0.6310538944259874,
+      0.594453672942045,
+      0.5330195644149132,
+      0.591952750092285,
+      0.5835455887781469,
+      0.5611018826135106,
+      0.5718346253229974,
+      0.6069121447028425
+    ],
+    "gbt": [
+      0.6632890365448505,
+      0.6957641196013289,
+      0.6821520856404577,
+      0.6898947951273533,
+      0.6169342930970838,
+      0.6558139534883722,
+      0.6780915466961979,
+      0.6666574381690661,
+      0.6810631229235881,
+      0.646327057954965
+    ],
+    "ens_rank3": [
+      0.628968253968254,
+      0.6344222960502031,
+      0.6674926172019195,
+      0.6521456256921374,
+      0.5532761166482096,
+      0.5988510520487265,
+      0.6406653746770026,
+      0.5686369509043927,
+      0.6337578442229606,
+      0.6309246954595793
+    ],
+    "confound::age_only": [
+      0.7229974160206719,
+      0.7109819121447029,
+      0.7118863049095608,
+      0.7162790697674418,
+      0.6989664082687338,
+      0.6900516795865633,
+      0.7099483204134367,
+      0.691343669250646,
+      0.7182170542635659,
+      0.6923772609819122
+    ],
+    "confound::sex_only": [
+      0.5311369509043927,
+      0.5751937984496125,
+      0.5376614987080104,
+      0.5835271317829458,
+      0.5568475452196382,
+      0.5580749354005168,
+      0.5602067183462532,
+      0.5630490956072352,
+      0.5689922480620154,
+      0.561498708010336
+    ],
+    "confound::age_sex": [
+      0.6848837209302325,
+      0.7005167958656331,
+      0.6834625322997415,
+      0.6987080103359175,
+      0.6267441860465117,
+      0.6859173126614988,
+      0.6990956072351422,
+      0.6661498708010336,
+      0.6515503875968992,
+      0.6593023255813953
+    ],
+    "confound::duration_only": [
+      0.4697259136212625,
+      0.4916297526762643,
+      0.4990263935031377,
+      0.49549649317091177,
+      0.4938676633444075,
+      0.4861526393503138,
+      0.4967100406053894,
+      0.4819536729420451,
+      0.49162052417866375,
+      0.49361387966039133
+    ],
+    "confound::intensity_rms_only": [
+      0.39649317091177555,
+      0.44035622000738284,
+      0.4700812107788852,
+      0.4911129568106312,
+      0.4287744555186416,
+      0.5024824658545588,
+      0.4814414913252123,
+      0.4224160206718346,
+      0.4843207825765965,
+      0.47406792174234036
+    ],
+    "confound::age_sex_duration_rms": [
+      0.6760428202288666,
+      0.6958287190845329,
+      0.6833056478405316,
+      0.6950166112956812,
+      0.6254245108896271,
+      0.6872000738279809,
+      0.6976005906238465,
+      0.6573551125876707,
+      0.6495662606127722,
+      0.6592561830933924
+    ]
+  },
+  "margins_vs_confound": {
+    "confound_bar_name": "confound::age_only",
+    "confound_bar_auc_recording": 0.7027131782945737,
+    "confound_bar_auc_speaker": 0.7086206896551724,
+    "best_audio_head": "gbt",
+    "per_head": {
+      "logreg": {
+        "recording_level_delta_auc": {
+          "delta": -0.1318383167220376,
+          "lo": -0.2888891635109835,
+          "hi": 0.029669732041362234,
+          "p_gt_zero": 0.0485,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": -0.09137931034482771,
+          "lo": -0.2857142857142856,
+          "hi": 0.09596256684491983,
+          "p_gt_zero": 0.157,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.001953125
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "linsvm": {
+        "recording_level_delta_auc": {
+          "delta": -0.17132705795496506,
+          "lo": -0.3335567835434086,
+          "hi": -0.01078458903215928,
+          "p_gt_zero": 0.0185,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": -0.1827586206896552,
+          "lo": -0.37205387205387214,
+          "hi": 0.010111642743221584,
+          "p_gt_zero": 0.031,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.001953125
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "mlp": {
+        "recording_level_delta_auc": {
+          "delta": -0.10694905869324478,
+          "lo": -0.2612446945991513,
+          "hi": 0.050662282117582155,
+          "p_gt_zero": 0.0835,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": -0.07758620689655182,
+          "lo": -0.27069850806919765,
+          "hi": 0.09704055864770089,
+          "p_gt_zero": 0.1945,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.001953125
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "gbt": {
+        "recording_level_delta_auc": {
+          "delta": -0.011710963455149548,
+          "lo": -0.158920628681079,
+          "hi": 0.1514669832061577,
+          "p_gt_zero": 0.4355,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": 0.08965517241379306,
+          "lo": -0.07577690166975885,
+          "hi": 0.26354332273449893,
+          "p_gt_zero": 0.854,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.001953125
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      },
+      "ens_rank3": {
+        "recording_level_delta_auc": {
+          "delta": -0.0633259505352528,
+          "lo": -0.21833597712549915,
+          "hi": 0.10276626922058371,
+          "p_gt_zero": 0.2115,
+          "n_boot": 2000
+        },
+        "speaker_level_delta_auc": {
+          "delta": 0.010344827586206917,
+          "lo": -0.1706376811594203,
+          "hi": 0.19866135848278693,
+          "p_gt_zero": 0.544,
+          "n_boot": 2000
+        },
+        "paired_wilcoxon_over_repeats": {
+          "statistic": 0.0,
+          "p_value": 0.001953125
+        },
+        "cleared_confound_bar_recording": false,
+        "cleared_confound_bar_speaker": false
+      }
+    }
+  },
+  "verdicts": {
+    "logreg": "NOT CLEARED",
+    "linsvm": "NOT CLEARED",
+    "mlp": "NOT CLEARED",
+    "gbt": "NOT CLEARED",
+    "ens_rank3": "NOT CLEARED"
+  }
+}
