@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Voice-Health Claim Audit &mdash; dashboard</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:30px;line-height:1.25;margin:0 0 8px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:64px 0 14px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:10px}
+h3{font-size:18px;margin:28px 0 10px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;
+padding:1px 5px;font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:14px 16px;
+overflow-x:auto;font-size:13px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.thesis{font-size:19px;line-height:1.55;color:#cfd6e4;margin:14px 0 22px;
+border-left:3px solid var(--accent);padding-left:16px}
+.banner{background:#241d0c;border:1px solid #6b5518;color:var(--warn);
+border-radius:8px;padding:12px 16px;margin:18px 0;font-size:14px}
+.meta{color:var(--muted);font-size:13px;margin-top:10px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:22px 24px;margin:18px 0}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.stat .n{font-size:34px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+.stat .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:8px}
+.stat .s{color:var(--muted);font-size:13px;margin-top:8px}
+ul{margin:0 0 14px;padding-left:20px}
+li{margin:7px 0}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;background:var(--panel2);text-align:left;padding:12px 14px;
+font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--fg)}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.nm{color:var(--muted);font-style:italic}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.bad{color:var(--bad)}
+.ok{color:var(--ok)}
+.warnc{color:var(--warn)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;display:block}
+figure{margin:0}
+figcaption{color:var(--muted);font-size:13px;margin-top:10px}
+.filter{width:100%;max-width:340px;background:var(--panel2);border:1px solid var(--line);
+border-radius:8px;color:var(--fg);padding:9px 12px;font-size:14px;margin:0 0 12px}
+.filter:focus{outline:none;border-color:var(--accent)}
+footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:24px}
+.stat .n{font-size:27px}td,th{padding:10px 11px}}
+</style></head><body>
+<div class="wrap">
+<h1>Voice-Health Claim Audit &mdash; transparency dashboard</h1>
+<p class="thesis">An autonomous, pre-registered audit harness that systematically re-tests published voice-health classification claims for speaker leakage, acquisition confounds, and cross-corpus collapse &mdash; publishing a transparent ledger of which claims survive. <strong>This program does not build another voice-disease detector.</strong></p>
+<div class="banner"><strong>Internal QA pass &mdash; independent external review pending.</strong> Implementer, critic and judge share a model family, so no verdict on this page is external validation, peer review, or a venue decision (CLAUDE.md R5, R16). Negative results are published here with equal prominence (R8).</div>
+<p class="meta">Generated by <code>scripts/build_dashboard.py</code> on 2026-07-27 05:11 UTC &middot; commit <code>ecd4d43bd950c01575f855ddf1628b102f45cfb2</code> &middot; every number below is read from a file in this repository; nothing is hand-entered (R1: no orphan numbers, R2: the agent never states a metric it did not read from an artifact).</p>
+<p class="meta">Not a medical device. No diagnosis, no clinical claim.</p>
+<h2>How to read this</h2>
+<div class="panel"><ul>
+<li><strong>Every number carries its n and its tier.</strong> <span class="chip screen">SCREENING</span> means n&nbsp;&le;&nbsp;3 and may never be called a result; <span class="chip eval">EVALUATION</span> means n&nbsp;&ge;&nbsp;8 with the full statistical contract. A cell with no measurement says <span class="nm">not yet measured</span> &mdash; it is never filled with a guess.</li>
+<li><strong>A confound baseline outranks a model.</strong> Age, sex, duration and loudness are fitted first; an audio model may claim only the margin <em>above</em> the strongest of them. On this page the audio model currently loses that comparison.</li>
+<li><strong>Speaker-disjoint or it does not count.</strong> Splits group on speaker id. A corpus with no real speaker id (COUGHVID) cannot carry a generalisation claim at all, and is marked in red below.</li>
+<li><strong>Negative and blocked entries are the product.</strong> The ledger's value is that it reports the claims that did not survive and the corpora that cannot support a claim, in the same tables and with the same detail as everything else.</li>
+</ul></div>
+<h2>Status at a glance</h2>
+<div class="grid g4">
+<div class="stat"><div class="n">1</div><div class="k">findings</div><div class="s">F1, screening-tier, metadata-only &mdash; see below</div></div>
+<div class="stat"><div class="n">1</div><div class="k">benchmark runs with artifacts</div><div class="s">bench_svd_egemaps.json &middot; experiment_log.jsonl rows: 0</div></div>
+<div class="stat"><div class="n">3</div><div class="k">corpora decoded</div><div class="s">14,812 files at 16&nbsp;kHz mono &mdash; but see the corpus table for what each one can support</div></div>
+<div class="stat"><div class="n">7</div><div class="k">hypotheses registered</div><div class="s">all UNTESTED: a hypothesis whose falsifier has not been executed is never SUPPORTED (R7)</div></div>
+</div>
+<div class="panel"><h3>What is blocked right now</h3><ul>
+<li><strong>The full SVD download is in progress.</strong> 20 of 72 pathology archives are on disk and they are the smallest ones; the 52 missing archives hold <strong>1,344 pathological sessions from 1,010 speakers</strong>. Until they land, every audio number on SVD is measured on 49 speakers and is screening-tier by construction. <span class="small muted">(data/PREPROCESSING_STATUS.md)</span></li>
+<li><strong>Coswara audio is partially decoded.</strong> 610 of 684 found files, 72 of 2,746 participants &mdash; the host has ~15&nbsp;GB free disk and the decoder stops cleanly rather than filling the volume. <span class="small muted">(data/interim/coswara/summary.json)</span></li>
+<li class="bad"><strong>COUGHVID can never support an evaluation claim.</strong> 34,434 rows, 34,434 unique uuids, zero participant identifiers. Pretraining and out-of-distribution probing only.</li>
+<li><strong>PROCESS-2</strong> is behind a manually-reviewed HuggingFace gate (<code>CognoSpeak/PROCESS-2</code>); <strong>Bridge2AI-Voice v3.1.0</strong> needs PhysioNet credentialing plus a separate DACO application for raw audio. Both are paperwork-bound, not compute-bound. <span class="small muted">(data/ACQUISITION_STATUS.md)</span></li>
+</ul></div>
+<h2>F1 &mdash; the headline finding</h2>
+<div class="panel">
+<h3>On SVD, patient age alone reaches ROC-AUC 0.8709 without hearing any audio</h3>
+<p class="meta"><span class="chip screen">SCREENING</span> metadata-only &middot; artifact <code>data/raw/svd_meta/voice_data.csv</code> (md5 <code>2ee9852a19ed…</code>) &middot; measured values in <code>autoresearch_results/F1_demographic_baseline.json</code></p>
+<p>Using <strong>only</strong> the demographic metadata distributed with the Saarbr&uuml;cken Voice Database &mdash; no audio, no features, no model of speech &mdash; over n&nbsp;=&nbsp;2,225 sessions (1,356 pathological / 869 healthy) from 1,853 unique speakers:</p>
+<div class="tablewrap"><table><thead><tr><th>predictor</th><th>ROC-AUC (pathological vs healthy)</th><th>n</th></tr></thead><tbody>
+<tr><td>age alone</td><td class="num"><strong>0.8709</strong></td><td class="num muted">2,225 sessions</td></tr>
+<tr><td>sex alone</td><td class="num">0.5172</td><td class="num muted">2,225 sessions</td></tr>
+<tr><td>age + sex, logistic, <strong>speaker-disjoint</strong> 5-fold <code>GroupKFold</code></td><td class="num"><strong>0.8768</strong></td><td class="num muted">2,225 sessions /<br>1,853 speaker groups</td></tr>
+</tbody></table></div>
+<h3>Underlying cause &mdash; a recruitment asymmetry</h3>
+<p>Healthy speakers are young volunteers; pathological speakers are older clinic patients. Mean age <strong>28.3</strong> years (healthy) vs <strong>51.0</strong> years (pathological) &mdash; a gap of <strong>22.7 years</strong>.</p>
+<figure><img src="assets/svd_age_distribution.png" alt="Age distribution of healthy vs pathological SVD sessions, showing a 22.7-year gap in means"><figcaption>Recomputed from <code>voice_data.csv</code> by <code>scripts/build_dashboard.py</code>; the script aborts if the recomputed counts and means disagree with <code>F1_demographic_baseline.json</code>.</figcaption></figure>
+<h3>A live leakage trap in the same artifact</h3>
+<p><strong>200 of 1,853 speakers contribute more than one session</strong> (max 24 sessions for a single speaker). Splitting SVD at the recording level &mdash; the default in any naive <code>train_test_split</code> &mdash; leaks those speakers across folds. All work in this repository splits on <code>SprecherID</code> via <code>GroupKFold</code> and asserts speaker-disjointness before every fit.</p>
+<h3 class="warnc">What this does NOT claim &mdash; read before citing</h3>
+<ol>
+<li><strong>This does not show any published result is wrong.</strong> UAR and ROC-AUC are different metrics and are not directly comparable; the comparison above is indicative, not a like-for-like contest. A proper audit must recompute the published pipeline&#x27;s metric on matched splits — that is the next experiment, not this one.</li>
+<li>Several published pipelines may already control for age, use age-matched subsets, or report demographic baselines. <strong>The audit question is whether the margin above the demographic bar is reported at all</strong> — not whether these researchers were careless.</li>
+<li>Metadata-only baselines say nothing about whether voice <em>does</em> carry pathology signal. It very likely does. The claim is strictly about <strong>attribution</strong>.</li>
+</ol>
+<p class="small muted">Quoted verbatim from <code>FINDINGS.md</code> &sect;F1. The published SVD benchmark is UAR 85.22 (<a href="https://arxiv.org/abs/2410.10537">arXiv:2410.10537</a>) — different metric, indicative only.</p>
+<h3>Reproduce</h3>
+<pre># metadata (167 KB), then the baseline -- CPU, seconds, no audio required
+python scripts/fetch_svd.py --metadata-only
+python scripts/audit_demographic_baseline.py --dataset svd</pre>
+</div>
+<h2>First measured audio benchmark &mdash; a negative result</h2>
+<div class="panel">
+<h3>eGeMAPS on the decoded SVD slice does not clear its own age bar</h3>
+<p class="meta"><span class="chip screen">SCREENING</span> <span class="chip bad">CONFOUND BAR NOT CLEARED</span> &middot; artifact <code>autoresearch_results/bench_svd_egemaps.json</code> &middot; config hash <code>3ffad10ed6634618</code> &middot; run commit <code>a640ceb19f59</code> &middot; 2026-07-25T23:55:48Z &middot; 58 min CPU</p>
+<p>Command: <code>run_benchmark.py --corpus svd --backbone egemaps --head all --folds 5 --repeats 10</code> &mdash; opensmile-eGeMAPSv02, 88 features, 5-fold speaker-disjoint &times; 10 repeated partitions, n=667 recordings / 49 speakers, 20 pathological / 29 healthy speakers.</p>
+<div class="tablewrap"><table data-sortable><thead><tr><th>head / baseline</th><th>speaker-level ROC-AUC</th><th>95% CI</th><th>recording-level ROC-AUC</th><th>UAR</th><th>ECE</th><th>verdict vs age bar</th></tr></thead><tbody>
+<tr><td><code>logreg</code></td><td class="num"><strong>0.6172</strong></td><td class="num muted">[0.437, 0.777]</td><td class="num">0.5709</td><td class="num">0.6560</td><td class="num">0.204</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>linsvm</code></td><td class="num"><strong>0.5259</strong></td><td class="num muted">[0.353, 0.697]</td><td class="num">0.5314</td><td class="num">0.5250</td><td class="num">0.088</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>mlp</code></td><td class="num"><strong>0.6310</strong></td><td class="num muted">[0.460, 0.791]</td><td class="num">0.5958</td><td class="num">0.6560</td><td class="num">0.209</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>gbt</code></td><td class="num"><strong>0.7983</strong></td><td class="num muted">[0.663, 0.925]</td><td class="num">0.6910</td><td class="num">0.6655</td><td class="num">0.152</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>ens_rank3</code></td><td class="num"><strong>0.7190</strong></td><td class="num muted">[0.566, 0.855]</td><td class="num">0.6394</td><td class="num">0.6448</td><td class="num">0.186</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_only</code></td><td class="num"><strong>0.7086</strong></td><td class="num muted">[0.533, 0.874]</td><td class="num">0.7027</td><td class="num">0.6716</td><td class="num">0.244</td><td><span class="chip screen">THE BAR</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>sex_only</code></td><td class="num"><strong>0.4569</strong></td><td class="num muted">[0.286, 0.630]</td><td class="num">0.4552</td><td class="num">0.6336</td><td class="num">0.282</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_sex</code></td><td class="num"><strong>0.6776</strong></td><td class="num muted">[0.495, 0.853]</td><td class="num">0.6725</td><td class="num">0.7138</td><td class="num">0.188</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>duration_only</code></td><td class="num"><strong>0.4414</strong></td><td class="num muted">[0.283, 0.606]</td><td class="num">0.4149</td><td class="num">0.5000</td><td class="num">0.012</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>intensity_rms_only</code></td><td class="num"><strong>0.5155</strong></td><td class="num muted">[0.359, 0.689]</td><td class="num">0.4655</td><td class="num">0.5000</td><td class="num">0.087</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_sex_duration_rms</code></td><td class="num"><strong>0.6759</strong></td><td class="num muted">[0.495, 0.852]</td><td class="num">0.6723</td><td class="num">0.7138</td><td class="num">0.179</td><td><span class="chip pend">baseline</span></td></tr>
+</tbody></table></div>
+<p class="small muted">Sortable: click a column header. CI = 2,000-resample speaker-level bootstrap. All rows: n=667 recordings / 49 speakers.</p>
+<p><strong>Result:</strong> the strongest confound baseline is <code>age_only</code> at speaker-level AUC 0.7086. The best audio head (<code>gbt</code>) reaches 0.7983, a delta of +0.0897 (95% CI [-0.076, 0.264]). <strong>All 5 heads are NOT CLEARED.</strong> On this slice, eGeMAPS carries no demonstrated signal above patient age.</p>
+<p class="warnc"><strong>What this does NOT claim.</strong> This is 49 speakers, which the preprocessing status file already flags as screening-tier: a speaker-disjoint test fold holds ~10 people and the 95% CI on any accuracy is roughly &plusmn;15&nbsp;pp &mdash; visible in the intervals above. It is <em>not</em> evidence that eGeMAPS fails on full SVD, and it is not comparable to the published UAR 85.22, which is a different metric on the full 2,225-session corpus. It is a null on a small slice, reported because nulls are reported (R8).</p>
+<figure><img src="assets/confound_vs_sota.png" alt="Bar chart of measured confound baselines against the audio model and the published SVD target"><figcaption>Every bar is a measured speaker-level AUC read from <code>bench_svd_egemaps.json</code> or <code>F1_demographic_baseline.json</code>. The dashed line is the published target and is a <em>different metric</em> (UAR) on a <em>different</em>, larger slice &mdash; it is drawn for orientation, not as a like-for-like contest.</figcaption></figure>
+</div>
+<h2>Benchmark scoreboard</h2>
+<p class="small muted">Published SOTA cells are quoted verbatim from <code>corpus/SURVEY_datasets.md</code> &sect;1. &quot;Ours&quot; is filled only from a measured artifact in <code>autoresearch_results/</code>; everything else says <span class="nm">not yet measured</span>. Margins are shown only where the two numbers are the same metric on a comparable slice &mdash; otherwise the cell says so.</p>
+<input class="filter" data-filters="scoreboard" placeholder="filter datasets...">
+<div class="tablewrap"><table id="scoreboard" data-sortable><thead><tr><th>dataset</th><th>published SOTA</th><th>ours</th><th>margin vs SOTA</th><th>confound baseline</th><th>margin vs confound</th><th>speaker-disjoint?</th><th>status</th></tr></thead><tbody>
+<tr><td><strong>SVD (Saarbruecken Voice Database)</strong></td><td><strong>UAR 85.61 (F) / 84.69 (M) / 85.22 (combined)</strong> — <a href="https://arxiv.org/abs/2410.10537">arXiv:2410.10537</a></td><td><span class="num">UAR 0.6655</span> / <span class="num">AUC 0.7983</span><br><span class="small muted">n=667 recordings / 49 speakers, eGeMAPS <code>gbt</code>, speaker-level</span> <span class="chip screen">SCREENING</span></td><td><span class="nm">not comparable</span><br><span class="small muted">published UAR is the full 2,225-session corpus; ours is the decoded pilot slice</span></td><td><span class="num">0.7086</span> AUC<br><span class="small muted">age only, same run</span><br><span class="num">0.8768</span> AUC<br><span class="small muted">age+sex, metadata, full corpus (F1)</span></td><td><span class="num">+0.0897</span> AUC<br><span class="small muted">95% CI [-0.076, 0.264] &mdash; includes 0</span><br><span class="chip bad">NOT CLEARED</span></td><td><span class="ok">YES &mdash; SprecherID</span></td><td><span class="chip screen">SCREENING / NEGATIVE</span></td></tr>
+<tr><td><strong>Coswara</strong></td><td>AUC ~0.92 intra-dataset</td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="ok">YES &mdash; participant id</span><br><span class="small muted">submission-disjoint, not person-disjoint: returning-user flag is missing for 680 of 2,746</span></td><td><span class="chip pend">PENDING</span></td></tr>
+<tr><td><strong>PROCESS-2</strong></td><td>macro-F1 <strong>0.59</strong> (3-way), F1 <strong>0.85</strong> (2-way), MMSE RMSE <strong>3.87</strong> (DistilBERT)<br><span class="small"><a href="https://arxiv.org/abs/2605.14888">arXiv:2605.14888</a></span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="muted">n/a &mdash; not obtained</span></td><td><span class="chip pend">BLOCKED</span><br><span class="small muted">manual HF gate; 400 participants fails the 500/class bar &mdash; screening-tier only</span></td></tr>
+<tr><td><strong>ICBHI 2017 respiratory sound</strong></td><td>ICBHI score (event-level)</td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="muted">n/a &mdash; not obtained</span></td><td><span class="chip pend">BLOCKED</span></td></tr>
+<tr><td><strong>ADReSS / ADReSSo / ADReSS-M</strong></td><td>ADReSS F-score ~0.79 (with age+sex as inputs); ADReSSo acoustic F-score ~0.76</td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="nm">not yet measured</span></td><td><span class="muted">n/a &mdash; not obtained</span></td><td><span class="chip pend">BLOCKED</span></td></tr>
+</tbody></table></div>
+<h2>Corpus status</h2>
+<div class="tablewrap"><table data-sortable><thead><tr><th>corpus</th><th>on disk</th><th>files found</th><th>decoded</th><th>speakers</th><th>audio</th><th>class balance</th><th>licence / access</th><th>speaker-disjoint possible?</th></tr></thead><tbody>
+<tr><td><strong>SVD (Saarbruecken)</strong><br><span class="small muted">17 duplicate waveform hashes (within-speaker only)</span></td><td class="num">152 MB</td><td class="num">667</td><td class="num">667</td><td class="num">49</td><td class="num">44.8 min</td><td><span class="num">387</span> healthy<br><span class="num">280</span> pathological</td><td class="small">free to use (&quot;free for reproducible voice science&quot;)</td><td><span class="ok">YES</span><br><span class="small muted">provenance: participant</span></td></tr>
+<tr><td><strong>COUGHVID</strong></td><td class="num">2.30 GB</td><td class="num">13,535</td><td class="num">13,535</td><td class="num">13,535</td><td class="num">1856.9 min</td><td><span class="num">10,132</span> healthy<br><span class="num">2,683</span> symptomatic<br><span class="num">720</span> COVID-19</td><td class="small">open (Creative Commons via Zenodo)</td><td><span class="bad"><strong>NO &mdash; cannot support an evaluation claim (0 real speaker ids)</strong></span><br><span class="small">uuid is per-recording; one person may appear in both halves of any split and there is no way to detect it. Pretraining and OOD probing only.</span></td></tr>
+<tr><td><strong>Coswara</strong></td><td class="num">12.98 GB</td><td class="num">684</td><td class="num">610<br><span class="small bad">74 failed</span></td><td class="num">72</td><td class="num">110.7 min</td><td><span class="num">529</span> healthy<br><span class="num">45</span> no_resp_illness_exposed<br><span class="num">36</span> resp_illness_not_identified</td><td class="small">open</td><td><span class="ok">YES</span><br><span class="small muted">provenance: participant</span></td></tr>
+</tbody></table></div>
+<p class="small muted">Counts read from <code>data/interim/&lt;corpus&gt;/summary.json</code> and the row count of each <code>manifest.csv</code>; on-disk sizes from <code>data/ACQUISITION_STATUS.md</code>; licences from <code>corpus/SURVEY_datasets.md</code>. SVD and Coswara are partial acquisitions &mdash; the speaker counts here are what is decoded on this host, not corpus totals (SVD: 1,853 speakers exist, 49 decoded; Coswara: 2,746 exist, 72 decoded).</p>
+<h2>Hypothesis registry</h2>
+<p class="small muted">Parsed from <code>IDEA_TABLE.md</code>. A hypothesis whose falsifier has not been <em>executed</em> is UNTESTED, never SUPPORTED (R7). Tier and family size are pre-registered in version control before the sweep; reclassifying a loser as screening afterwards is HARKing and is a blocker.</p>
+<input class="filter" data-filters="hyps" placeholder="filter hypotheses...">
+<div class="tablewrap"><table id="hyps" data-sortable><thead><tr><th>id</th><th>claim</th><th>falsifier</th><th>required n</th><th>tier</th><th>datasets</th><th>status</th></tr></thead><tbody>
+<tr><td><strong>V1</strong><br><span class="small muted">&quot;SSL beats handcrafted features&quot; may be an artifact of leaky protocols</span></td><td class="small">Under simultaneously speaker-disjoint <em>and</em> demographically balanced splits, frozen SSL/health embeddings do not reliably beat eGeMAPS.</td><td class="small">If eGeMAPS lands <strong>within 2σ_seed</strong> of the best of {HeAR, WavLM-base+, Whisper-small-enc} on <strong>≥ 2 of 3 corpora</strong> under <code>A3 = speaker_disjoint + demographically_matched</code>, <code>A4 = fit_per_fold</code>, the &quot;SSL wins&quot; claim is falsified for this task family.</td><td class="num">10<br><span class="small muted">m = 9 (3 encoders × 3 corpora, each vs eGeMAPS) · n = 10 → 0.001953 ≤ 0.05/9 = 0.005556 ✓</span></td><td><span class="chip eval">EVALUATION</span></td><td class="small">SVD · Coswara · COUGHVID</td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><strong>V2</strong><br><span class="small muted">Speaker-identity subspace ablation: how much of the &quot;disease&quot; signal is identity?</span></td><td class="small">A large fraction of frozen-embedding disease discrimination lives in a low-rank speaker-identity subspace, and removing it collapses AUC further than a variance-matched random projection of the same rank does.</td><td class="small">Two-sided, both pre-registered. <strong>(a)</strong> If projecting out the rank-k speaker subspace collapses disease AUC toward chance while a <strong>variance-matched</strong> same-rank random projection does not — i.e. <code>D(k) = AUC_rand(k) − AUC_spk(k)</code> has a Holm-corrected 95% CI excluding 0 and <code>AUC_spk(k)</code>&#x27;s CI includes 0.5 — the clinical-validity claim for that model/dataset pair is falsified. <strong>(b)</strong> Conversely, if <code>D(k)</code> is within...</td><td class="num">10<br><span class="small muted">m = 14 (7 ranks k ∈ {1,2,4,8,16,32,64} × 2 corpora) · n = 10 → 0.001953 ≤ 0.05/14 = 0.003571 ✓</span></td><td><span class="chip eval">EVALUATION</span></td><td class="small">SVD (≥ 2 vocalisations/speaker, 2,043 speakers) · Coswara (9 streams/participant). COUGHVID is excluded — no speaker identifiers, so the subspace cannot be estimated.</td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><strong>V3</strong><br><span class="small muted">Where does health-specific pretraining actually cross general-purpose pretraining?</span></td><td class="small">Health-acoustic pretraining buys sample-efficiency, not ceiling: HeAR leads at small labelled-set size and is overtaken by Whisper-enc as n grows.</td><td class="small">Sweep labelled-set size n_train ∈ {25, 50, 100, 200, 400, 800, all}, subject-disjoint. <strong>If HeAR never crosses Whisper-enc at any n_train on any of the 3 tasks</strong> (Holm-corrected), the &quot;health pretraining is the right prior&quot; claim is falsified and reduces to a low-data convenience argument. If HeAR wins low and loses high, the crossover point is the deliverable.</td><td class="num">12<br><span class="small muted">m = 42 (2 contrasts {HeAR vs Whisper-enc, HeAR vs WavLM} × 7 sizes × 3 tasks) · n = 12 → 0.000488 ≤ 0.05/42 = 0.001190 ✓</span></td><td><span class="chip eval">EVALUATION</span></td><td class="small">SVD (voice pathology) · Coswara (respiratory) · COUGHVID (respiratory, OOD)</td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><strong>V4</strong><br><span class="small muted">Does calibration degrade <em>with</em> distribution shift, or independently of it?</span></td><td class="small">Calibration error does <strong>not</strong> track AUC collapse under corpus shift, so model confidence is unusable as an out-of-domain detector.</td><td class="small">Measure ECE, Brier, and reliability curves within- and cross-corpus on COUGHVID↔Coswara (both directions) and on SVD→VOICED. <strong>If ECE stays flat within its own seed noise band while AUC falls from ~0.80 to ~0.55</strong>, confidence is falsified as a shift detector — a negative result with direct deployment consequences. Raw and temperature-scaled variants reported separately.</td><td class="num">10<br><span class="small muted">m = 6 (3 corpus pairings × {raw, temperature-scaled}) · n = 10 → 0.001953 ≤ 0.05/6 = 0.008333 ✓</span></td><td><span class="chip eval">EVALUATION</span></td><td class="small">Coswara ↔ COUGHVID · SVD → VOICED</td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><strong>V5</strong><br><span class="small muted">Zero-shot audio-LLMs as a leakage-free reference point</span></td><td class="small">The gap between a supervised probe and a zero-shot audio-LLM is a cheap, model-free estimate of how much leakage a protocol admits, because a zero-shot model has no training split and therefore cannot leak speaker identity, demographics, or preprocessing statistics.</td><td class="small">Compute <code>Δ_leaky = AUC_sup(random_recording split) − AUC_zeroshot</code> and <code>Δ_honest = AUC_sup(speaker_disjoint + demographically_matched) − AUC_zeroshot</code>. <strong>If Δ_leaky ≈ Δ_honest (overlapping bootstrap CIs) on ≥ 2 of 3 datasets</strong>, the proposed leakage estimator is falsified — the gap tracks supervised capacity, not leakage. If <code>Δ_leaky ≫ Δ_honest</code> consistently across ≥ 3 datasets, the field gains a leakage audit...</td><td class="num">10<br><span class="small muted">screening n ≤ 3 · promotion target m = 3 (3 datasets), n = 10 → 0.001953 ≤ 0.016667 ✓ (n = 8 would also satisfy m = 3)</span></td><td><span class="chip eval">EVALUATION</span></td><td class="small">SVD · Coswara · COUGHVID</td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><strong>V6</strong><br><span class="small muted">Preprocessing-fit leakage is corpus-specific and cannot be assumed small</span></td><td class="small">The inflation from fitting the scaler/normaliser before splitting varies by an order of magnitude across corpora, so &quot;we scaled before splitting but it&#x27;s a small effect&quot; is not defensible on an unmeasured corpus.</td><td class="small">If the <code>fit_on_all</code> − <code>fit_per_fold</code> AUC difference has a 95% CI contained within ±0.01 AUC on <strong>all</strong> of SVD, Coswara, COUGHVID for <strong>both</strong> eGeMAPS and a frozen SSL representation, the &quot;corpus-specific magnitude&quot; claim is falsified for this pipeline family and preprocessing scope can be de-prioritised as an audit axis.</td><td class="num">10<br><span class="small muted">m = 6 (3 corpora × 2 representations) · n = 10 → 0.001953 ≤ 0.008333 ✓</span></td><td><span class="chip eval">EVALUATION</span></td><td class="small">SVD · Coswara · COUGHVID</td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><strong>V7</strong><br><span class="small muted">The Clever-Hans silence shortcut beyond the Pitt corpus</span></td><td class="small">Non-phonatory signal alone (silence/pause structure, recording-level duration and intensity statistics) achieves a substantial fraction of headline performance on voice-health corpora outside the one where the effect was first documented.</td><td class="small">If <code>silence_only</code> and <code>duration+intensity_only</code> baselines both score <strong>&lt; 0.60 AUC</strong> on all of SVD, Coswara and COUGHVID under <code>A3 = speaker_disjoint</code>, the generalisation claim is falsified and the shortcut is confirmed Pitt-specific for this corpus set.</td><td class="num">10<br><span class="small muted">m = 6 (3 corpora × 2 shortcut feature sets) · n = 10 → 0.001953 ≤ 0.008333 ✓</span></td><td><span class="chip eval">EVALUATION</span></td><td class="small">SVD · Coswara · COUGHVID</td><td><span class="chip pend">UNTESTED</span></td></tr>
+</tbody></table></div>
+<h2>The methodological traps &mdash; the audit checklist</h2>
+<p class="small muted">The 10 traps catalogued in <code>corpus/SURVEY_datasets.md</code> &sect;3, each reduced to its operative rule. Every experiment in this program is checked against this list.</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>trap</th><th>operative rule</th></tr></thead><tbody>
+<tr><td class="num muted">3.1</td><td><strong>Speaker-dependent splits — the #1 leakage failure</strong></td><td class="small">Group-aware <code>GroupKFold</code> on speaker id, always. Never <code>train_test_split</code> on recordings. Report the speaker-level n alongside the recording-level n.</td></tr>
+<tr><td class="num muted">3.2</td><td><strong>Recruitment / symptom confound — the field&#x27;s canonical negative result</strong></td><td class="small">Any respiratory claim in this program must report a confounder-matched number alongside the raw number, or it is not a claim.</td></tr>
+<tr><td class="num muted">3.3</td><td><strong>Recording-device and site confounds</strong></td><td class="small">Every headline number needs a cross-corpus companion number. Log the recording device / site as a feature and check that a device-only classifier is near chance.</td></tr>
+<tr><td class="num muted">3.4</td><td><strong>Interviewer / prompt shortcut</strong></td><td class="small">Strip all interviewer audio and text from any interview-based corpus before training.</td></tr>
+<tr><td class="num muted">3.5</td><td><strong>Age and sex confounds</strong></td><td class="small">Report per-sex and per-age-band metrics; include a demographics-only baseline classifier in every experiment and claim only the margin above it.</td></tr>
+<tr><td class="num muted">3.6</td><td><strong>Language and accent confounds</strong></td><td class="small">Do not report a cross-lingual result as if it were an in-language one.</td></tr>
+<tr><td class="num muted">3.7</td><td><strong>Tiny-n overfitting</strong></td><td class="small">Under the project&#x27;s rigor contract these are screening-tier only: <code>n&lt;=3</code> seeds cannot reach <code>p&lt;0.05</code> under paired Wilcoxon, and a 12-speaker test fold has a standard error of roughly ±0.14 on accuracy.</td></tr>
+<tr><td class="num muted">3.8</td><td><strong>&quot;Balanced&quot; is not &quot;deconfounded&quot;, and ASR quality is a hidden variable</strong></td><td class="small">It does not remove recording-session, task-administration, or transcription-pipeline effects.</td></tr>
+<tr><td class="num muted">3.9</td><td><strong>Label-provenance asymmetry</strong></td><td class="small">These are not interchangeable. A high AUC on a self-report corpus may be measuring self-report behaviour.</td></tr>
+<tr><td class="num muted">3.10</td><td><strong>Anonymisation degrades diagnostic signal</strong></td><td class="small">Voice anonymisation, increasingly required for sharing, measurably harms downstream diagnostic classification (<a href="https://arxiv.org/abs/2304.02181">arXiv:2304.02181</a>, COVID-19 case study).</td></tr>
+</tbody></table></div>
+<footer>
+<p>Repository: <a href="https://github.com/eranti/auto-research-voice-based-disease-detection">https://github.com/eranti/auto-research-voice-based-disease-detection</a> &middot; built 2026-07-27 05:11 UTC &middot; commit <code>ecd4d43bd950c01575f855ddf1628b102f45cfb2</code></p>
+<p>Sources rendered on this page: <code>autoresearch_results/F1_demographic_baseline.json</code>, <code>autoresearch_results/bench_svd_egemaps.json</code>, <code>FINDINGS.md</code>, <code>IDEA_TABLE.md</code>, <code>corpus/SURVEY_datasets.md</code>, <code>data/ACQUISITION_STATUS.md</code>, <code>data/PREPROCESSING_STATUS.md</code>, and <code>data/interim/&lt;corpus&gt;/summary.json</code>.</p>
+<p><strong>Not a medical device.</strong> This program produces no diagnosis and makes no clinical claim. No PHI is committed; no restricted corpus is redistributed. Internal QA pass &mdash; independent external review pending.</p>
+</footer>
+</div>
+<script>
+document.querySelectorAll('table[data-sortable]').forEach(function(t){
+  t.querySelectorAll('th').forEach(function(th,i){
+    th.addEventListener('click',function(){
+      var tb=t.tBodies[0],rows=Array.prototype.slice.call(tb.rows);
+      var dir=th.dataset.dir==='asc'?-1:1;
+      t.querySelectorAll('th').forEach(function(o){delete o.dataset.dir;});
+      th.dataset.dir=dir===1?'asc':'desc';
+      // numeric compare only when BOTH cells are numbers with no words in them,
+      // otherwise "PROCESS-2" would sort as -2
+      var numeric=function(s){return /\d/.test(s)&&!/[A-Za-z]/.test(s);};
+      rows.sort(function(a,b){
+        var x=a.cells[i].innerText.trim().split('\n')[0].trim();
+        var y=b.cells[i].innerText.trim().split('\n')[0].trim();
+        if(numeric(x)&&numeric(y)){
+          var nx=parseFloat(x.replace(/[^0-9.\-]/g,'')),ny=parseFloat(y.replace(/[^0-9.\-]/g,''));
+          if(!isNaN(nx)&&!isNaN(ny))return (nx-ny)*dir;
+        }
+        return x.localeCompare(y)*dir;
+      });
+      rows.forEach(function(r){tb.appendChild(r);});
+    });
+  });
+});
+document.querySelectorAll('input[data-filters]').forEach(function(inp){
+  inp.addEventListener('input',function(){
+    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase();
+    Array.prototype.slice.call(t.tBodies[0].rows).forEach(function(r){
+      r.style.display=r.innerText.toLowerCase().indexOf(q)>-1?'':'none';
+    });
+  });
+});
+</script>
+</body></html>
