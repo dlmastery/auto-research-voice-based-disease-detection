@@ -6,6 +6,84 @@ Eighth instantiation of a portable autoresearch process ([`meta-skills/`](meta-s
 
 ---
 
+## Background — start here
+
+### What is "voice-based disease detection"?
+
+A person speaks; a model listens and predicts a health condition. It is attractive because the sensor is a
+microphone everyone already owns — no blood draw, no scanner, no clinic visit. Two mechanisms make it
+plausible rather than magical:
+
+1. **The larynx is the instrument.** Anything that changes the vocal folds — a paralysis, a polyp, swelling,
+   a tumour, scar tissue from surgery — changes the sound directly and audibly. This is where the evidence
+   is strongest, and it is what the corpus below actually contains.
+2. **Speech is a motor act.** Producing fluent speech needs breath control, timing, and fine neuromuscular
+   coordination, so neurological and respiratory disease can leave traces in speech even when the larynx is
+   healthy. This is the claim behind Parkinson's, Alzheimer's, and COVID screening from voice. It is a much
+   longer causal chain and correspondingly weaker evidence.
+
+The literature also claims depression, diabetes, heart failure, and more. **This program tests none of those**,
+for the reason in the next section.
+
+### What the data actually supports
+
+The primary corpus is the **Saarbrücken Voice Database (SVD)** — a clinical archive from Saarland
+University Hospital. Each participant records **13 short vocalisations**: the sustained vowels `/a/`, `/i/`,
+`/u/` at normal, high, low, and rising-falling pitch (12 clips), plus one spoken German sentence
+(*"Guten Morgen, wie geht es Ihnen?"*).
+
+| | |
+|---|---|
+| Recordings decoded | **28,509** |
+| Sessions | 2,225 |
+| **Speakers** | **1,679** (1,008 pathological / 671 healthy) |
+| Distinct named pathologies | **70** |
+| Mean age | healthy **27.2** · pathological **49.4** |
+
+Seventy diagnoses sounds like seventy detectable diseases. It is not. Sorted by how many *speakers* carry
+each label:
+
+| condition has ≥ N speakers | number of conditions | speakers covered |
+|---|---|---|
+| ≥ 100 | **2** | 265 |
+| ≥ 50 | **6** | 535 |
+| **≥ 30** (this program's data floor) | **12** | 762 |
+| ≥ 5 | 28 | 938 |
+| ≥ 1 | 70 | 1,019 |
+
+**19 of the 70 conditions are represented by a single speaker.** So the honest answer to *"how many diseases
+can this detect?"* is:
+
+- **1 task is properly powered** — binary *healthy vs. pathological* (1,008 vs. 671 speakers). This is what
+  every headline number in this repository refers to.
+- **At most 12 named conditions** clear a ≥30-speaker floor, and would need one-vs-rest treatment with wide
+  confidence intervals. The largest are *Rekurrensparese* (recurrent-laryngeal-nerve palsy, 139),
+  *Hyperfunktionelle Dysphonie* (126), *Laryngitis* (79), *Psychogene Dysphonie* (70).
+- **58 conditions cannot be modelled at all** at any defensible sample size.
+
+And note what those twelve *are*: they are almost all **dysphonias and structural larynx disorders** — the
+category where sound changes because the sound-producing organ changed. The corpus contains essentially no
+systemic disease. A model trained here detects **disordered voice**, not disease in general, and it is a
+category error to describe it otherwise.
+
+The two secondary corpora are respiratory: **Coswara** (72 participants, 9 tasks including cough and
+breathing) and **COUGHVID** (13,535 cough clips, 720 COVID-19). COUGHVID ships **no speaker identifiers at
+all**, so it is permanently barred from carrying an evaluation claim here — see *Corpora* below.
+
+### Why this program exists
+
+Published SVD results report UAR in the mid-80s. But healthy volunteers in this corpus average 27 years old
+and patients average 49, so **patient age alone reaches ROC-AUC 0.871 without hearing a single audio sample**
+(F1 below). Any classifier that quietly learns "older ⇒ patient" inherits that score for free.
+
+That makes the interesting quantity not the accuracy but the **margin above the demographic baseline on the
+identical folds** — a number the field does not currently report. Measuring it is the entire purpose of this
+repository, and the first time we did (F3) the margin came out **negative**.
+
+> **Not a medical device.** Nothing here is a clinical claim, a diagnosis, or fit for any care decision.
+
+---
+
 ## Goal
 
 > Beat the published number on every corpus **and** clear the demographic-confound bar on the identical folds, under speaker-disjoint splits — reporting all four numbers every time.
@@ -25,12 +103,30 @@ A win that does not clear the confound bar is logged **NOT CLEARED**, not announ
 
 | | |
 |---|---|
-| Findings | **1** (F1, below) |
-| Benchmark results | **0 measured** — pipeline built, full corpus downloading |
-| Corpora decoded | SVD pilot (49 speakers), Coswara, COUGHVID |
-| Blocking | full SVD corpus (38 GB, in progress) → then embeddings → benchmark |
+| Findings | **3** — F1 (age baseline), F2 (COUGHVID has no speaker ids), **F3 (certified)** |
+| Benchmark results | SVD measured at **full corpus**, 5-fold × 8 repeats, speaker-disjoint |
+| Corpora decoded | **SVD 28,509 recs / 1,679 speakers**, Coswara, COUGHVID |
+| Headline | **WavLM does not clear the age bar.** Audio 0.7438 vs. age-only **0.8737** rec-AUC → **NOT CLEARED** |
 
 Nothing here is a clinical claim. This is not a medical device.
+
+### F3 — the audio model loses to a single demographic variable
+
+Speaker-disjoint `GroupKFold`, 5 folds × 8 repeats, on all 1,679 speakers:
+
+| predictor | recording-AUC | speaker-AUC |
+|---|---|---|
+| WavLM + logistic regression | 0.7438 | 0.8671 |
+| WavLM + rank-3 ensemble | 0.7443 | 0.8650 |
+| **age alone** (no audio) | **0.8737** | 0.8642 |
+| age + sex + duration + RMS | 0.8747 | 0.8649 |
+| *sex alone* (negative control) | *0.4898* | — |
+| *duration alone* (negative control) | *0.4724* | — |
+
+The negative controls sitting at chance are what isolate the effect: it is **age**, not some generic
+metadata leak. Power contract cleared (`n=8, m=2, min p=0.0078 < Holm 0.025`), so this is a *powered*
+negative rather than a small-sample curiosity — a self-supervised speech model, given 28,509 clinical
+recordings, is beaten at the recording level by asking the patient's age.
 
 ---
 

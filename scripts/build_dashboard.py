@@ -320,6 +320,42 @@ def load_bench() -> dict:
     return read_json("bench_svd")
 
 
+def load_background() -> dict:
+    """Corpus scope facts, recomputed from the SVD manifest.
+
+    This answers the first question any reader has -- "what is in here and how many
+    diseases can it actually detect?" -- with counts rather than adjectives. The
+    long tail is the point: 70 named pathologies exist, but only a handful carry
+    enough speakers to model, and stating that up front prevents the reader from
+    reading "70 diagnoses" as "70 detectable diseases".
+    """
+    df = pd.read_csv(require("manifest_svd"), encoding="utf-8")
+    spk = df.drop_duplicates("speaker_id")
+    # speaker-level, because a pathology with 200 recordings from 8 people is an
+    # 8-person condition -- recording counts would overstate every row below.
+    path_spk = df[df.pathology.notna()].drop_duplicates("speaker_id").pathology.value_counts()
+    ages = spk.groupby("label").age.mean()
+    return {
+        "recordings": int(len(df)),
+        "sessions": int(df.session_id.nunique()),
+        "speakers": int(df.speaker_id.nunique()),
+        "tasks": int(df.task.nunique()),
+        "n_patho_speakers": int((spk.label == "pathological").sum()),
+        "n_healthy_speakers": int((spk.label == "healthy").sum()),
+        "age_healthy": float(ages.get("healthy", float("nan"))),
+        "age_patho": float(ages.get("pathological", float("nan"))),
+        "n_pathologies": int(len(path_spk)),
+        "singletons": int((path_spk == 1).sum()),
+        "tiers": [
+            {"thresh": t,
+             "n_conditions": int((path_spk >= t).sum()),
+             "n_speakers": int(path_spk[path_spk >= t].sum())}
+            for t in (100, 50, 30, 5, 1)
+        ],
+        "top": [(str(k), int(v)) for k, v in path_spk.head(4).items()],
+    }
+
+
 def count_findings() -> int:
     return len(re.findall(r"^## F\d+", read_text("findings"), re.M))
 
@@ -640,6 +676,88 @@ def build_html() -> str:
       "from a file in this repository; nothing is hand-entered (R1: no orphan numbers, "
       "R2: the agent never states a metric it did not read from an artifact).</p>")
     A('<p class="meta">Not a medical device. No diagnosis, no clinical claim.</p>')
+
+    # ---------------- background: what the data is, what it can support -------
+    bg = load_background()
+    A("<h2>Background &mdash; what this data is, and what it can actually detect</h2>")
+    A('<div class="panel">')
+    A("<h3>The idea</h3>")
+    A("<p>A person speaks; a model listens and predicts a health condition. The appeal is "
+      "that the sensor is a microphone everyone already owns. Two mechanisms make it "
+      "plausible rather than magical. First, <strong>the larynx is the instrument</strong> "
+      "&mdash; a vocal-fold paralysis, a polyp, swelling, a tumour or surgical scarring "
+      "changes the sound directly. Second, <strong>speech is a motor act</strong> needing "
+      "breath control, timing and fine neuromuscular coordination, so neurological and "
+      "respiratory disease can leave traces even when the larynx is healthy. The first "
+      "mechanism is short and well-evidenced; the second is a long causal chain and "
+      "correspondingly weaker. The literature also claims depression, diabetes and heart "
+      "failure from voice &mdash; <strong>this program tests none of those</strong>, for the "
+      "reason in the next block.</p>")
+    A("<h3>The corpus</h3>")
+    A("<p>The primary corpus is the <strong>Saarbr&uuml;cken Voice Database</strong>, a "
+      "clinical archive from Saarland University Hospital. Each participant records "
+      f"<strong>{bg['tasks']} short vocalisations</strong>: the sustained vowels "
+      "<code>/a/</code>, <code>/i/</code>, <code>/u/</code> at normal, high, low and "
+      "rising-falling pitch, plus one spoken German sentence.</p>")
+    A('<div class="grid g4">')
+    for n, k, s in (
+        (f"{bg['recordings']:,}", "recordings decoded", f"{bg['sessions']:,} sessions"),
+        (f"{bg['speakers']:,}", "speakers",
+         f"{bg['n_patho_speakers']:,} pathological / {bg['n_healthy_speakers']:,} healthy"),
+        (f"{bg['n_pathologies']}", "named pathologies", "see the long tail below"),
+        (f"{bg['age_patho'] - bg['age_healthy']:.1f} yr", "age gap",
+         f"healthy {bg['age_healthy']:.1f} vs pathological {bg['age_patho']:.1f} &mdash; "
+         "the confound this program is about"),
+    ):
+        A(f'<div class="stat"><div class="n">{n}</div><div class="k">{k}</div>'
+          f'<div class="s">{s}</div></div>')
+    A("</div>")
+    A(f"<h3>How many diseases can it detect? Not {bg['n_pathologies']}.</h3>")
+    A("<p>Sorted by how many <em>speakers</em> carry each diagnosis &mdash; not how many "
+      "recordings, since a condition with 200 clips from 8 people is an 8-person "
+      "condition:</p>")
+    A('<div class="tablewrap"><table><thead><tr><th>condition has &ge; N speakers</th>'
+      "<th>number of conditions</th><th>speakers covered</th></tr></thead><tbody>")
+    for t in bg["tiers"]:
+        floor = t["thresh"] == 30
+        lbl = (f"&ge; {t['thresh']} <span class=\"small muted\">(this program's data floor)</span>"
+               if floor else f"&ge; {t['thresh']}")
+        em = ("<strong>", "</strong>") if floor else ("", "")
+        A(f'<tr><td>{lbl}</td><td class="num">{em[0]}{t["n_conditions"]}{em[1]}</td>'
+          f'<td class="num muted">{t["n_speakers"]:,}</td></tr>')
+    A("</tbody></table></div>")
+    tier30 = next(t for t in bg["tiers"] if t["thresh"] == 30)
+    top = ", ".join(f"<em>{html.escape(k)}</em> ({v})" for k, v in bg["top"])
+    A(f"<p><strong>{bg['singletons']} of the {bg['n_pathologies']} conditions are "
+      "represented by a single speaker.</strong> So the honest answer is:</p>")
+    A("<ul>")
+    A("<li><strong>One task is properly powered</strong> &mdash; binary <em>healthy vs "
+      f"pathological</em> ({bg['n_patho_speakers']:,} vs {bg['n_healthy_speakers']:,} "
+      "speakers). Every headline number on this page refers to that task and no other.</li>")
+    A(f"<li><strong>At most {tier30['n_conditions']} named conditions</strong> clear a "
+      "&ge;30-speaker floor, and would need one-vs-rest treatment with wide intervals. "
+      f"The largest are {top}.</li>")
+    A(f"<li><strong>{bg['n_pathologies'] - tier30['n_conditions']} conditions cannot be "
+      "modelled at all</strong> at any defensible sample size.</li>")
+    A("</ul>")
+    A("<p class=\"warnc\">And note what those conditions <em>are</em>: almost all are "
+      "<strong>dysphonias and structural larynx disorders</strong> &mdash; the category where "
+      "the sound changes because the sound-producing organ changed. This corpus contains "
+      "essentially no systemic disease. A model trained here detects <strong>disordered "
+      "voice</strong>, not disease in general, and describing it otherwise is a category "
+      "error.</p>")
+    A("<h3>Why this program exists</h3>")
+    A("<p>Published SVD results report UAR in the mid-80s. But healthy participants here "
+      f"average {bg['age_healthy']:.0f} years and patients {bg['age_patho']:.0f}, so patient "
+      "age alone reaches ROC-AUC 0.87 without hearing a single audio sample (F1 below). Any "
+      "classifier that quietly learns &quot;older &rArr; patient&quot; inherits that score "
+      "for free. The interesting quantity is therefore not the accuracy but the "
+      "<strong>margin above the demographic baseline on the identical folds</strong> &mdash; "
+      "a number the field does not currently report. Measuring it is the entire purpose of "
+      "this repository.</p>")
+    A('<p class="small muted">Every count in this section is recomputed at build time from '
+      "<code>data/interim/svd/manifest.csv</code>; none is hand-entered.</p>")
+    A("</div>")
 
     # ---------------- how to read ----------------
     A("<h2>How to read this</h2>")
