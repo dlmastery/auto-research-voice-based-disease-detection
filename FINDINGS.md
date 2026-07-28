@@ -258,8 +258,20 @@ variance effect.
 ### The negative control passes
 
 Permuting the speaker→label map (identical pipeline, `V2_SHUFFLE=1`) collapses
-everything to chance: full AUC **0.5074**, and D at k=8 falls from **+0.0921 to
-+0.0016** — a 58× reduction. This matters more than usual here because **D is a
+everything to chance — **now verified across the full rank range**, since a systematic
+bug could plausibly bite only at extreme ranks:
+
+| k | D measured | D under shuffled labels | ratio |
+|---|---|---|---|
+| 1 | +0.0565 | **−0.0005** | 122× |
+| 8 | +0.0921 | **+0.0017** | 53× |
+| 16 | +0.0734 | **−0.0010** | 74× |
+| 64 | +0.0888 | **−0.0023** | 39× |
+
+Full-embedding AUC falls **0.7382 → 0.5069**. Note that shuffled D **changes sign**
+across ranks (−, +, −, −): that is what noise scattered around zero looks like, and it
+is a stronger signature of "no residual signal" than four small positive numbers would
+have been. This matters more than usual here because **D is a
 difference**, so a systematic bug inflating every arm equally would have survived the
 whole table above untouched. Speaker-ID accuracy is unchanged by the shuffle
 (0.278 / 0.193), exactly as it should be — permuting *diagnoses* cannot affect *who is
