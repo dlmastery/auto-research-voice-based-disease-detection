@@ -341,3 +341,84 @@ from the manifests or read out of `autoresearch_results/bench_svd_egemaps.json`.
 ---
 
 > **Internal QA pass — implementer and critic share a model family; independent external review pending.**
+
+---
+
+# Addendum 2026-07-28 — `run_v2_speaker_subspace.py`
+
+The program's first experiment against a registered hypothesis. Audited **during**
+implementation rather than after, which is why three defects were caught before any
+result was reported. All three were mine.
+
+## D1 — the control was not variance-matched (CORRECTNESS, would have inflated the finding)
+
+`variance_matched_random()` drew 400 uniformly-random k-subsets of the principal
+directions and kept the closest match to the speaker subspace's captured variance.
+That cannot work: a random 16-of-1536 draw essentially never includes the top
+directions, so the best draw reached **0.350** of the variance against the speaker
+subspace's **0.818**.
+
+The comparison was therefore between two *different-sized* interventions — remove 82%
+of the variance one way, 35% the other — and could not separate "identity was removed"
+from "more signal was removed". Measured cost of the defect: `D(16)` read **+0.132**
+with the broken control and **+0.070 / +0.075** with correct ones, an inflation of
+~1.8×. Had this shipped, the headline would have been nearly double its true size.
+
+**Fixed** with two controls built from the data's own principal axes: `pca_topk` (the
+variance-*maximising* rank-k subspace — 0.879 at k=16, i.e. strictly *more* than the
+speaker subspace, so a positive D cannot be a variance artifact) and `var_matched`
+(top-k with the lowest member walked down the spectrum onto the target). Both are
+reported so the claim survives whichever control a reader trusts.
+
+## D2 — the manipulation check could not check anything (VALIDITY, unresolved)
+
+The pre-registered check was "speaker-ID accuracy falls from ~0.90 to < 0.30". Measured
+on unprojected embeddings it was **0.204** — a number with no room to fall, so its drop
+demonstrated nothing.
+
+Cause: a 150-way task over speakers with ≥4 recordings starves the probe. Narrowing to
+60-way over speakers with ≥12 recordings raised it to **0.278** (chance 0.0167).
+
+**This remains a genuine weakness, not a closed issue.** 0.278 is 16.7× chance, so
+identity *is* linearly present, but it is nowhere near the predicted 0.90. The
+prediction assumed mean-pooled WavLM-base+ separates speakers like an x-vector; it does
+not. Consequence for the finding: the projection demonstrably removes *some* identity,
+but the claim "the subspace removed is the identity subspace" is supported only weakly,
+and any write-up must say so in the body rather than a footnote.
+
+## D3 — the speaker basis was recomputed per rank (PERFORMANCE, no correctness impact)
+
+The speaker-mean matrix and its SVD are rank-independent; only the `Vt[:k]` slice
+varies. `speaker_subspace()` rebuilt both on every call, once per rank. Measured at
+1.2 s + 10.7 s ≈ 12 s per call, so ~6 redundant calls × 10 repeats ≈ 13 minutes wasted.
+Now cached per (matrix, split). The dominant cost — 21 `auc_cv` calls per repeat — is
+inherent to the design and unchanged.
+
+## What is verified
+
+- **Leakage.** Every subspace, speaker and control alike, is estimated on *training
+  speakers only*, inside the repeat's 80% speaker split. Estimating on all data would
+  leak test speakers into the projection meant to remove them. Scalers are fit per fold
+  on train only. Splits are `GroupKFold` on `speaker_id` throughout.
+- **Family size.** `FAMILY_M = 14` is the pre-registered value and is used even though
+  only SVD runs (a post-hoc m=7 would be easier to clear). Shrinking m after the fact is
+  the move the contract forbids.
+- **Judge-free.** The objective is ROC-AUC against ground-truth clinical labels; no
+  model grades any output, so the failed judge calibration is irrelevant here.
+
+## What is NOT verified
+
+- **No shuffle test.** The pipeline has not been run with permuted labels to confirm it
+  returns AUC ≈ 0.5. Until it is, a systematic bug that inflates every arm equally would
+  be invisible — `D` is a *difference*, so it would survive such a bug unnoticed. This is
+  the highest-value missing control and should precede any external claim.
+- **SVD only.** The pre-registration names SVD *and* Coswara. Coswara has not been run,
+  so half the registered family is unexecuted.
+- **Single backbone, single head.** WavLM mean+std pooling with logistic regression. The
+  result may not transfer to other representations, which is exactly what
+  arXiv:2604.14354 claims is a property of representations in general.
+
+---
+
+> **Internal QA pass — implementer and critic share a model family; independent external
+> review pending.** This addendum audits code the same author wrote, in the same session.
