@@ -39,7 +39,17 @@
     {
       "corpus": "coswara",
       "backbone": "wavlm",
-      "status": "NOT RUN -- no cached embeddings"
+      "status": "RUN",
+      "n_recordings": 610,
+      "n_speakers": 72,
+      "auc_fit_on_all": 0.49292165511447167,
+      "auc_fit_per_fold": 0.4905575392657939,
+      "delta_mean": 0.002364115848677917,
+      "delta_ci95": [
+        0.0004386916847534313,
+        0.004833368339984618
+      ],
+      "ci_within_pm_0.01": true
     },
     {
       "corpus": "coswara",
@@ -57,7 +67,7 @@
       "status": "NOT RUN -- no cached embeddings"
     }
   ],
-  "cells_run": 2,
+  "cells_run": 3,
   "all_within_pm_0.01": true,
-  "elapsed_s": 2582.3
+  "elapsed_s": 2486.5
 }

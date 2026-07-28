@@ -311,7 +311,7 @@ this single-representation result cannot establish.
 
 ## F5 — Scaler-before-split leakage is *nothing* on SVD embeddings (0.00004 AUC), but the corpus-specificity claim is UNTESTED
 
-**Tier: PARTIAL** — 2 of 6 pre-registered cells ran. n = 10 × 5-fold speaker-disjoint,
+**Tier: PARTIAL** — 3 of 6 pre-registered cells ran; one is underpowered by construction. n = 10 × 5-fold speaker-disjoint,
 m = 6 pre-registered. Judge-free. Artifact: `autoresearch_results/V6_preprocessing_leakage.json`.
 
 Pre-registered as **V6**. Audits *Feature scaling induced data leakage quantification in
@@ -323,7 +323,9 @@ machine learning-based voice pathology detection*, *Applied Soft Computing*
 |---|---|---|---|---|
 | SVD / WavLM | 0.7382 | 0.7382 | **+0.00004** [+0.00001, +0.00007] | yes |
 | SVD / eGeMAPS | 0.5315 | 0.5357 | **−0.00418** [−0.00627, −0.00221] | yes |
-| Coswara ×2, COUGHVID ×2 | — | — | **NOT RUN** — no cached embeddings | — |
+| **Coswara / WavLM** | 0.4929 | 0.4906 | **+0.00236** [+0.00044, +0.00483] | yes |
+| Coswara / eGeMAPS | — | — | NOT RUN — no cached eGeMAPS | — |
+| COUGHVID ×2 | — | — | **DELIBERATELY EXCLUDED** — see below | — |
 
 **Established.** The published near-null on SVD reproduces, and extends from handcrafted
 features to **embeddings** — the representation the field actually uses, and one the
@@ -335,10 +337,35 @@ CI excluding zero: leakage made performance slightly *worse*. That matches the a
 observation that scaler leakage can degrade as well as inflate — a direction most
 treatments of data leakage do not consider.
 
-**NOT established.** The prediction had two halves: `< 0.01 on SVD` (**confirmed**) and
-`> 0.03 on at least one of Coswara/COUGHVID` (**untestable** — those corpora have no
-cached embeddings, which is GPU extraction work). The corpus-specificity claim *is* V6's
-novel content, so **the falsifier is not evaluable** and V6 is not closed.
+**My prediction MISSED on the half that mattered.** I predicted `< 0.01 on SVD`
+(**confirmed**) and `> 0.03 on at least one of Coswara/COUGHVID`. Coswara measured
+**+0.0024** — an order of magnitude below the predicted threshold. So across two corpora
+and two representations, scaler-fit scope on embedding features is **uniformly
+negligible**, and the "corpus-specific magnitude" claim is *not supported* for this
+pipeline family. That is the direction of the falsifier, though it formally requires all
+six cells.
+
+**THE LIMITATION THAT CAPS THE COSWARA CELL — read before citing it.** Coswara's
+classifier sits at **AUC 0.49, i.e. chance**. A leakage test asks whether preprocessing
+scope *inflates* performance, and **there is nothing to inflate in a model with no
+signal**. That cell therefore cannot detect the effect it was run to detect; it is
+consistent with "no leakage" and equally consistent with "no power to see leakage." It
+should be read as a null *observation*, not a null *result*. A corpus where the audio
+model actually works is required to test this properly, and on the corpora available to
+this program that means SVD alone — which is where the audited paper already reported a
+near-null.
+
+**COUGHVID: deliberately excluded, with cause.** Extraction was reaped twice at ~8.5% of
+13,535 files, but that is not the reason it was abandoned. [F2](#f2--wavlm-embeddings-do-not-clear-the-demographic-bar-on-svd-pilot)
+established COUGHVID ships **zero real speaker identifiers** — 13,535 unique ids for
+13,535 recordings — so its `GroupKFold` degenerates to plain `KFold`. Populating cells
+whose results could never carry an evaluation claim is not a good use of GPU hours in a
+program whose subject is precisely that unclaimable numbers get reported as claims. This
+is recorded as a judgement with its reasoning, not a silent omission: *a pre-registered
+cell that becomes known-uninformative is a different thing from one that is merely
+inconvenient.*
+
+**Status: V6 is NOT closed.** 3 of 6 cells, one of them underpowered by construction.
 
 ---
 
