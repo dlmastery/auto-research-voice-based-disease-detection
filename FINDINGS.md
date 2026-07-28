@@ -186,12 +186,27 @@ voice-pathology claim on SVD that does not report its margin above a demographic
 baseline is uninterpretable**, because the demographic baseline is already close to the
 number being claimed.
 
-### Statistical status — NOT yet certifiable
+### Statistical status — CERTIFIED (2026-07-27)
 
-This run used 1 repeat, so `power R6: n_paired=1, m=3, min_p=1.000 vs Holm α=0.0167 →
-feasible=False`. Every head is labelled **UNDERPOWERED**. A repeat=8 run is in progress to
-clear the contract. The *direction* (age > audio at recording level by 0.136) is far too
-large to be a power artifact, but the precise margin is not yet certified.
+The repeat=8 run cleared the power contract: `power R6: n_paired=8, m=2,
+min_attainable_p=0.00781 vs Holm α=0.02500 → **feasible=True**`. The heads are no longer
+labelled UNDERPOWERED; the verdict is simply **NOT CLEARED**.
+
+Certified numbers (8 repeats × 5 speaker-disjoint folds):
+
+| model | rec-AUC | rec-UAR | spk-AUC |
+|---|---|---|---|
+| logreg (WavLM) | 0.7438 | 0.6409 | 0.8671 |
+| ens_rank3 | 0.7443 | 0.6759 | 0.8650 |
+| **confound: age only** | **0.8737** | **0.8078** | 0.8642 |
+| **confound: age+sex+duration+RMS** | **0.8747** | 0.8127 | 0.8649 |
+| confound: sex only | 0.4898 | 0.5000 | 0.5027 |
+| confound: duration only | 0.4724 | 0.5000 | 0.5021 |
+| confound: RMS only | 0.5121 | 0.5000 | 0.5206 |
+
+The conclusion is unchanged and now carries statistical power: **at recording level the
+demographic bar (0.8747) exceeds the best audio head (0.7443) by +0.130**, and at speaker
+level they are tied (0.8671 vs 0.8649, +0.002). The negative controls remain at chance.
 
 ### Limitations
 
