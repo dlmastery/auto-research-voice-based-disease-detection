@@ -4,6 +4,8 @@
   "files_decoded": 667,
   "files_failed": 0,
   "excluded_no_speaker_id": 0,
+  "complete": true,
+  "incomplete_reason": "",
   "total_duration_s": 2685.2,
   "n_speakers": 49,
   "n_sessions": 49,

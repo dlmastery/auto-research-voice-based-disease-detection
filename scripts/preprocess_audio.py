@@ -301,8 +301,17 @@ def run_svd(args) -> tuple[list[Row], Stats]:
         files += [(p.name, p) for p in sorted(pilot.rglob("*.nsp"))]
 
     # Extract the pathology zips, then treat them like the pilot directory.
+    #
+    # Prefer `svd_full` (the COMPLETE 73-file / 38.1 GB Zenodo record, which includes the
+    # 6 GB `healthy.zip` holding the healthy-speaker archive) over `svd` (an earlier
+    # 22-zip partial download). Reading the partial silently capped the corpus at 49
+    # speakers even after the full record had finished downloading -- the manifest looked
+    # successful and complete, so nothing flagged that ~97% of the speakers were missing.
     extracted = RAW / "svd_extracted"
-    zips = sorted((RAW / "svd").glob("*.zip"))
+    full_dir, part_dir = RAW / "svd_full", RAW / "svd"
+    zip_dir = full_dir if list(full_dir.glob("*.zip")) else part_dir
+    zips = sorted(zip_dir.glob("*.zip"))
+    print(f"[svd] zip source: {zip_dir.name} ({len(zips)} archives)")
     for z in zips:
         target = extracted / z.stem
         if not target.exists():
