@@ -411,3 +411,70 @@ sharper experiment, and PROCESS-2 is the obvious candidate once its gate clears.
 corpus set. A headline model here must beat ~0.53, not 0.50.
 
 > Not a medical device. Internal QA pass — independent external review pending.
+
+---
+
+## F7 — With age MATCHED AWAY, WavLM still carries real acoustic signal (+0.069 over the residual age bar)
+
+**Tier: EVALUATION for the cell that ran** (n = 10 × 5-fold speaker-disjoint, m = 9
+pre-registered). Judge-free. Artifact: `autoresearch_results/V1_ssl_vs_handcrafted.json`.
+Pre-registered as **V1**.
+
+Every prior finding here was about what the model gets for free. F1/F3: patient **age
+alone** reaches 0.8737 while WavLM reaches 0.7438. F4: ~a third of WavLM's
+discrimination is **speaker identity**. That leaves the question those findings cannot
+answer — **once age is removed by construction, is anything real left?**
+
+### Feasibility, re-checked — a design that used to be impossible
+
+`audits/DATA_SPLIT_AUDIT.md` **failed** this design at 49 speakers: only **9**
+age-matched pairs existed. At the full 1,679-speaker corpus, greedy sex-exact
+age-±3y matching yields **308 pairs (616 speakers)**. V1 became runnable purely because
+the corpus grew 34×.
+
+### The matching worked — and it is checked, not assumed
+
+| | unmatched (F3) | **matched (F7)** |
+|---|---|---|
+| age gap, healthy vs pathological | **22.2 years** | **0.77 years** |
+| age-only ROC-AUC | **0.8737** | **0.5534** |
+
+The built-in falsifier for the construction — *an age-only classifier must collapse
+toward chance* — is satisfied. Age went from the single best predictor in this corpus to
+nearly uninformative.
+
+### The result
+
+| predictor, on the matched subset | ROC-AUC |
+|---|---|
+| age only (the residual bar) | 0.5534 |
+| **WavLM-base+** | **0.6227** |
+| **margin above the residual age bar** | **+0.0693** [95% CI **+0.0598, +0.0789**] |
+
+**Positive in all 10 of 10 seeds.** This is the first evidence in this program that the
+audio itself carries pathology-relevant signal rather than demographics.
+
+**But read the size honestly.** WavLM fell from 0.7438 unmatched to **0.6227** matched.
+Roughly *half* of its headroom above chance disappeared when age was equalised — which is
+exactly what F1, F3 and F4 predicted between them. The real, non-demographic, non-identity
+signal in these embeddings is **AUC ≈ 0.62** — well above chance, far below the ~0.85 the
+literature reports on this corpus, and nowhere near clinical usefulness.
+
+### What did NOT run, and a bug in my own harness
+
+**The SSL-vs-handcrafted contrast — V1's actual registered question — did not run.** The
+cached eGeMAPS matrix for SVD covers only the **667-recording pilot slice** (667 × 88),
+not the full corpus, so it cannot be aligned to the matched subset. Full-corpus eGeMAPS
+extraction is required before the claim can be tested at all.
+
+Worse, **the artifact initially claimed eGeMAPS had run.** `encoders_run` was populated
+from *the cache file existing* rather than from *the arm producing a number*, so a
+silently-skipped arm was reported as an executed one. Fixed in both the script and the
+artifact, with the reason recorded rather than quietly overwritten. This is the same
+failure class as everything in `CLAUDE.md` §18.8: it did not crash, it produced a
+confident, well-formed, false field.
+
+**Scope:** one encoder (WavLM-base+) of three registered; one corpus of three; `m` kept
+at the pre-registered 9. **V1 is NOT closed.**
+
+> Not a medical device. Internal QA pass — independent external review pending.

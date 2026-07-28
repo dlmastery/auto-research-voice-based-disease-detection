@@ -1,0 +1,127 @@
+{
+  "hypothesis": "V1 -- SSL vs handcrafted under age-matched speaker-disjoint splits",
+  "objective": "ROC-AUC vs clinical labels (JUDGE-FREE)",
+  "corpus": "svd",
+  "age_tolerance_years": 3.0,
+  "repeats": 10,
+  "folds": 5,
+  "family_m_preregistered": 9,
+  "encoders_registered": [
+    "HeAR",
+    "WavLM-base+",
+    "Whisper-small-enc"
+  ],
+  "encoders_run": [
+    "WavLM-base+"
+  ],
+  "note_scope": "HeAR and Whisper not extracted on this host; COUGHVID excluded per F2",
+  "repeats_detail": [
+    {
+      "seed": 0,
+      "n_speakers": 616,
+      "n_recordings": 10243,
+      "age_healthy": 34.31578947368421,
+      "age_patho": 35.208333333333336,
+      "age_gap": 0.8925438596491233,
+      "auc_age_only": 0.5655034242146529,
+      "auc_wavlm": 0.6151016448711167
+    },
+    {
+      "seed": 1,
+      "n_speakers": 610,
+      "n_recordings": 10402,
+      "age_healthy": 34.42622950819672,
+      "age_patho": 34.95737704918033,
+      "age_gap": 0.5311475409836106,
+      "auc_age_only": 0.5585095687801036,
+      "auc_wavlm": 0.6253068295416679
+    },
+    {
+      "seed": 2,
+      "n_speakers": 616,
+      "n_recordings": 10200,
+      "age_healthy": 34.20322580645161,
+      "age_patho": 35.04248366013072,
+      "age_gap": 0.8392578536791078,
+      "auc_age_only": 0.5473887900688976,
+      "auc_wavlm": 0.6239931879207823
+    },
+    {
+      "seed": 3,
+      "n_speakers": 608,
+      "n_recordings": 10682,
+      "age_healthy": 34.50830564784053,
+      "age_patho": 35.14006514657981,
+      "age_gap": 0.6317594987392781,
+      "auc_age_only": 0.5787271968218508,
+      "auc_wavlm": 0.6306718919135847
+    },
+    {
+      "seed": 4,
+      "n_speakers": 608,
+      "n_recordings": 10160,
+      "age_healthy": 34.25328947368421,
+      "age_patho": 35.13486842105263,
+      "age_gap": 0.8815789473684177,
+      "auc_age_only": 0.5683818305439194,
+      "auc_wavlm": 0.6217379769013396
+    },
+    {
+      "seed": 5,
+      "n_speakers": 610,
+      "n_recordings": 9579,
+      "age_healthy": 34.077669902912625,
+      "age_patho": 34.83720930232558,
+      "age_gap": 0.759539399412958,
+      "auc_age_only": 0.5292114603428845,
+      "auc_wavlm": 0.6139438029222901
+    },
+    {
+      "seed": 6,
+      "n_speakers": 610,
+      "n_recordings": 10427,
+      "age_healthy": 34.411764705882355,
+      "age_patho": 35.08223684210526,
+      "age_gap": 0.6704721362229051,
+      "auc_age_only": 0.5489799036708621,
+      "auc_wavlm": 0.6182622546082662
+    },
+    {
+      "seed": 7,
+      "n_speakers": 608,
+      "n_recordings": 9968,
+      "age_healthy": 34.412541254125415,
+      "age_patho": 34.8327868852459,
+      "age_gap": 0.42024563112048696,
+      "auc_age_only": 0.539130028179846,
+      "auc_wavlm": 0.6307025113350472
+    },
+    {
+      "seed": 8,
+      "n_speakers": 620,
+      "n_recordings": 10117,
+      "age_healthy": 34.33009708737864,
+      "age_patho": 35.51125401929261,
+      "age_gap": 1.1811569319139679,
+      "auc_age_only": 0.5359480091608964,
+      "auc_wavlm": 0.6276631617146917
+    },
+    {
+      "seed": 9,
+      "n_speakers": 626,
+      "n_recordings": 10652,
+      "age_healthy": 34.15923566878981,
+      "age_patho": 35.083333333333336,
+      "age_gap": 0.9240976645435239,
+      "auc_age_only": 0.5623016648306061,
+      "auc_wavlm": 0.6195907169040498
+    }
+  ],
+  "mean_auc_age_only": 0.5534081876614521,
+  "mean_auc_wavlm": 0.6226973978632836,
+  "mean_age_gap": 0.773179946363338,
+  "mean_n_speakers": 613.2,
+  "matching_worked": true,
+  "elapsed_s": 495.2,
+  "egemaps_skipped_reason": "cached eGeMAPS for svd covers only the 667-recording pilot slice (667x88), not the full corpus, so it could not be aligned to the matched subset. The earlier 'encoders_run' value was wrong: it was derived from the cache FILE EXISTING rather than from the arm producing a number."
+}
