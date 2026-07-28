@@ -198,8 +198,8 @@ target-selection criterion.
 | **V3** | A5 | EVALUATION | 42 | 12 | 0.000488 | 0.001190 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |
 | **V4** | A8 | EVALUATION | 6 | 10 | 0.001953 | 0.008333 | ✓ | Coswara↔COUGHVID, SVD→VOICED | UNTESTED |
 | **V5** | A12 | SCREENING (promotion pre-declared) | 3 | ≤3 → 10 | 0.001953 | 0.016667 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |
-| **V6** | A4 | EVALUATION | 6 | 10 | 0.001953 | 0.008333 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |
-| **V7** | A5 | EVALUATION | 6 | 10 | 0.001953 | 0.008333 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |
+| **V6** | A4 | EVALUATION | 6 | 10 | 0.001953 | 0.008333 | ✓ | SVD only (4 cells unrun) | **PARTIAL — SVD near-null reproduced on embeddings; falsifier NOT evaluable** — see F5 |
+| **V7** | A5 | EVALUATION | 6 | 10 | 0.001953 | 0.008333 | ✓ | all 3 (silence arm complete) | **PARTIAL — shortcut does NOT generalise; my mechanism was WRONG** — see F6 |
 
 **Every plan in this table is arithmetically satisfiable under R6.** The runner must recompute
 `2/2ⁿ ≤ 0.05/m` at launch from the config's own declared `m` and `n` and refuse to start

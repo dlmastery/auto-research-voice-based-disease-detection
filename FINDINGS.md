@@ -306,3 +306,81 @@ this single-representation result cannot establish.
 
 > Not a medical device. No diagnosis, no clinical claim.
 > Internal QA pass — independent external review pending.
+
+---
+
+## F5 — Scaler-before-split leakage is *nothing* on SVD embeddings (0.00004 AUC), but the corpus-specificity claim is UNTESTED
+
+**Tier: PARTIAL** — 2 of 6 pre-registered cells ran. n = 10 × 5-fold speaker-disjoint,
+m = 6 pre-registered. Judge-free. Artifact: `autoresearch_results/V6_preprocessing_leakage.json`.
+
+Pre-registered as **V6**. Audits *Feature scaling induced data leakage quantification in
+machine learning-based voice pathology detection*, *Applied Soft Computing*
+(`S1568494626007970`), which measured −0.14/+0.14 pp on SVD and −8.3/+7.8 pp on VOICED
+— on **handcrafted** features.
+
+| cell | fit_on_all | fit_per_fold | **D [95% CI]** | within ±0.01 |
+|---|---|---|---|---|
+| SVD / WavLM | 0.7382 | 0.7382 | **+0.00004** [+0.00001, +0.00007] | yes |
+| SVD / eGeMAPS | 0.5315 | 0.5357 | **−0.00418** [−0.00627, −0.00221] | yes |
+| Coswara ×2, COUGHVID ×2 | — | — | **NOT RUN** — no cached embeddings | — |
+
+**Established.** The published near-null on SVD reproduces, and extends from handcrafted
+features to **embeddings** — the representation the field actually uses, and one the
+audited paper did not test. At 28,509 rows, fitting the scaler on everything versus on
+train only is worth **0.00004 AUC**. That is not "small"; it is nothing.
+
+**A reproduction of the paper's subtler point.** The eGeMAPS cell is **negative** with a
+CI excluding zero: leakage made performance slightly *worse*. That matches the audited
+observation that scaler leakage can degrade as well as inflate — a direction most
+treatments of data leakage do not consider.
+
+**NOT established.** The prediction had two halves: `< 0.01 on SVD` (**confirmed**) and
+`> 0.03 on at least one of Coswara/COUGHVID` (**untestable** — those corpora have no
+cached embeddings, which is GPU extraction work). The corpus-specificity claim *is* V6's
+novel content, so **the falsifier is not evaluable** and V6 is not closed.
+
+---
+
+## F6 — The Clever-Hans silence shortcut does NOT generalise: near chance on all three corpora
+
+**Tier: PARTIAL** — 4 of 6 cells; but the **silence arm ran on all three corpora**.
+n = 10 × 5-fold speaker-disjoint, m = 6 pre-registered. Judge-free.
+Artifact: `autoresearch_results/V7_silence_shortcut.json` · 42,654 files VAD'd, 0 unreadable.
+
+Pre-registered as **V7**. Audits Liu, Feng, Yuan, Ling, Interspeech 2024, *Clever Hans
+Effect Found in Automatic Detection of Alzheimer's Disease through Speech*
+([arXiv:2406.07410](https://arxiv.org/abs/2406.07410)) — near-100% AD detection from
+**silent segments alone** on Pitt.
+
+| corpus | features | AUC | directionless | ≥ 0.60 |
+|---|---|---|---|---|
+| SVD | silence_only | 0.5136 [0.5104, 0.5174] | 0.5136 | **no** |
+| SVD | duration+intensity | 0.5048 [0.5020, 0.5077] | 0.5048 | **no** |
+| Coswara | silence_only | 0.4854 [0.4668, 0.5037] | 0.5146 | **no** |
+| COUGHVID | silence_only | 0.5264 [0.5251, 0.5277] | 0.5264 | **no** |
+| Coswara, COUGHVID | duration+intensity | NOT RUN — no cached metadata | — | — |
+
+**Every cell that ran is near chance.** The silence arm — the one the Pitt paper is
+actually about — ran on **all three corpora** and never exceeded **0.527**.
+
+**My predicted mechanism is WRONG, and that is the informative part.** I predicted
+silence_only ∈ [0.55, 0.70] on Coswara because it is crowd-recorded and protocol-
+heterogeneous, i.e. that the shortcut scales with **acquisition heterogeneity**.
+Coswara measured **0.5146 — the lowest of the three**, below the predicted band. The
+SVD half ([0.50, 0.60] predicted, 0.5136 measured) was confirmed, but the
+heterogeneity mechanism it was meant to contrast with is not supported.
+
+**The caveat that limits this null, stated plainly.** SVD, Coswara and COUGHVID are
+corpora of sustained vowels, coughs and breathing — **short, prompted vocalisations**.
+Pitt is spontaneous picture-description speech, where pause structure plausibly carries
+cognitive load directly. So this is a fair test of *whether the shortcut generalises to
+these corpora* — and it does not — but it is **not** evidence that the Pitt effect was
+spurious. These corpora may simply lack the pause structure that could carry such a
+signal at all. A generalisation test on another *spontaneous-speech* corpus would be the
+sharper experiment, and PROCESS-2 is the obvious candidate once its gate clears.
+
+**Useful either way:** these four numbers are now the measured confound floor for this
+corpus set. A headline model here must beat ~0.53, not 0.50.
+
+> Not a medical device. Internal QA pass — independent external review pending.

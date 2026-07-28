@@ -1,0 +1,63 @@
+{
+  "hypothesis": "V6 -- preprocessing-fit leakage",
+  "audited": "Applied Soft Computing S1568494626007970",
+  "objective": "ROC-AUC vs clinical labels (JUDGE-FREE)",
+  "repeats": 10,
+  "folds": 5,
+  "family_m_preregistered": 6,
+  "cells": [
+    {
+      "corpus": "svd",
+      "backbone": "wavlm",
+      "status": "RUN",
+      "n_recordings": 28509,
+      "n_speakers": 1679,
+      "auc_fit_on_all": 0.7382131178609018,
+      "auc_fit_per_fold": 0.7381773075798943,
+      "delta_mean": 3.581028100761996e-05,
+      "delta_ci95": [
+        7.611837039608049e-06,
+        6.580190183895717e-05
+      ],
+      "ci_within_pm_0.01": true
+    },
+    {
+      "corpus": "svd",
+      "backbone": "egemaps",
+      "status": "RUN",
+      "n_recordings": 667,
+      "n_speakers": 49,
+      "auc_fit_on_all": 0.5315153193060169,
+      "auc_fit_per_fold": 0.5356958287190846,
+      "delta_mean": -0.00418050941306759,
+      "delta_ci95": [
+        -0.006265388519749041,
+        -0.002207410483573286
+      ],
+      "ci_within_pm_0.01": true
+    },
+    {
+      "corpus": "coswara",
+      "backbone": "wavlm",
+      "status": "NOT RUN -- no cached embeddings"
+    },
+    {
+      "corpus": "coswara",
+      "backbone": "egemaps",
+      "status": "NOT RUN -- no cached embeddings"
+    },
+    {
+      "corpus": "coughvid",
+      "backbone": "wavlm",
+      "status": "NOT RUN -- no cached embeddings"
+    },
+    {
+      "corpus": "coughvid",
+      "backbone": "egemaps",
+      "status": "NOT RUN -- no cached embeddings"
+    }
+  ],
+  "cells_run": 2,
+  "all_within_pm_0.01": true,
+  "elapsed_s": 2582.3
+}

@@ -1,0 +1,80 @@
+{
+  "hypothesis": "V7 -- Clever-Hans silence shortcut beyond Pitt",
+  "audited": "arXiv:2406.07410",
+  "objective": "ROC-AUC (JUDGE-FREE)",
+  "repeats": 10,
+  "folds": 5,
+  "family_m_preregistered": 6,
+  "cells": [
+    {
+      "corpus": "svd",
+      "features": "silence_only",
+      "status": "RUN",
+      "n_recordings": 28509,
+      "n_speakers": 1679,
+      "auc": 0.5136457281085319,
+      "auc_ci95": [
+        0.5104474658671532,
+        0.5173784073381937
+      ],
+      "auc_directionless": 0.5136457281085319,
+      "clears_0.60": false
+    },
+    {
+      "corpus": "svd",
+      "features": "duration_intensity_only",
+      "status": "RUN",
+      "n_recordings": 28509,
+      "n_speakers": 1679,
+      "auc": 0.5048072818800243,
+      "auc_ci95": [
+        0.5019920451153912,
+        0.5077433073990989
+      ],
+      "auc_directionless": 0.5048072818800243,
+      "clears_0.60": false
+    },
+    {
+      "corpus": "coswara",
+      "features": "silence_only",
+      "status": "RUN",
+      "n_recordings": 610,
+      "n_speakers": 72,
+      "auc": 0.48538822376251484,
+      "auc_ci95": [
+        0.4667739620527899,
+        0.5037130388107073
+      ],
+      "auc_directionless": 0.5146117762374851,
+      "clears_0.60": false
+    },
+    {
+      "corpus": "coswara",
+      "features": "duration_intensity_only",
+      "status": "NOT RUN -- no data"
+    },
+    {
+      "corpus": "coughvid",
+      "features": "silence_only",
+      "status": "RUN",
+      "n_recordings": 13535,
+      "n_speakers": 13535,
+      "auc": 0.5264035594101439,
+      "auc_ci95": [
+        0.5251320574586484,
+        0.5276593280698889
+      ],
+      "auc_directionless": 0.5264035594101439,
+      "clears_0.60": false
+    },
+    {
+      "corpus": "coughvid",
+      "features": "duration_intensity_only",
+      "status": "NOT RUN -- no data"
+    }
+  ],
+  "cells_run": 4,
+  "all_below_0.60": true,
+  "falsifier_fully_evaluable": false,
+  "elapsed_s": 78.3
+}
