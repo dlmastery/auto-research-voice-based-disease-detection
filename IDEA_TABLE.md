@@ -193,7 +193,7 @@ target-selection criterion.
 
 | id | axis | tier | m | n | min p | Holm 0.05/m | satisfiable | datasets | status |
 |---|---|---|---|---|---|---|---|---|---|
-| **V1** | A5 | EVALUATION | 9 | 10 | 0.001953 | 0.005556 | ✓ | SVD, 1 of 3 encoders | **PARTIAL — matching WORKS (age 0.874→0.553); WavLM keeps +0.069 over residual age. SSL-vs-eGeMAPS contrast did NOT run** — see F7 |
+| **V1** | A5 | EVALUATION | 9 | 10 | 0.001953 | 0.005556 | ✓ | SVD, 1 of 3 encoders | **CLAIM SUPPORTED on SVD** — matching works (age 0.874→0.553); **eGeMAPS 0.6496 BEATS WavLM 0.6227**, CI [−0.032, −0.022], 10/10 seeds. Not formally closed (falsifier wants ≥2 corpora) — see F7 |
 | **V2** | A9 | EVALUATION | 14 | 10 | 0.001953 | 0.003571 | ✓ | SVD (Coswara unrun) | **CLAIM SUPPORTED, falsifier did NOT fire** — see F4 |
 | **V3** | A5 | EVALUATION | 42 | 12 | 0.000488 | 0.001190 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |
 | **V4** | A8 | EVALUATION | 6 | 10 | 0.001953 | 0.008333 | ✓ | Coswara↔COUGHVID, SVD→VOICED | UNTESTED |

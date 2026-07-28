@@ -12,7 +12,8 @@
     "Whisper-small-enc"
   ],
   "encoders_run": [
-    "WavLM-base+"
+    "WavLM-base+",
+    "eGeMAPS(baseline)"
   ],
   "note_scope": "HeAR and Whisper not extracted on this host; COUGHVID excluded per F2",
   "repeats_detail": [
@@ -24,7 +25,8 @@
       "age_patho": 35.208333333333336,
       "age_gap": 0.8925438596491233,
       "auc_age_only": 0.5655034242146529,
-      "auc_wavlm": 0.6151016448711167
+      "auc_wavlm": 0.6151016448711167,
+      "auc_egemaps": 0.6391862683444517
     },
     {
       "seed": 1,
@@ -34,7 +36,8 @@
       "age_patho": 34.95737704918033,
       "age_gap": 0.5311475409836106,
       "auc_age_only": 0.5585095687801036,
-      "auc_wavlm": 0.6253068295416679
+      "auc_wavlm": 0.6253068295416679,
+      "auc_egemaps": 0.6335410923631517
     },
     {
       "seed": 2,
@@ -44,7 +47,8 @@
       "age_patho": 35.04248366013072,
       "age_gap": 0.8392578536791078,
       "auc_age_only": 0.5473887900688976,
-      "auc_wavlm": 0.6239931879207823
+      "auc_wavlm": 0.6239931879207823,
+      "auc_egemaps": 0.6538918990765176
     },
     {
       "seed": 3,
@@ -54,7 +58,8 @@
       "age_patho": 35.14006514657981,
       "age_gap": 0.6317594987392781,
       "auc_age_only": 0.5787271968218508,
-      "auc_wavlm": 0.6306718919135847
+      "auc_wavlm": 0.6306718919135847,
+      "auc_egemaps": 0.6717904037024413
     },
     {
       "seed": 4,
@@ -64,7 +69,8 @@
       "age_patho": 35.13486842105263,
       "age_gap": 0.8815789473684177,
       "auc_age_only": 0.5683818305439194,
-      "auc_wavlm": 0.6217379769013396
+      "auc_wavlm": 0.6217379769013396,
+      "auc_egemaps": 0.6519090378809934
     },
     {
       "seed": 5,
@@ -74,7 +80,8 @@
       "age_patho": 34.83720930232558,
       "age_gap": 0.759539399412958,
       "auc_age_only": 0.5292114603428845,
-      "auc_wavlm": 0.6139438029222901
+      "auc_wavlm": 0.6139438029222901,
+      "auc_egemaps": 0.6443755361542773
     },
     {
       "seed": 6,
@@ -84,7 +91,8 @@
       "age_patho": 35.08223684210526,
       "age_gap": 0.6704721362229051,
       "auc_age_only": 0.5489799036708621,
-      "auc_wavlm": 0.6182622546082662
+      "auc_wavlm": 0.6182622546082662,
+      "auc_egemaps": 0.6466020654016214
     },
     {
       "seed": 7,
@@ -94,7 +102,8 @@
       "age_patho": 34.8327868852459,
       "age_gap": 0.42024563112048696,
       "auc_age_only": 0.539130028179846,
-      "auc_wavlm": 0.6307025113350472
+      "auc_wavlm": 0.6307025113350472,
+      "auc_egemaps": 0.6602026133553768
     },
     {
       "seed": 8,
@@ -104,7 +113,8 @@
       "age_patho": 35.51125401929261,
       "age_gap": 1.1811569319139679,
       "auc_age_only": 0.5359480091608964,
-      "auc_wavlm": 0.6276631617146917
+      "auc_wavlm": 0.6276631617146917,
+      "auc_egemaps": 0.6561598336770242
     },
     {
       "seed": 9,
@@ -114,14 +124,21 @@
       "age_patho": 35.083333333333336,
       "age_gap": 0.9240976645435239,
       "auc_age_only": 0.5623016648306061,
-      "auc_wavlm": 0.6195907169040498
+      "auc_wavlm": 0.6195907169040498,
+      "auc_egemaps": 0.6386102422154656
     }
   ],
   "mean_auc_age_only": 0.5534081876614521,
   "mean_auc_wavlm": 0.6226973978632836,
+  "mean_auc_egemaps": 0.6496268992171321,
   "mean_age_gap": 0.773179946363338,
   "mean_n_speakers": 613.2,
   "matching_worked": true,
-  "elapsed_s": 495.2,
-  "egemaps_skipped_reason": "cached eGeMAPS for svd covers only the 667-recording pilot slice (667x88), not the full corpus, so it could not be aligned to the matched subset. The earlier 'encoders_run' value was wrong: it was derived from the cache FILE EXISTING rather than from the arm producing a number."
+  "wavlm_minus_egemaps": -0.026929501353848462,
+  "wavlm_minus_egemaps_ci95": [
+    -0.031721271180321454,
+    -0.021512581036710512
+  ],
+  "ssl_beats_handcrafted": false,
+  "elapsed_s": 499.7
 }

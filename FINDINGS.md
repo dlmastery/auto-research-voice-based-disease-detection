@@ -414,7 +414,7 @@ corpus set. A headline model here must beat ~0.53, not 0.50.
 
 ---
 
-## F7 — With age MATCHED AWAY, WavLM still carries real acoustic signal (+0.069 over the residual age bar)
+## F7 — With age matched away, 88 handcrafted features BEAT a 1536-dim SSL model
 
 **Tier: EVALUATION for the cell that ran** (n = 10 × 5-fold speaker-disjoint, m = 9
 pre-registered). Judge-free. Artifact: `autoresearch_results/V1_ssl_vs_handcrafted.json`.
@@ -445,14 +445,34 @@ nearly uninformative.
 
 ### The result
 
-| predictor, on the matched subset | ROC-AUC |
-|---|---|
-| age only (the residual bar) | 0.5534 |
-| **WavLM-base+** | **0.6227** |
-| **margin above the residual age bar** | **+0.0693** [95% CI **+0.0598, +0.0789**] |
+| predictor, on the matched subset | ROC-AUC | margin above the residual age bar |
+|---|---|---|
+| age only (the residual bar) | 0.5534 | — |
+| WavLM-base+ (1536-dim SSL) | 0.6227 | +0.0693 [+0.0598, +0.0789] |
+| **eGeMAPS (88 handcrafted features)** | **0.6496** | **+0.0962** |
 
-**Positive in all 10 of 10 seeds.** This is the first evidence in this program that the
-audio itself carries pathology-relevant signal rather than demographics.
+**The registered claim is SUPPORTED, and not marginally.** `WavLM − eGeMAPS =
+**−0.0269**`, 95% CI **[−0.0317, −0.0215]** — excluding zero — and eGeMAPS wins in
+**10 of 10 seeds**. Measured against the residual age bar, 88 handcrafted features
+capture **39% more real signal** than a 1536-dimensional self-supervised model.
+
+Both encoders clear the residual age bar in all 10 of 10 seeds — the first evidence in
+this program that the audio itself carries pathology-relevant signal rather than
+demographics. **But the SSL model is the weaker of the two.**
+
+**My prediction was directionally right and quantitatively understated.** I predicted
+eGeMAPS would land *within noise* of WavLM. It did not land within noise — it won
+outright, with a CI excluding zero. Registered before the run, recorded as understated
+rather than reframed after the fact.
+
+**Converges with the 2026 literature from a different direction.** SpeechDx
+([arXiv:2606.17339](https://arxiv.org/abs/2606.17339), 27 tasks / 12 datasets) concluded
+that no current representation generalises reliably across clinical speech. This result
+is sharper and more specific: on a corpus where the confounds have been *measured* rather
+than assumed — age equalised to a 0.77-year gap, identity's contribution quantified at
+24–39% by F4 — a 2016-era handcrafted feature set beats a self-supervised transformer.
+Whatever WavLM's extra 1,448 dimensions were buying at 0.7438 unmatched, it was
+substantially demographics and identity, not pathology.
 
 **But read the size honestly.** WavLM fell from 0.7438 unmatched to **0.6227** matched.
 Roughly *half* of its headroom above chance disappeared when age was equalised — which is
@@ -460,21 +480,24 @@ exactly what F1, F3 and F4 predicted between them. The real, non-demographic, no
 signal in these embeddings is **AUC ≈ 0.62** — well above chance, far below the ~0.85 the
 literature reports on this corpus, and nowhere near clinical usefulness.
 
-### What did NOT run, and a bug in my own harness
+### A bug in my own harness, on the way here
 
-**The SSL-vs-handcrafted contrast — V1's actual registered question — did not run.** The
-cached eGeMAPS matrix for SVD covers only the **667-recording pilot slice** (667 × 88),
-not the full corpus, so it cannot be aligned to the matched subset. Full-corpus eGeMAPS
-extraction is required before the claim can be tested at all.
+The first V1 run reported only WavLM: the cached eGeMAPS covered just the 667-recording
+pilot slice, so it could not align to the matched subset. Full-corpus extraction
+(28,509 × 88, 0 unreadable) was needed and is now done — via a **resumable** extractor,
+after two non-resumable attempts were killed at 74% and 8.5% and discarded everything.
 
-Worse, **the artifact initially claimed eGeMAPS had run.** `encoders_run` was populated
+Worse, **that first artifact claimed eGeMAPS had run.** `encoders_run` was populated
 from *the cache file existing* rather than from *the arm producing a number*, so a
 silently-skipped arm was reported as an executed one. Fixed in both the script and the
 artifact, with the reason recorded rather than quietly overwritten. This is the same
 failure class as everything in `CLAUDE.md` §18.8: it did not crash, it produced a
 confident, well-formed, false field.
 
-**Scope:** one encoder (WavLM-base+) of three registered; one corpus of three; `m` kept
-at the pre-registered 9. **V1 is NOT closed.**
+**Scope:** two of three registered encoders (HeAR and Whisper-small-enc not extracted);
+one corpus of three (COUGHVID excluded per F2; Coswara's classifier is at chance, so it
+cannot host this contrast either). `m` kept at the pre-registered 9. The falsifier asks
+for ≥2 of 3 corpora, so **V1 is NOT formally closed** — but for the one corpus where the
+audio model demonstrably works, the answer is unambiguous.
 
 > Not a medical device. Internal QA pass — independent external review pending.
