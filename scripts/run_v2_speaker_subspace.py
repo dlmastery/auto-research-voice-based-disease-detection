@@ -69,7 +69,9 @@ RANKS = [int(x) for x in os.environ.get("V2_RANKS", "1,2,4,8,16,32,64").split(",
 REPEATS = int(os.environ.get("V2_REPEATS", "10"))
 FOLDS = int(os.environ.get("V2_FOLDS", "5"))
 FAMILY_M = 14          # pre-registered; NOT recomputed from what was actually run
-OUT = ROOT / "autoresearch_results" / "V2_speaker_subspace.json"
+OUT = ROOT / "autoresearch_results" / ("V2_speaker_subspace_SHUFFLE.json"
+                                       if os.environ.get("V2_SHUFFLE") == "1"
+                                       else "V2_speaker_subspace.json")
 PARTIAL = OUT.with_suffix(".partial.json")   # written after every repeat
 
 
@@ -199,6 +201,29 @@ def speaker_id_acc(X, spk, seed, n_way=60, min_recs=12) -> tuple[float, float]:
     return float((clf.predict(sc.transform(Xs[~tr])) == ss[~tr]).mean()), 1.0 / len(keep)
 
 
+def shuffle_labels(y: np.ndarray, spk: np.ndarray, seed: int) -> np.ndarray:
+    """Permute labels ACROSS SPEAKERS, keeping each speaker's label internally constant.
+
+    The negative control the impl-critic flagged as the highest-value missing check.
+    Every arm of this experiment shares one pipeline, so a systematic bug that inflated
+    all arms equally would leave D -- a *difference* -- looking perfectly healthy. Only
+    destroying the label-feature relationship can expose that, and a correct pipeline
+    must then return AUC ~ 0.5 on every arm.
+
+    Permuting per RECORDING would be the wrong control: a speaker's recordings would
+    get mixed labels, which is not a hypothesis this data can express and would depress
+    AUC for reasons unrelated to leakage. Permuting the SPEAKER->label map preserves the
+    real structure (one diagnosis per person, unequal recordings per person) and changes
+    only which person carries which diagnosis.
+    """
+    rng = np.random.default_rng(seed)
+    uniq = np.unique(spk)
+    spk_label = {s: y[spk == s][0] for s in uniq}
+    shuffled = rng.permutation([spk_label[s] for s in uniq])
+    m = dict(zip(uniq, shuffled))
+    return np.array([m[s] for s in spk])
+
+
 def main() -> None:
     t0 = time.time()
     d = load_svd()
@@ -206,9 +231,16 @@ def main() -> None:
     print(f"[data] {X.shape[0]:,} recordings x {X.shape[1]} dims, "
           f"{len(np.unique(spk)):,} speakers, {y.sum():,} pathological  <- {d['src'][:16]}")
 
+    if os.environ.get("V2_SHUFFLE") == "1":
+        y = shuffle_labels(y, spk, seed=int(os.environ.get("V2_SHUFFLE_SEED", "0")))
+        print("[SHUFFLE] labels permuted across speakers -- NEGATIVE CONTROL. "
+              "Every AUC below must land near 0.500; anything else means the pipeline "
+              "manufactures signal and no V2 number is trustworthy.")
+
     res = {"hypothesis": "V2 -- speaker-identity subspace ablation",
            "audited": "arXiv:2604.14354", "objective": "ROC-AUC vs clinical labels (JUDGE-FREE)",
-           "corpus": "svd", "backbone": "wavlm", "n_recordings": int(X.shape[0]),
+           "corpus": "svd", "backbone": "wavlm",
+           "shuffle_control": os.environ.get("V2_SHUFFLE") == "1", "n_recordings": int(X.shape[0]),
            "n_speakers": int(len(np.unique(spk))), "folds": FOLDS, "repeats": REPEATS,
            "family_m_preregistered": FAMILY_M, "ranks": RANKS, "rows": []}
 
