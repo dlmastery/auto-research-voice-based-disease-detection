@@ -661,6 +661,25 @@ def build_html() -> str:
 
     # ---------------- header ----------------
     A("<h1>Voice-Health Claim Audit &mdash; transparency dashboard</h1>")
+    A('<div class="panel" style="border-left:4px solid var(--ok)">'
+      "<h3 style='margin-top:0'>The result, in four steps</h3>"
+      "<p>Each step removes something the model was getting for free, and asks what "
+      "survives.</p>"
+      "<ol><li><strong>F1/F3</strong> — patient <strong>age alone</strong> reaches "
+      "<strong>0.8737</strong> rec-AUC; WavLM reaches 0.7438. The audio model loses to one "
+      "demographic variable.</li>"
+      "<li><strong>F4</strong> — projecting out the speaker-identity subspace costs WavLM "
+      "<em>more</em> AUC than removing <em>more</em> variance any other way: "
+      "<strong>24–39%</strong> of its discrimination is <em>who is speaking</em>.</li>"
+      "<li><strong>F7a</strong> — with age matched to a <strong>0.77-year</strong> gap, "
+      "age-only collapses <strong>0.8737 → 0.5534</strong>. The confound is genuinely "
+      "removed, not assumed away.</li>"
+      "<li><strong>F7b</strong> — on that matched subset <strong>eGeMAPS 0.6496 beats "
+      "WavLM 0.6227</strong> (CI [−0.032, −0.022], 10/10 seeds). "
+      "<strong>88 handcrafted features beat 1536 learned ones.</strong></li></ol>"
+      "<p>What survives once demographics and identity are stripped is "
+      "<strong>AUC ≈ 0.65</strong> — real, well above chance, far below the ~0.85 the "
+      "literature reports here, and nowhere near clinical usefulness.</p></div>")
     A('<p class="thesis">An autonomous, pre-registered audit harness that systematically '
       "re-tests published voice-health classification claims for speaker leakage, acquisition "
       "confounds, and cross-corpus collapse &mdash; publishing a transparent ledger of which "

@@ -144,9 +144,30 @@ A win that does not clear the confound bar is logged **NOT CLEARED**, not announ
 | Findings | **3** — F1 (age baseline), F2 (COUGHVID has no speaker ids), **F3 (certified)** |
 | Benchmark results | SVD measured at **full corpus**, 5-fold × 8 repeats, speaker-disjoint |
 | Corpora decoded | **SVD 28,509 recs / 1,679 speakers**, Coswara, COUGHVID |
-| Headline | **WavLM does not clear the age bar.** Audio 0.7438 vs. age-only **0.8737** rec-AUC → **NOT CLEARED** |
+| Headline | **Strip the confounds and a 2016 feature set beats a self-supervised transformer.** See the four-step arc below. |
 
 Nothing here is a clinical claim. This is not a medical device.
+
+### The result, in four steps
+
+Each step removes something the model was getting for free, and asks what survives.
+
+| step | finding | what it establishes |
+|---|---|---|
+| 1 | **F1/F3** — patient **age alone** reaches **0.8737** rec-AUC; WavLM reaches **0.7438** | the audio model loses to one demographic variable |
+| 2 | **F4** — projecting out the speaker-identity subspace costs WavLM **more** AUC than removing *more* variance any other way | **24–39%** of its discrimination is *who is speaking* |
+| 3 | **F7a** — with age matched to a **0.77-year** gap, age-only collapses **0.8737 → 0.5534** | the confound is genuinely removed, not assumed away |
+| 4 | **F7b** — on that matched subset **eGeMAPS 0.6496 > WavLM 0.6227**, CI [−0.032, −0.022], **10/10 seeds** | **88 handcrafted features beat 1536 learned ones** |
+
+What is left when demographics and identity are stripped out is **AUC ≈ 0.65** — real,
+well above chance, far below the ~0.85 the literature reports on this corpus, and
+nowhere near clinical usefulness. Whatever WavLM's extra 1,448 dimensions were buying
+at 0.7438, it was substantially age and identity rather than pathology.
+
+This converges with SpeechDx ([arXiv:2606.17339](https://arxiv.org/abs/2606.17339)) —
+"no current representation generalises reliably across clinical speech" — from a
+different direction, and more specifically: here the confounds are *measured* rather
+than assumed.
 
 ### F3 — the audio model loses to a single demographic variable
 
