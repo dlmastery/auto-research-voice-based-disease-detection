@@ -1,1 +1,9 @@
 file,reason
+1114-iau.nsp,session 1114 absent from SVD metadata -> no speaker_id
+2035-iau.nsp,session 2035 absent from SVD metadata -> no speaker_id
+2065-iau.nsp,session 2065 absent from SVD metadata -> no speaker_id
+713-i_n.nsp,NSPError: zero-length audio payload
+713-iau.nsp,NSPError: zero-length audio payload
+966-iau.nsp,session 966 absent from SVD metadata -> no speaker_id
+713-i_n.nsp,NSPError: zero-length audio payload
+713-iau.nsp,NSPError: zero-length audio payload

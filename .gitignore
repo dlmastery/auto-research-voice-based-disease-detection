@@ -12,3 +12,8 @@ data/**/*.mp3
 models/
 *.ckpt
 autoresearch_results/*_cache/
+
+# Derived embedding caches: regenerable from the manifest + backbone, and the
+# full-corpus WavLM cache is 151 MB (over GitHub's 100 MB file limit).
+# Reproduce with: python scripts/run_benchmark.py --corpus svd --backbone wavlm
+cache/
