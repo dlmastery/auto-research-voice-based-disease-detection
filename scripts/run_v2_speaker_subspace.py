@@ -84,6 +84,9 @@ def load_svd() -> dict:
             "y": (d["labels"] == "pathological").astype(int), "src": Path(cands[-1]).name}
 
 
+_SPK_BASIS: dict = {}   # (matrix, split) -> (sv, Vt); see below
+
+
 def speaker_subspace(X: np.ndarray, spk: np.ndarray, k: int) -> np.ndarray:
     """Top-k directions of the BETWEEN-SPEAKER scatter -- the identity subspace.
 
@@ -93,10 +96,17 @@ def speaker_subspace(X: np.ndarray, spk: np.ndarray, k: int) -> np.ndarray:
     each recording) keeps a 336-recording speaker from defining the subspace on their
     own.
     """
-    means = np.stack([X[spk == s].mean(0) for s in np.unique(spk)])
-    means = means - means.mean(0, keepdims=True)
-    # SVD of the speaker-mean matrix; right singular vectors span the identity subspace
-    _, sv, Vt = np.linalg.svd(means, full_matrices=False)
+    key = (id(X), len(spk))
+    if key not in _SPK_BASIS:
+        # The speaker-mean matrix and its SVD do NOT depend on k -- only the Vt[:k]
+        # slice does. Recomputing them per rank cost ~12s x 7 ranks x 10 repeats of
+        # pure waste in the first confirmatory run, which is most of why that run
+        # overran its estimate by 3x. Cache per (matrix, split).
+        means = np.stack([X[spk == s].mean(0) for s in np.unique(spk)])
+        means = means - means.mean(0, keepdims=True)
+        # right singular vectors of the speaker-mean matrix span the identity subspace
+        _SPK_BASIS[key] = np.linalg.svd(means, full_matrices=False)[1:]
+    sv, Vt = _SPK_BASIS[key]
     return Vt[:k].T, sv                                   # (d, k)
 
 
