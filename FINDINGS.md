@@ -216,3 +216,93 @@ level they are tied (0.8671 vs 0.8649, +0.002). The negative controls remain at 
    aggregator might help the audio side.
 3. This says nothing about whether voice *carries* pathology signal. It says these
    embeddings, on this corpus, do not beat knowing the patient's age.
+
+---
+
+## F4 — About a third of WavLM's disease discrimination is speaker IDENTITY, not pathology
+
+**Tier: EVALUATION** (n = 10 repeats × 5-fold speaker-disjoint, m = 14 pre-registered,
+min attainable paired p = 0.001953 ≤ Holm 0.05/14 = 0.003571). Judge-free.
+Artifact: `autoresearch_results/V2_speaker_subspace.json` · 4h15m CPU ·
+negative control: `V2_speaker_subspace_SHUFFLE.json`.
+
+Pre-registered as **V2** in `IDEA_TABLE.md` before the run. Audits Yeh et al., 2026,
+*Who is Speaking or Who is Depressed?* ([arXiv:2604.14354](https://arxiv.org/abs/2604.14354)),
+which established speaker leakage by **measurement**; the mechanistic test — estimate
+the identity subspace, project it out, re-measure — had not been run.
+
+### The result
+
+Estimate the identity subspace from between-speaker scatter (training speakers only,
+inside each fold), project it out, re-measure disease AUC. Compare against controls
+that remove **at least as much variance** a different way.
+
+| k | AUC, speaker subspace removed | AUC, top-k PCA removed | **D vs top-k [95% CI]** | variance removed spk / topk | identity as % of headroom |
+|---|---|---|---|---|---|
+| 1 | 0.6755 | 0.7320 | **+0.0565** [+0.056, +0.058] | 0.206 / 0.345 | 23.7% |
+| 2 | 0.6739 | 0.7302 | **+0.0564** [+0.055, +0.058] | 0.261 / 0.616 | 23.7% |
+| 4 | 0.6446 | 0.7189 | **+0.0743** [+0.072, +0.078] | 0.451 / 0.718 | 31.2% |
+| **8** | **0.6104** | 0.7025 | **+0.0921** [+0.090, +0.094] | 0.700 / 0.812 | **38.7%** |
+| 16 | 0.5959 | 0.6692 | **+0.0734** [+0.071, +0.076] | 0.819 / 0.879 | 30.8% |
+| 32 | 0.5661 | 0.6529 | **+0.0869** [+0.085, +0.088] | 0.893 / 0.926 | 36.5% |
+| 64 | 0.5398 | 0.6287 | **+0.0888** [+0.086, +0.091] | 0.940 / 0.959 | 37.3% |
+
+Full-embedding AUC **0.7382**; headroom above chance 0.2382. `D` is positive with a
+95% CI excluding zero at **all 7 ranks against both controls**.
+
+**The cleanest form of the result:** at *every* rank the speaker subspace removes
+**less** variance than top-k PCA (0.700 vs 0.812 at k=8) yet costs **more** AUC. Deleting
+more signal a different way hurts less. The damage is direction-specific, not a
+variance effect.
+
+### The negative control passes
+
+Permuting the speaker→label map (identical pipeline, `V2_SHUFFLE=1`) collapses
+everything to chance: full AUC **0.5074**, and D at k=8 falls from **+0.0921 to
++0.0016** — a 58× reduction. This matters more than usual here because **D is a
+difference**, so a systematic bug inflating every arm equally would have survived the
+whole table above untouched. Speaker-ID accuracy is unchanged by the shuffle
+(0.278 / 0.193), exactly as it should be — permuting *diagnoses* cannot affect *who is
+speaking*.
+
+### What this does NOT show — the falsifier did not fire
+
+The pre-registered falsifier required **two** conditions: D's CI excluding zero **and**
+`AUC_spk` collapsing to include 0.5. **Only the first holds.** At k=64 the projected AUC
+is 0.5398 — near chance, but the intervals are tight and it does not reach it. So the
+strong conclusion the falsifier would have licensed — *"the clinical-validity claim is
+falsified"* — **does not follow**. Identity is a large, direction-specific component of
+what this model uses. It is not the whole signal.
+
+Two pre-registered predictions also missed, recorded rather than quietly dropped:
+
+1. Predicted the control would drop **< 0.05**; top-k PCA dropped **0.069**. In fairness
+   to the prediction, it assumed a *random* control, and the control actually used is far
+   stricter — but the number missed and is reported as missed.
+2. **The manipulation check remains uninformative.** Predicted speaker-ID accuracy
+   ~0.90 → < 0.30; measured **0.278 → 0.193**. It cleared "< 0.30" only because it
+   started there. Mean-pooled WavLM-base+ is not an x-vector, and my prediction assumed
+   it was. **Consequence: the projection demonstrably removes something
+   direction-specific and identity-correlated, but "the subspace removed *is* the
+   identity subspace" is supported only weakly.** A stronger identity probe is the
+   obvious next step.
+
+### Composed with F3
+
+F3: at full corpus scale WavLM reaches rec-AUC **0.7438** while patient **age alone**
+reaches **0.8737** — the audio model does not clear the demographic bar. F4 adds that
+roughly **a third of the discrimination it does have is speaker identity**. The two
+together describe an audio representation that is beaten by a single demographic
+variable, and whose remaining margin is substantially *who is talking* rather than
+*what is wrong with them*.
+
+### Scope
+
+SVD only — the pre-registered family names SVD **and** Coswara, so half of it is
+unexecuted, and `m = 14` was deliberately kept rather than shrunk to the m = 7 actually
+run. One backbone (WavLM mean+std), one head (logistic regression); the audited paper
+claims identity reliance is a property of speech representations *in general*, which
+this single-representation result cannot establish.
+
+> Not a medical device. No diagnosis, no clinical claim.
+> Internal QA pass — independent external review pending.

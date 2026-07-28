@@ -89,8 +89,8 @@ does not relax it.
 | **m / n** | m = **14** (7 ranks k ∈ {1,2,4,8,16,32,64} × 2 corpora) · n = **10** → 0.001953 ≤ 0.05/14 = 0.003571 ✓ |
 | **Axis moved** | A9 (`subspace_projection`), with its mandatory A12 controls |
 | **Datasets** | SVD (≥ 2 vocalisations/speaker, 2,043 speakers) · Coswara (9 streams/participant). **COUGHVID is excluded** — no speaker identifiers, so the subspace cannot be estimated. |
-| **Cost** | Pure linear algebra on cached embeddings. Essentially free — this is the cheapest decisive hypothesis in the registry and is therefore **first** (see `PREREGISTRATION.md`). |
-| **Status** | **UNTESTED** |
+| **Cost** | Pure linear algebra on cached embeddings — but "free" was wrong: the confirmatory run took **4h15m** on CPU (21 `auc_cv` calls per repeat × 10 repeats on a 28,509 × 1536 matrix). Cheap in concept, not in wall-clock. |
+| **Status** | **RUN 2026-07-28 → [F4](FINDINGS.md). CLAIM SUPPORTED; FALSIFIER DID NOT FIRE.** D positive with CI excluding 0 at all 7 ranks against both controls, and at every rank the speaker subspace removes *less* variance than top-k PCA yet costs *more* AUC — identity accounts for **24–39%** of above-chance headroom. But the falsifier also required `AUC_spk` to include 0.5, and at k=64 it is 0.5398 — near chance, not chance. So identity is a large direction-specific component, **not the whole signal**, and the "clinical-validity falsified" conclusion does not follow. Shuffle control passes (D 0.0921 → 0.0016). Manipulation check remains WEAK (speaker-ID 0.278 → 0.193 vs a predicted 0.90 → <0.30). |
 
 ---
 
@@ -194,7 +194,7 @@ target-selection criterion.
 | id | axis | tier | m | n | min p | Holm 0.05/m | satisfiable | datasets | status |
 |---|---|---|---|---|---|---|---|---|---|
 | **V1** | A5 | EVALUATION | 9 | 10 | 0.001953 | 0.005556 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |
-| **V2** | A9 | EVALUATION | 14 | 10 | 0.001953 | 0.003571 | ✓ | SVD, Coswara | UNTESTED |
+| **V2** | A9 | EVALUATION | 14 | 10 | 0.001953 | 0.003571 | ✓ | SVD (Coswara unrun) | **CLAIM SUPPORTED, falsifier did NOT fire** — see F4 |
 | **V3** | A5 | EVALUATION | 42 | 12 | 0.000488 | 0.001190 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |
 | **V4** | A8 | EVALUATION | 6 | 10 | 0.001953 | 0.008333 | ✓ | Coswara↔COUGHVID, SVD→VOICED | UNTESTED |
 | **V5** | A12 | SCREENING (promotion pre-declared) | 3 | ≤3 → 10 | 0.001953 | 0.016667 | ✓ | SVD, Coswara, COUGHVID | UNTESTED |

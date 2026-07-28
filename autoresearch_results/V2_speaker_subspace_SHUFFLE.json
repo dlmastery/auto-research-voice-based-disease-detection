@@ -1,0 +1,73 @@
+{
+  "hypothesis": "V2 -- speaker-identity subspace ablation",
+  "audited": "arXiv:2604.14354",
+  "objective": "ROC-AUC vs clinical labels (JUDGE-FREE)",
+  "corpus": "svd",
+  "backbone": "wavlm",
+  "shuffle_control": true,
+  "n_recordings": 28509,
+  "n_speakers": 1679,
+  "folds": 5,
+  "repeats": 2,
+  "family_m_preregistered": 14,
+  "ranks": [
+    8,
+    16
+  ],
+  "rows": [
+    {
+      "k": 8,
+      "auc_speaker_removed": 0.5048711914678798,
+      "variance_removed_speaker": 0.7020569018530034,
+      "drop_from_full": 0.002515224018238893,
+      "auc_pca_topk_removed": 0.506472702387792,
+      "variance_removed_pca_topk": 0.8118218690850953,
+      "D_vs_pca_topk": 0.0016015109199120636,
+      "D_vs_pca_topk_ci95": [
+        0.0015255929322480766,
+        0.0016774289075760507
+      ],
+      "D_vs_pca_topk_excludes_zero": true,
+      "auc_var_matched_removed": 0.5064551690201445,
+      "variance_removed_var_matched": 0.7977249623982322,
+      "D_vs_var_matched": 0.0015839775522646926,
+      "D_vs_var_matched_ci95": [
+        0.00151341100268243,
+        0.0016545441018469553
+      ],
+      "D_vs_var_matched_excludes_zero": true,
+      "speaker_id_acc_after": 0.20656370656370657
+    },
+    {
+      "k": 16,
+      "auc_speaker_removed": 0.5021085679091768,
+      "variance_removed_speaker": 0.8199397267336581,
+      "drop_from_full": 0.005277847576941941,
+      "auc_pca_topk_removed": 0.502244757322996,
+      "variance_removed_pca_topk": 0.879091706209898,
+      "D_vs_pca_topk": 0.0001361894138191544,
+      "D_vs_pca_topk_ci95": [
+        -0.0009706085344379778,
+        0.0012429873620762866
+      ],
+      "D_vs_pca_topk_excludes_zero": false,
+      "auc_var_matched_removed": 0.5019712033570379,
+      "variance_removed_var_matched": 0.8742664219494173,
+      "D_vs_var_matched": -0.00013736455213891885,
+      "D_vs_var_matched_ci95": [
+        -0.0012078801047704646,
+        0.0009331510004926269
+      ],
+      "D_vs_var_matched_excludes_zero": false,
+      "speaker_id_acc_after": 0.19305019305019305
+    }
+  ],
+  "auc_full_mean": 0.5073864154861187,
+  "auc_full": [
+    0.5083358993896818,
+    0.5064369315825555
+  ],
+  "speaker_id_acc_full": 0.277992277992278,
+  "speaker_id_chance": 0.016666666666666666,
+  "elapsed_s": 963.0
+}
