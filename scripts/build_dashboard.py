@@ -758,6 +758,17 @@ def build_html() -> str:
     A('<p class="small muted">Every count in this section is recomputed at build time from '
       "<code>data/interim/svd/manifest.csv</code>; none is hand-entered.</p>")
     A("</div>")
+    # the full landscape lives on its own page -- it is too wide for this column
+    A('<div class="panel"><h3 style="margin-top:0">The rest of the field &rarr; '
+      '<a href="datasets.html">the dataset landscape</a></h3>'
+      "<p>SVD is one corpus of many. The companion page catalogues <strong>every dataset the "
+      "field uses to claim a disease can be heard in a voice</strong> &mdash; 25 corpora "
+      "across 7 disease families (larynx, Parkinson's, dementia, dysarthria, respiratory, "
+      "mental health, multi-phenotype), 8 of them released or audited in <strong>2026</strong> "
+      "&mdash; each scored on the question the published surveys do not ask: <em>could a "
+      "result on this dataset mean anything?</em> "
+      '<span class="small muted">Spoiler: 5 of the 25 can never carry a generalisation claim '
+      "at all.</span></p></div>")
 
     # ---------------- how to read ----------------
     A("<h2>How to read this</h2>")

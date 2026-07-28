@@ -70,6 +70,44 @@ The two secondary corpora are respiratory: **Coswara** (72 participants, 9 tasks
 breathing) and **COUGHVID** (13,535 cough clips, 720 COVID-19). COUGHVID ships **no speaker identifiers at
 all**, so it is permanently barred from carrying an evaluation claim here — see *Corpora* below.
 
+### The rest of the field
+
+SVD is one corpus of many. **[The dataset landscape](https://dlmastery.github.io/auto-research-voice-based-disease-detection/datasets.html)**
+catalogues every dataset the field uses to claim a disease can be heard in a voice — **25 corpora across 7
+disease families**, 8 of them released or audited in **2026** — each scored on the question the published
+surveys do not ask: *could a result on this dataset mean anything?*
+
+| family | mechanism | notable corpora |
+|---|---|---|
+| **Voice & larynx pathology** | the sound-producing organ itself changed — shortest causal chain, strongest evidence | SVD, **Bridge2AI-Voice v3.1** (2026), **RRP-Voice** (2026), VOICED, PVQD |
+| **Parkinson's & motor-neurological** | hypokinetic dysarthria appears early | PC-GITA, NeuroVoz, mPower, MDVR-KCL |
+| **Dementia, MCI & cognition** | language production degrades before motor speech | **PROCESS-2** (2026), ADReSS/ADReSSo/TAUKADIAL, **PARLO** (2026) |
+| **Dysarthria & motor speech** | direct motor impairment of articulation | **SAP** (524 participants, 415 h), TORGO, UASpeech |
+| **Respiratory & infectious** | airway obstruction changes cough/breath acoustics | Coswara, COUGHVID, **UK ONS** (67,842 PCR-referenced), ICBHI |
+| **Mental health** | prosody and pause structure shift with mood — weakest chain | DAIC-WOZ/E-DAIC, CMDC/ANDROIDS/MODMA, **Voice Biomarkers D&A** (2026) |
+| **Multi-phenotype** | what one voice sample carries across many conditions | **SpeechDx** (2026), HPP-Voice, **RespiraMFM** (2026), Voice EHR |
+
+Scored by what a result on each would be worth: **1 EVALUATION** · 9 SCREENING · 10 BLOCKED ·
+**5 that may NEVER carry a generalisation claim** (COUGHVID has no speaker ids; TORGO/UASpeech have 15–19
+speakers; the depression interview corpora classify the interviewer).
+
+**Three findings from that landscape are the empirical case for this whole program:**
+
+- **UK ONS / Turing** (67,842 individuals, *PCR-referenced* — the best labels in the field): AUC **0.846
+  unadjusted → 0.619 after matching on recruitment confounders**. The largest, cleanest respiratory study
+  ever run lost a quarter of its AUC to confounds.
+- **HPP-Voice** is the only large study in the table that reports a demographic baseline beside its headline
+  — and once it does, its best effect is **AUC 0.64 against a 0.57 bar**. That is what an honest voice-
+  phenotype effect size looks like.
+- **SpeechDx** ([arXiv:2606.17339](https://arxiv.org/abs/2606.17339), 27 tasks over 12 datasets, Jun 2026)
+  concludes that **no current representation generalises reliably across clinical speech** — converging with
+  this repository's F3 from an entirely different direction.
+
+And the closest published work to this program's *method*: **[arXiv:2605.23977](https://arxiv.org/abs/2605.23977)**
+(May 2026) audits five depression benchmarks and finds the official E-DAIC leaderboard is essentially noise —
+the best cross-validation configuration ranks **20th** on the official test, the test winner ranks **41st** by
+CV, and **top-3 overlap is zero**.
+
 ### Why this program exists
 
 Published SVD results report UAR in the mid-80s. But healthy volunteers in this corpus average 27 years old
