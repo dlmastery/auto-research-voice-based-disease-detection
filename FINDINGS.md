@@ -138,3 +138,66 @@ Note also what the confound row rules OUT: duration (0.459) and loudness (0.425)
    (wav2vec2, Whisper-encoder, HeAR) and poolings are untested.
 3. This says nothing about whether voice *carries* pathology signal — only that **these
    embeddings, on this corpus, at this n, do not beat age.**
+
+---
+
+## F3 — At FULL corpus scale (1,679 speakers), WavLM still does not clear the age bar
+
+**Supersedes F2's pilot numbers.** Same protocol, 34× the speakers.
+**Date:** 2026-07-27 · **Artifact:** `autoresearch_results/bench_svd_wavlm_mean_std.json`
+(config_hash `f267bc4b705e8645`) · **28,509 recordings / 1,679 speakers**
+(1,002 pathological / 677 healthy speakers), speaker-disjoint `GroupKFold`, 5 folds,
+scaler fit train-only inside each fold.
+
+### The measurement
+
+| model | rec-AUC | rec-UAR | spk-AUC | spk-UAR | ECE |
+|---|---|---|---|---|---|
+| logreg (WavLM) | 0.7386 | 0.6402 | 0.8665 | 0.6845 | 0.059 |
+| linsvm (WavLM) | 0.7375 | 0.6008 | **0.8676** | 0.5598 | 0.022 |
+| ens_rank3 | 0.7385 | 0.6702 | 0.8632 | 0.7678 | 0.164 |
+| **confound: age only** | **0.8744** | **0.8067** | 0.8645 | 0.7964 | 0.067 |
+| confound: age+sex | **0.8751** | **0.8136** | 0.8650 | 0.8055 | 0.075 |
+| confound: age+sex+duration+RMS | **0.8752** | 0.8142 | 0.8653 | 0.8045 | 0.074 |
+| confound: sex only | 0.5293 | 0.5000 | 0.5246 | 0.5000 | 0.000 |
+| confound: duration only | 0.4859 | 0.5000 | 0.4947 | 0.5000 | 0.010 |
+| confound: intensity (RMS) only | 0.5090 | 0.5000 | 0.5190 | 0.5000 | 0.006 |
+
+### Verdict: NOT CLEARED — and the gap WIDENED with more data
+
+- **Recording level:** age alone **0.8744** vs the best audio head **0.7386** — age wins
+  by **+0.136**. In the 49-speaker pilot this gap was +0.096; more data made it *larger*,
+  not smaller, which is the opposite of what a noise explanation predicts.
+- **Speaker level:** audio 0.8676 vs age 0.8645 — a margin of **+0.003**. Essentially tied.
+- **The negative controls hold:** duration (0.4859) and loudness (0.5090) sit at chance,
+  so the tell is specifically **age**, not recording length or level.
+
+### The observation that matters most
+
+**The published SVD benchmark is UAR 85.22** (arXiv:2410.10537). Patient **age alone**
+reaches **UAR 0.8067** at recording level, and age+sex **0.8136** — i.e. a model that
+hears nothing lands within a few points of the published headline, while our WavLM heads
+reach only 0.60–0.67.
+
+This does **not** prove any published result is wrong: the metric definitions, splits and
+preprocessing differ, and a proper audit must recompute a published pipeline under
+matched conditions (that is F1-a, still to run). But it does establish the bar. **Any
+voice-pathology claim on SVD that does not report its margin above a demographic
+baseline is uninterpretable**, because the demographic baseline is already close to the
+number being claimed.
+
+### Statistical status — NOT yet certifiable
+
+This run used 1 repeat, so `power R6: n_paired=1, m=3, min_p=1.000 vs Holm α=0.0167 →
+feasible=False`. Every head is labelled **UNDERPOWERED**. A repeat=8 run is in progress to
+clear the contract. The *direction* (age > audio at recording level by 0.136) is far too
+large to be a power artifact, but the precise margin is not yet certified.
+
+### Limitations
+
+1. One backbone (WavLM-base-plus), one pooling (mean+std), one layer. wav2vec2,
+   Whisper-encoder and HeAR are untested — a better representation may yet clear the bar.
+2. Speaker-level aggregation is a simple mean over a speaker's recordings; a better
+   aggregator might help the audio side.
+3. This says nothing about whether voice *carries* pathology signal. It says these
+   embeddings, on this corpus, do not beat knowing the patient's age.
