@@ -1059,6 +1059,11 @@ def build_html() -> str:
 
     # ---------------- hypotheses ----------------
     A("<h2>Hypothesis registry</h2>")
+    A('<p><a href="hypotheses/index.html"><strong>Per-hypothesis pages &rarr;</strong></a> '
+      "&mdash; each registered hypothesis has its own page carrying the claim, the "
+      "published result it audits, the pre-registered falsifier and predicted effect, and "
+      "the power arithmetic. The prediction is rendered whether or not a result exists, so "
+      "a reader can see what was promised <em>before</em> seeing what happened.</p>")
     A('<p class="small muted">Parsed from <code>IDEA_TABLE.md</code>. A hypothesis whose '
       "falsifier has not been <em>executed</em> is UNTESTED, never SUPPORTED (R7). "
       "Tier and family size are pre-registered in version control before the sweep; "

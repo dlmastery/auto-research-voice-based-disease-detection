@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V2 — Speaker-identity subspace ablation: how much of the &quot;disease&quot; signal is identity?</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:18px 22px;margin:14px 0}
+.panel h3{margin:0 0 8px;font-size:16px}
+.meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--panel2);text-align:left;padding:11px 13px;font-size:12px;
+letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.hit{color:var(--ok);font-weight:600}.miss{color:var(--bad);font-weight:600}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:22px}td,th{padding:9px 10px}}
+</style>
+</head><body><div class="wrap">
+<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
+<h1>V2 — Speaker-identity subspace ablation: how much of the &quot;disease&quot; signal is identity?</h1>
+<p class="sub"><span class="chip screen">SCREENING n=1</span> <span class="chip">`EVALUATION`</span> <span class="chip">axis A9 (`subspace_projection`), with its mandatory A12 controls</span></p>
+<div class="panel"><h3>The claim</h3><p>A large fraction of frozen-embedding disease discrimination lives in a low-rank speaker-identity subspace, and removing it collapses AUC further than a variance-matched random projection of the same rank does.</p></div>
+<div class="panel"><h3>The published claim it audits</h3><p>Yeh, Sun, Mahapatra, Chandra, Mower Provost, Sisman, 2026, <em>Who is Speaking or Who is Depressed? A Controlled Study of Speaker Leakage in Speech-Based Depression Detection</em> (<a href="https://arxiv.org/abs/2604.14354">arXiv:2604.14354</a>): speaker overlap significantly boosts performance, accuracy drops sharply on unseen speakers, and a DANN <strong>fails to close the gap</strong>; they conclude identity reliance is &quot;a property of current speech representations rather than a model-specific limitation.&quot; That paper establishes the effect by <em>measurement</em>. The mechanistic test — estimate the identity subspace, project it out, re-measure — has not been run, and their DANN result predicts it will be hard to remove.</p></div>
+<div class="panel"><h3>Pre-registered falsifier</h3><p>Two-sided, both pre-registered. <strong>(a)</strong> If projecting out the rank-k speaker subspace collapses disease AUC toward chance while a <strong>variance-matched</strong> same-rank random projection does not — i.e. <code>D(k) = AUC_rand(k) − AUC_spk(k)</code> has a Holm-corrected 95% CI excluding 0 and <code>AUC_spk(k)</code>&#x27;s CI includes 0.5 — the clinical-validity claim for that model/dataset pair is falsified. <strong>(b)</strong> Conversely, if <code>D(k)</code> is within the noise band for all k while <code>AUC_spk(k)</code> stays well above chance, the <em>hypothesis</em> is falsified and the audited result is <strong>strengthened</strong> — that becomes the positive control the field currently lacks.</p></div>
+<div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>At k = 16: <code>AUC_spk</code> drops <strong>0.10–0.25</strong> from <code>AUC_full</code>; the variance-matched random control drops <strong>&lt; 0.05</strong>; so <code>D(16)</code> ∈ <strong>[0.06, 0.22]</strong>, positive. Manipulation check: speaker-verification accuracy on the projected embeddings falls from ~0.90 to <strong>&lt; 0.30</strong>.</p></div>
+<h2>Power and scope</h2>
+<div class="tablewrap"><table><tbody>
+<tr><td class="muted">family size m / seeds n</td><td>m = <strong>14</strong> (7 ranks k ∈ {1,2,4,8,16,32,64} × 2 corpora) · n = <strong>10</strong> → 0.001953 ≤ 0.05/14 = 0.003571 ✓</td></tr>
+<tr><td class="muted">datasets</td><td>SVD (≥ 2 vocalisations/speaker, 2,043 speakers) · Coswara (9 streams/participant). <strong>COUGHVID is excluded</strong> — no speaker identifiers, so the subspace cannot be estimated.</td></tr>
+<tr><td class="muted">cost</td><td>Pure linear algebra on cached embeddings. Essentially free — this is the cheapest decisive hypothesis in the registry and is therefore <strong>first</strong> (see <code>PREREGISTRATION.md</code>).</td></tr>
+<tr><td class="muted">registry status</td><td><strong>UNTESTED</strong></td></tr>
+</tbody></table></div>
+<h2>Measured result</h2>
+<div class="panel"><p><span class="chip screen">SCREENING</span> This artifact has <strong>n = 1</strong> repeats. Under R6 that cannot reach the Holm-corrected threshold for this hypothesis' pre-registered family (m = 14), so nothing below may be reported as a result, a win, or a null. It is shown because a visible screening number is more honest than a blank page.</p></div>
+<p class="meta">Artifact <code>autoresearch_results/V2_speaker_subspace.json</code> &middot; 28,509 recordings / 1,679 speakers &middot; 1 repeats &times; 5-fold speaker-disjoint &middot; objective ROC-AUC vs clinical labels (JUDGE-FREE)</p>
+<div class="panel"><h3 style="margin-top:0">Baseline</h3><p>Full-embedding disease AUC <strong>0.7372</strong>. Speaker-ID accuracy on unprojected embeddings <strong>0.2780</strong> (chance 0.0167).</p></div>
+<div class="tablewrap"><table><thead><tr><th>rank k</th><th>AUC after removing<br>SPEAKER subspace</th><th>AUC after removing<br>top-k PCA</th><th>AUC after removing<br>variance-matched</th><th>D vs top-k PCA [95% CI]</th><th>variance removed<br>spk / topk / matched</th><th>speaker-ID<br>after</th></tr></thead><tbody>
+<tr><td class="num"><strong>16</strong></td><td class="num">0.6035</td><td class="num">0.6739</td><td class="num">0.6782</td><td class="num hit">+0.0704 <span class="small muted">[0.070, 0.070]</span></td><td class="num small muted">0.819 / 0.879 / 0.874</td><td class="num">0.193</td></tr>
+</tbody></table></div>
+<p class="small muted">Both controls are built from the data's own principal axes and remove <em>at least as much variance</em> as the speaker subspace, so a positive D cannot be explained by "more signal was deleted". A uniformly random subspace was tried first and rejected: at k=16 it reached only 0.350 of the variance against the speaker subspace's 0.818, which would have compared two different-sized interventions.</p>
+<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p><strong>Not a medical device.</strong> Internal QA pass — independent external review pending.</p></footer></div></body></html>

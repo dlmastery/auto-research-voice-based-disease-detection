@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V6 — Preprocessing-fit leakage is corpus-specific and cannot be assumed small</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:18px 22px;margin:14px 0}
+.panel h3{margin:0 0 8px;font-size:16px}
+.meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--panel2);text-align:left;padding:11px 13px;font-size:12px;
+letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.hit{color:var(--ok);font-weight:600}.miss{color:var(--bad);font-weight:600}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:22px}td,th{padding:9px 10px}}
+</style>
+</head><body><div class="wrap">
+<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
+<h1>V6 — Preprocessing-fit leakage is corpus-specific and cannot be assumed small</h1>
+<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">`EVALUATION`</span> <span class="chip">axis A4 (preprocessing-fit scope), A3 pinned at `speaker_disjoint`</span></p>
+<div class="panel"><h3>The claim</h3><p>The inflation from fitting the scaler/normaliser before splitting varies by an order of magnitude across corpora, so &quot;we scaled before splitting but it&#x27;s a small effect&quot; is not defensible on an unmeasured corpus.</p></div>
+<div class="panel"><h3>The published claim it audits</h3><p><em>Feature scaling induced data leakage quantification in machine learning-based voice pathology detection</em>, <em>Applied Soft Computing</em> (<code>S1568494626007970</code>): 1,000 repetitions per configuration; effect <strong>−0.14 to +0.14 pp on SVD</strong> but <strong>−8.3 to +7.8 pp on VOICED</strong>. Leakage can <em>degrade</em> as well as inflate. This is a published measurement on two corpora; the audited proposition is its generalisation to the corpora this program actually uses, and to <em>embedding</em> features rather than handcrafted ones.</p></div>
+<div class="panel"><h3>Pre-registered falsifier</h3><p>If the <code>fit_on_all</code> − <code>fit_per_fold</code> AUC difference has a 95% CI contained within ±0.01 AUC on <strong>all</strong> of SVD, Coswara, COUGHVID for <strong>both</strong> eGeMAPS and a frozen SSL representation, the &quot;corpus-specific magnitude&quot; claim is falsified for this pipeline family and preprocessing scope can be de-prioritised as an audit axis.</p></div>
+<div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>Effect <strong>&lt; 0.01 AUC on SVD</strong> (reproducing the published near-null) and <strong>&gt; 0.03 AUC on at least one</strong> of Coswara/COUGHVID; sign not predicted (the published result shows both directions).</p></div>
+<h2>Power and scope</h2>
+<div class="tablewrap"><table><tbody>
+<tr><td class="muted">family size m / seeds n</td><td>m = <strong>6</strong> (3 corpora × 2 representations) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td></tr>
+<tr><td class="muted">datasets</td><td>SVD · Coswara · COUGHVID</td></tr>
+<tr><td class="muted">cost</td><td>Free — re-fits a scaler on cached features.</td></tr>
+<tr><td class="muted">registry status</td><td><strong>UNTESTED</strong></td></tr>
+</tbody></table></div>
+<h2>Measured result</h2>
+<div class="panel"><p><span class="chip pend">UNTESTED</span> No artifact exists for this hypothesis yet. Under R7 a hypothesis whose falsifier has not been <em>executed</em> is UNTESTED and is never reported as supported. This page exists so that the prediction above is on the record <em>before</em> any result is, and so the debt is visible rather than absent.</p></div>
+<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p><strong>Not a medical device.</strong> Internal QA pass — independent external review pending.</p></footer></div></body></html>
