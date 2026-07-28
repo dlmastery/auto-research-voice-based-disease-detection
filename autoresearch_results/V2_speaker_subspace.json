@@ -1,0 +1,47 @@
+{
+  "hypothesis": "V2 -- speaker-identity subspace ablation",
+  "audited": "arXiv:2604.14354",
+  "objective": "ROC-AUC vs clinical labels (JUDGE-FREE)",
+  "corpus": "svd",
+  "backbone": "wavlm",
+  "n_recordings": 28509,
+  "n_speakers": 1679,
+  "folds": 5,
+  "repeats": 1,
+  "family_m_preregistered": 14,
+  "ranks": [
+    16
+  ],
+  "rows": [
+    {
+      "k": 16,
+      "auc_speaker_removed": 0.6034931359580961,
+      "variance_removed_speaker": 0.8188081512677683,
+      "drop_from_full": 0.13367330877989858,
+      "auc_pca_topk_removed": 0.6738568005979713,
+      "variance_removed_pca_topk": 0.8786077490505722,
+      "D_vs_pca_topk": 0.0703636646398752,
+      "D_vs_pca_topk_ci95": [
+        0.0703636646398752,
+        0.0703636646398752
+      ],
+      "D_vs_pca_topk_excludes_zero": true,
+      "auc_var_matched_removed": 0.6781878754980151,
+      "variance_removed_var_matched": 0.8737716055797473,
+      "D_vs_var_matched": 0.07469473953991901,
+      "D_vs_var_matched_ci95": [
+        0.07469473953991901,
+        0.07469473953991901
+      ],
+      "D_vs_var_matched_excludes_zero": true,
+      "speaker_id_acc_after": 0.19305019305019305
+    }
+  ],
+  "auc_full_mean": 0.7371664447379946,
+  "auc_full": [
+    0.7371664447379946
+  ],
+  "speaker_id_acc_full": 0.277992277992278,
+  "speaker_id_chance": 0.016666666666666666,
+  "elapsed_s": 295.9
+}
