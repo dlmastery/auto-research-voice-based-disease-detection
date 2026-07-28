@@ -1,21 +1,21 @@
 {
   "corpus": "svd",
-  "files_found": 667,
-  "files_decoded": 667,
-  "files_failed": 0,
-  "excluded_no_speaker_id": 0,
+  "files_found": 61178,
+  "files_decoded": 61170,
+  "files_failed": 8,
+  "excluded_no_speaker_id": 4,
   "complete": true,
   "incomplete_reason": "",
-  "total_duration_s": 2685.2,
-  "n_speakers": 49,
-  "n_sessions": 49,
+  "total_duration_s": 218352.22,
+  "n_speakers": 1679,
+  "n_sessions": 2042,
   "label_counts": {
-    "healthy": 387,
-    "pathological": 280
+    "pathological": 41653,
+    "healthy": 19517
   },
   "speaker_id_provenance": {
-    "participant": 667
+    "participant": 61170
   },
   "speaker_disjoint_split_possible": true,
-  "duplicate_audio_sha256": 17
+  "duplicate_audio_sha256": 33262
 }
