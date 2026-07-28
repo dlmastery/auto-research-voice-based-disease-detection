@@ -70,6 +70,7 @@ REPEATS = int(os.environ.get("V2_REPEATS", "10"))
 FOLDS = int(os.environ.get("V2_FOLDS", "5"))
 FAMILY_M = 14          # pre-registered; NOT recomputed from what was actually run
 OUT = ROOT / "autoresearch_results" / "V2_speaker_subspace.json"
+PARTIAL = OUT.with_suffix(".partial.json")   # written after every repeat
 
 
 def load_svd() -> dict:
@@ -224,7 +225,7 @@ def main() -> None:
         _, sv, Vt = np.linalg.svd(Xc, full_matrices=False)
         frac = (sv ** 2) / (sv ** 2).sum()
         tot = (Xc ** 2).sum()
-        print(f"  [repeat {s}] train speakers={len(tr_spk)} recs={m_tr.sum():,}")
+        print(f"  [repeat {s}] train speakers={len(tr_spk)} recs={m_tr.sum():,}", flush=True)
 
         for k in RANKS:
             B, _ = speaker_subspace(Xtr, spk[m_tr], k)
@@ -236,6 +237,17 @@ def main() -> None:
                 C, v = ctrl[nm]
                 acc[k][key].append(auc_cv(project_out(X, C), y, spk, seed=s))
                 acc[k][f"v_{key if key!='matched' else 'match'}"].append(v)
+
+        # CHECKPOINT after every repeat. This run took ~2.5 h and wrote nothing until
+        # it finished, so a crash at repeat 9 would have discarded nine repeats of
+        # completed work and left no way to tell how far it had got (stdout is
+        # block-buffered when redirected, so the log was empty too). A long job that
+        # cannot be resumed or observed is a long job that will eventually be re-run
+        # from zero.
+        PARTIAL.write_text(json.dumps(
+            {"completed_repeats": s + 1, "of": REPEATS, "ranks": RANKS,
+             "acc": {str(kk): vv for kk, vv in acc.items()}}, indent=2), encoding="utf-8")
+        print(f"  [repeat {s}] checkpointed -> {PARTIAL.name}", flush=True)
 
     for k in RANKS:
         a = acc[k]
