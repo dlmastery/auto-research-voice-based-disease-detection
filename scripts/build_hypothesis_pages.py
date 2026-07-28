@@ -90,6 +90,16 @@ def md(s: str) -> str:
     return s
 
 
+def tier_label(s: str) -> str:
+    """The one-word tier for a chip. The registry's `tier` cell is prose for some
+    hypotheses (V5 carries its whole promotion condition there), and a chip must hold a
+    label, not a paragraph -- the full text is rendered separately, through md()."""
+    for word in ("EVALUATION", "SCREENING"):
+        if word in s.upper():
+            return word
+    return "?"
+
+
 def parse_hypotheses() -> list[dict]:
     """Pull each `#### Vn -- title` block and its key/value table out of IDEA_TABLE.md."""
     text = IDEAS.read_text(encoding="utf-8")
@@ -188,7 +198,7 @@ def build_page(h: dict, result: dict | None) -> str:
         '<a href="index.html">all hypotheses</a></p>')
     add(f"<h1>{esc(h['id'])} — {esc(h['title'])}</h1>")
     add(f'<p class="sub">{chip} '
-        f'<span class="chip">{esc(f.get("tier", "?"))}</span> '
+        f'<span class="chip">{esc(tier_label(f.get("tier", "?")))}</span> '
         f'<span class="chip">axis {esc(f.get("axis moved", "?"))}</span></p>')
 
     for key, label in (("claim", "The claim"), ("audited claim", "The published claim it audits"),
@@ -200,7 +210,8 @@ def build_page(h: dict, result: dict | None) -> str:
 
     add("<h2>Power and scope</h2>")
     add('<div class="tablewrap"><table><tbody>')
-    for key, label in (("m / n", "family size m / seeds n"), ("datasets", "datasets"),
+    for key, label in (("tier", "tier (as registered)"),
+                       ("m / n", "family size m / seeds n"), ("datasets", "datasets"),
                        ("cost", "cost"), ("status", "registry status")):
         if key in f:
             add(f'<tr><td class="muted">{label}</td><td>{md(f[key])}</td></tr>')
@@ -262,7 +273,7 @@ def main() -> None:
         idx.append(f'<tr><td><a href="{h["id"]}.html"><strong>{esc(h["id"])}</strong></a><br>'
                    f'<span class="small muted">{esc(h["title"])[:70]}</span></td>'
                    f'<td class="small">{md(f.get("claim", ""))[:260]}</td>'
-                   f'<td class="small">{esc(f.get("tier", "?"))}</td>'
+                   f'<td class="small">{esc(tier_label(f.get("tier", "?")))}</td>'
                    f'<td class="small num">{md(f.get("m / n", "?"))}</td>'
                    f"<td>{st}</td></tr>")
     idx += ["</tbody></table></div>",
@@ -270,8 +281,23 @@ def main() -> None:
             "</div></body></html>"]
     (OUT / "index.html").write_text("\n".join(idx), encoding="utf-8")
 
+    # BUILD-TIME GATE. The dashboard mandate forbids literal markdown reaching the page,
+    # and a check that must be remembered is a check that will eventually be skipped.
+    # This one caught a chip rendering V5's entire tier paragraph, asterisks and all,
+    # because chips bypass md(). Fail loudly rather than ship a page with syntax showing.
+    bad = []
+    for f in sorted(OUT.glob("*.html")):
+        html_text = f.read_text(encoding="utf-8")
+        for pat in (r"\*\*[^*]+\*\*", r"\|---", r"(?m)^#{2,}\s"):
+            hit = re.search(pat, html_text)
+            if hit:
+                bad.append(f"{f.name}: {hit.group(0)[:60]!r}")
+    if bad:
+        sys.exit("FATAL: literal markdown leaked into generated HTML:\n  " + "\n  ".join(bad))
+
     print(f"=== hypothesis pages built ===\n  {OUT}")
-    print(f"  {len(hyps)} hypotheses, {n_tested} with a result on disk")
+    print(f"  {len(hyps)} hypotheses, {n_tested} at EVALUATION tier")
+    print(f"  markdown-leak gate: clean across {len(list(OUT.glob('*.html')))} pages")
 
 
 if __name__ == "__main__":

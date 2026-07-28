@@ -44,13 +44,14 @@ color:var(--muted);font-size:13px}
 </head><body><div class="wrap">
 <p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
 <h1>V7 — The Clever-Hans silence shortcut beyond the Pitt corpus</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">`EVALUATION`</span> <span class="chip">axis A5 (representation → confound-only feature sets), which is also the `AUC_conf_max` battery of `COMPOSITE.md` §3</span></p>
+<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A5 (representation → confound-only feature sets), which is also the `AUC_conf_max` battery of `COMPOSITE.md` §3</span></p>
 <div class="panel"><h3>The claim</h3><p>Non-phonatory signal alone (silence/pause structure, recording-level duration and intensity statistics) achieves a substantial fraction of headline performance on voice-health corpora outside the one where the effect was first documented.</p></div>
 <div class="panel"><h3>The published claim it audits</h3><p>Liu, Feng, Yuan, Ling, Interspeech 2024, <em>Clever Hans Effect Found in Automatic Detection of Alzheimer&#x27;s Disease through Speech</em> (<a href="https://arxiv.org/abs/2406.07410">arXiv:2406.07410</a>): <strong>near-100% AD detection accuracy from silent segments alone</strong> in the Pitt corpus, dropping to ~80% on other datasets or preprocessed Pitt. The audited proposition is the implicit assumption that this is a Pitt-specific artifact. <code>audits/NOVELTY_CRITIQUE.md</code> §d.3 warns that re-deriving known Pitt/DAIC-WOZ results is redundant — <strong>so this hypothesis deliberately targets corpora that have not been checked</strong>, and Pitt itself is DUA-gated for us anyway.</p></div>
 <div class="panel"><h3>Pre-registered falsifier</h3><p>If <code>silence_only</code> and <code>duration+intensity_only</code> baselines both score <strong>&lt; 0.60 AUC</strong> on all of SVD, Coswara and COUGHVID under <code>A3 = speaker_disjoint</code>, the generalisation claim is falsified and the shortcut is confirmed Pitt-specific for this corpus set.</p></div>
 <div class="panel"><h3>Predicted effect (recorded before the run)</h3><p><code>silence_only</code> AUC ∈ <strong>[0.55, 0.70]</strong> on Coswara (crowd-recorded, heterogeneous protocol) and ∈ <strong>[0.50, 0.60]</strong> on SVD (controlled studio protocol, sustained vowels) — i.e. the shortcut is predicted to scale with acquisition heterogeneity, not with disease.</p></div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
+<tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>6</strong> (3 corpora × 2 shortcut feature sets) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>SVD · Coswara · COUGHVID</td></tr>
 <tr><td class="muted">cost</td><td>CPU-only; VAD + functionals.</td></tr>

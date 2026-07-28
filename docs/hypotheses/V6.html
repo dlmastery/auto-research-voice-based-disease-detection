@@ -44,13 +44,14 @@ color:var(--muted);font-size:13px}
 </head><body><div class="wrap">
 <p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
 <h1>V6 — Preprocessing-fit leakage is corpus-specific and cannot be assumed small</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">`EVALUATION`</span> <span class="chip">axis A4 (preprocessing-fit scope), A3 pinned at `speaker_disjoint`</span></p>
+<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A4 (preprocessing-fit scope), A3 pinned at `speaker_disjoint`</span></p>
 <div class="panel"><h3>The claim</h3><p>The inflation from fitting the scaler/normaliser before splitting varies by an order of magnitude across corpora, so &quot;we scaled before splitting but it&#x27;s a small effect&quot; is not defensible on an unmeasured corpus.</p></div>
 <div class="panel"><h3>The published claim it audits</h3><p><em>Feature scaling induced data leakage quantification in machine learning-based voice pathology detection</em>, <em>Applied Soft Computing</em> (<code>S1568494626007970</code>): 1,000 repetitions per configuration; effect <strong>−0.14 to +0.14 pp on SVD</strong> but <strong>−8.3 to +7.8 pp on VOICED</strong>. Leakage can <em>degrade</em> as well as inflate. This is a published measurement on two corpora; the audited proposition is its generalisation to the corpora this program actually uses, and to <em>embedding</em> features rather than handcrafted ones.</p></div>
 <div class="panel"><h3>Pre-registered falsifier</h3><p>If the <code>fit_on_all</code> − <code>fit_per_fold</code> AUC difference has a 95% CI contained within ±0.01 AUC on <strong>all</strong> of SVD, Coswara, COUGHVID for <strong>both</strong> eGeMAPS and a frozen SSL representation, the &quot;corpus-specific magnitude&quot; claim is falsified for this pipeline family and preprocessing scope can be de-prioritised as an audit axis.</p></div>
 <div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>Effect <strong>&lt; 0.01 AUC on SVD</strong> (reproducing the published near-null) and <strong>&gt; 0.03 AUC on at least one</strong> of Coswara/COUGHVID; sign not predicted (the published result shows both directions).</p></div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
+<tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>6</strong> (3 corpora × 2 representations) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>SVD · Coswara · COUGHVID</td></tr>
 <tr><td class="muted">cost</td><td>Free — re-fits a scaler on cached features.</td></tr>

@@ -44,13 +44,14 @@ color:var(--muted);font-size:13px}
 </head><body><div class="wrap">
 <p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
 <h1>V4 — Does calibration degrade *with* distribution shift, or independently of it?</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">`EVALUATION`</span> <span class="chip">axis A8 (calibration), with A1 corpus-pairing as the pre-registered shift condition</span></p>
+<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A8 (calibration), with A1 corpus-pairing as the pre-registered shift condition</span></p>
 <div class="panel"><h3>The claim</h3><p>Calibration error does <strong>not</strong> track AUC collapse under corpus shift, so model confidence is unusable as an out-of-domain detector.</p></div>
 <div class="panel"><h3>The published claim it audits</h3><p>Kafentzis &amp; Selisios, 2026, <em>Tuberculosis Screening from Cough Audio: Baseline Models, Clinical Variables, and Uncertainty Quantification</em> (<a href="https://arxiv.org/abs/2601.07969">arXiv:2601.07969</a>, <em>Sensors</em> 26(4):1223) introduces uncertainty quantification for cough screening and motivates it by the field&#x27;s protocol heterogeneity. Separately, de Brito, de Souza, Gauy, Finger, Candido Junior, 2025, <em>Fine-tuning Pre-trained Audio Models for COVID-19 Detection</em> (<a href="https://arxiv.org/abs/2511.14939">arXiv:2511.14939</a>) documents cross-dataset AUC collapse to <strong>0.43–0.68</strong>. <strong>Nobody reports cross-corpus ECE / Brier decomposition</strong> — the implicit assumption that uncertainty flags shift is untested.</p></div>
 <div class="panel"><h3>Pre-registered falsifier</h3><p>Measure ECE, Brier, and reliability curves within- and cross-corpus on COUGHVID↔Coswara (both directions) and on SVD→VOICED. <strong>If ECE stays flat within its own seed noise band while AUC falls from ~0.80 to ~0.55</strong>, confidence is falsified as a shift detector — a negative result with direct deployment consequences. Raw and temperature-scaled variants reported separately.</p></div>
 <div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>AUC falls <strong>0.18–0.30</strong> cross-corpus; raw ECE rises only <strong>0.00–0.04</strong>, i.e. inside or barely outside its noise band. Temperature scaling fitted in-domain <strong>worsens</strong> cross-corpus ECE by <strong>0.02–0.08</strong>.</p></div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
+<tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>6</strong> (3 corpus pairings × {raw, temperature-scaled}) · n = <strong>10</strong> → 0.001953 ≤ 0.05/6 = 0.008333 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>Coswara ↔ COUGHVID · SVD → VOICED</td></tr>
 <tr><td class="muted">cost</td><td>Free once predictions exist; reuses the V1/V3 runs.</td></tr>

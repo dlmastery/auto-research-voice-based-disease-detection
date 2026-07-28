@@ -44,13 +44,14 @@ color:var(--muted);font-size:13px}
 </head><body><div class="wrap">
 <p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
 <h1>V1 — &quot;SSL beats handcrafted features&quot; may be an artifact of leaky protocols</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">`EVALUATION`</span> <span class="chip">axis A5 (representation), with A3 pinned at the strict value; the *leaky* comparison at A3 = `random_recording` is the paired reference condition</span></p>
+<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A5 (representation), with A3 pinned at the strict value; the *leaky* comparison at A3 = `random_recording` is the paired reference condition</span></p>
 <div class="panel"><h3>The claim</h3><p>Under simultaneously speaker-disjoint <em>and</em> demographically balanced splits, frozen SSL/health embeddings do not reliably beat eGeMAPS.</p></div>
 <div class="panel"><h3>The published claim it audits</h3><p>SpeechDx ranks Whisper-enc (MRR 0.44) &gt; Qwen3-TTS-Tokenizer (0.40) &gt; WavLM (0.38) and states &quot;no current representation generalizes reliably across the clinical speech landscape&quot; — Bhalla, Kieu, Merchant, de Lara, Mariakakis, 2026, <em>SpeechDx: A Multi-Task Benchmark for Clinical Speech AI</em> (<a href="https://arxiv.org/abs/2606.17339">arXiv:2606.17339</a>). The audited proposition is the field&#x27;s <em>derived</em> habit of treating SSL &gt; handcrafted as settled; SpeechDx itself already qualifies it, and the head-to-head against eGeMAPS under both controls simultaneously has not been run with seed statistics.</p></div>
 <div class="panel"><h3>Pre-registered falsifier</h3><p>If eGeMAPS lands <strong>within 2σ_seed</strong> of the best of {HeAR, WavLM-base+, Whisper-small-enc} on <strong>≥ 2 of 3 corpora</strong> under <code>A3 = speaker_disjoint + demographically_matched</code>, <code>A4 = fit_per_fold</code>, the &quot;SSL wins&quot; claim is falsified for this task family.</p></div>
 <div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>eGeMAPS trails the best SSL encoder by <strong>0.02–0.06 AUC</strong> on SVD (a real but small gap) and by <strong>&lt; 0.02</strong> — i.e. inside the noise band — on Coswara and COUGHVID. Direction: the gap <em>shrinks</em> by ≥ 0.03 AUC relative to the same comparison under <code>A3 = random_recording</code>.</p></div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
+<tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>9</strong> (3 encoders × 3 corpora, each vs eGeMAPS) · n = <strong>10</strong> → 0.001953 ≤ 0.05/9 = 0.005556 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>SVD · Coswara · COUGHVID</td></tr>
 <tr><td class="muted">cost</td><td>openSMILE is CPU-only; embeddings extracted once and cached. No GPU beyond one extraction pass per encoder.</td></tr>

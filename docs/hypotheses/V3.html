@@ -44,13 +44,14 @@ color:var(--muted);font-size:13px}
 </head><body><div class="wrap">
 <p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
 <h1>V3 — Where does health-specific pretraining actually cross general-purpose pretraining?</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">`EVALUATION`</span> <span class="chip">axis A5 (representation), with training-set size as the pre-registered sweep parameter</span></p>
+<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A5 (representation), with training-set size as the pre-registered sweep parameter</span></p>
 <div class="panel"><h3>The claim</h3><p>Health-acoustic pretraining buys sample-efficiency, not ceiling: HeAR leads at small labelled-set size and is overtaken by Whisper-enc as n grows.</p></div>
 <div class="panel"><h3>The published claim it audits</h3><p>Two results in apparent tension. (i) SpeechDx (<a href="https://arxiv.org/abs/2606.17339">arXiv:2606.17339</a>) ranks general encoders above domain-specific ones on average. (ii) Sanap, Desikan, Lobaton, 2026, <em>Beyond Classification: A Cough Regression Benchmark for Respiratory Acoustic Foundation Models</em> (<a href="https://arxiv.org/abs/2606.15436">arXiv:2606.15436</a>): HeAR and M2D+Resp reach near-full performance at <strong>50</strong> samples where OPERA needs <strong>400</strong>. Both can be true only if the crossover exists — and it has never been plotted head-to-head.</p></div>
 <div class="panel"><h3>Pre-registered falsifier</h3><p>Sweep labelled-set size n_train ∈ {25, 50, 100, 200, 400, 800, all}, subject-disjoint. <strong>If HeAR never crosses Whisper-enc at any n_train on any of the 3 tasks</strong> (Holm-corrected), the &quot;health pretraining is the right prior&quot; claim is falsified and reduces to a low-data convenience argument. If HeAR wins low and loses high, the crossover point is the deliverable.</p></div>
 <div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>HeAR leads by <strong>0.04–0.10 AUC</strong> at n_train ≤ 50; crossover at n_train ∈ <strong>[200, 800]</strong>; Whisper-enc leads by <strong>0.01–0.04 AUC</strong> at full data.</p></div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
+<tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>42</strong> (2 contrasts {HeAR vs Whisper-enc, HeAR vs WavLM} × 7 sizes × 3 tasks) · n = <strong>12</strong> → 0.000488 ≤ 0.05/42 = 0.001190 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>SVD (voice pathology) · Coswara (respiratory) · COUGHVID (respiratory, OOD)</td></tr>
 <tr><td class="muted">cost</td><td>One embedding-extraction pass per encoder, then trivial probe training.</td></tr>
