@@ -1,0 +1,43 @@
+# GitHub Pages publish configuration, in version control.
+#
+# READ THIS BEFORE EDITING. The site is served as PURE STATIC HTML: `docs/.nojekyll`
+# sits beside this file and disables the Jekyll build entirely, so GitHub Pages does
+# not read the keys below at serve time. They are committed anyway, for one reason:
+# until now the publish configuration existed only in the repository's Settings UI,
+# where it could not be reviewed, diffed, or restored. This file is the reviewable
+# record of what that UI is set to.
+#
+#   Source branch : master
+#   Source folder : /docs
+#   Serving URL   : https://dlmastery.github.io/auto-research-voice-based-disease-detection/
+#
+# If the two ever disagree, the Settings UI wins and this file is wrong -- fix it.
+#
+# Why static rather than Jekyll: every page under docs/ is written by a generator
+# (`scripts/build_dashboard.py`, `build_datasets_page.py`, `build_hypothesis_pages.py`,
+# `build_experiment_pages.py`) as complete, self-contained HTML with inline CSS and one
+# inline <script>. There is no markdown for Jekyll to render and no theme to apply, so a
+# Jekyll build could only add failure modes. `.nojekyll` also stops Jekyll silently
+# dropping any future underscore-prefixed asset directory.
+
+title: Voice-Health Claim Audit
+description: >-
+  An autonomous, pre-registered audit harness that re-tests published voice-health
+  classification claims for speaker leakage, acquisition confounds, and cross-corpus
+  collapse, and publishes a transparent ledger of which claims survive.
+url: https://dlmastery.github.io
+baseurl: /auto-research-voice-based-disease-detection
+
+github:
+  repository_url: https://github.com/dlmastery/auto-research-voice-based-disease-detection
+  repository_nwo: dlmastery/auto-research-voice-based-disease-detection
+  owner_name: dlmastery
+
+# Entry points, in the order a reader should meet them.
+#   index.html                      master dashboard
+#   hypotheses/index.html           per-hypothesis registry (V1-V7)
+#   dashboard/experiments/index.html  per-run ledger
+#   datasets.html                   the 25-corpus dataset landscape
+
+exclude:
+  - README.md

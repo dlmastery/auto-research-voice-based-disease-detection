@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>run-v1-ssl-vs-handcrafted &mdash; SSL vs handcrafted features under age-matched speaker-disjoint splits</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:26px;line-height:1.28;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:18px 22px;margin:14px 0}
+.panel.debt{border-left:4px solid var(--warn)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
+.meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--panel2);text-align:left;padding:10px 13px;font-size:11.5px;
+letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warnc{color:var(--warn)}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:21px}td,th{padding:9px 10px}}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../../index.html">&larr; dashboard</a> &middot; <a href="index.html">all runs</a> &middot; <a href="../../hypotheses/V1.html">hypothesis V1</a></p>
+<h1>SSL vs handcrafted features under age-matched speaker-disjoint splits</h1>
+<p class="sub"><span class="chip eval">EVALUATION</span> <span class="chip bad">SSL DOES NOT BEAT HANDCRAFTED</span> <span class="chip screen">SCOPE-LIMITED</span> <span class="chip">svd</span> <span class="chip">see artifact</span></p>
+<div class="panel debt"><p><strong>Scope caveat.</strong> This run is a pilot slice -- 613 of the 13,535 speakers measured elsewhere on svd. It may satisfy the repeat contract and still be a narrower measurement than a later run on the same corpus; both facts are shown because either alone would mislead.</p></div>
+<div class="grid">
+<div class="stat"><div class="n">0.6496</div><div class="k">mean ROC-AUC, eGeMAPS (age-matched)</div><div class="s">no CI in the artifact</div></div>
+<div class="stat"><div class="n">0.6227</div><div class="k">mean ROC-AUC, WavLM (same folds)</div></div>
+<div class="stat"><div class="n">n = 10</div><div class="k">repeats &times; 5 folds</div><div class="s">n=10 repeats</div></div>
+<div class="stat"><div class="n">613</div><div class="k">speakers</div><div class="s">recording count not in artifact</div></div>
+</div>
+<h2>Power contract (R6)</h2>
+<div class="panel"><p>Paired Wilcoxon over 10 repeats gives a minimum attainable p of <strong>0.001953</strong> = 2/2<sup>10</sup>, against a Holm-tightest threshold of <strong>0.005556</strong> = 0.05/9 for the pre-registered family. <span class="ok">Feasible.</span> This is arithmetic on the design, computed before the data: it says what the run <em>could</em> have shown, not what it did.</p></div>
+<h2>Per-seed detail &mdash; every repeat, not a summary</h2>
+<div class="tablewrap"><table><thead><tr><th>seed</th><th>speakers</th><th>recordings</th><th>age healthy</th><th>age patho</th><th>age gap</th><th>AUC age only</th><th>AUC WavLM</th><th>AUC eGeMAPS</th></tr></thead><tbody>
+<tr><td class="num">0</td><td class="num">616</td><td class="num">10,243</td><td class="num muted">34.32</td><td class="num muted">35.21</td><td class="num">0.893</td><td class="num">0.5655</td><td class="num">0.6151</td><td class="num ok">0.6392</td></tr>
+<tr><td class="num">1</td><td class="num">610</td><td class="num">10,402</td><td class="num muted">34.43</td><td class="num muted">34.96</td><td class="num">0.531</td><td class="num">0.5585</td><td class="num">0.6253</td><td class="num ok">0.6335</td></tr>
+<tr><td class="num">2</td><td class="num">616</td><td class="num">10,200</td><td class="num muted">34.20</td><td class="num muted">35.04</td><td class="num">0.839</td><td class="num">0.5474</td><td class="num">0.6240</td><td class="num ok">0.6539</td></tr>
+<tr><td class="num">3</td><td class="num">608</td><td class="num">10,682</td><td class="num muted">34.51</td><td class="num muted">35.14</td><td class="num">0.632</td><td class="num">0.5787</td><td class="num">0.6307</td><td class="num ok">0.6718</td></tr>
+<tr><td class="num">4</td><td class="num">608</td><td class="num">10,160</td><td class="num muted">34.25</td><td class="num muted">35.13</td><td class="num">0.882</td><td class="num">0.5684</td><td class="num">0.6217</td><td class="num ok">0.6519</td></tr>
+<tr><td class="num">5</td><td class="num">610</td><td class="num">9,579</td><td class="num muted">34.08</td><td class="num muted">34.84</td><td class="num">0.760</td><td class="num">0.5292</td><td class="num">0.6139</td><td class="num ok">0.6444</td></tr>
+<tr><td class="num">6</td><td class="num">610</td><td class="num">10,427</td><td class="num muted">34.41</td><td class="num muted">35.08</td><td class="num">0.670</td><td class="num">0.5490</td><td class="num">0.6183</td><td class="num ok">0.6466</td></tr>
+<tr><td class="num">7</td><td class="num">608</td><td class="num">9,968</td><td class="num muted">34.41</td><td class="num muted">34.83</td><td class="num">0.420</td><td class="num">0.5391</td><td class="num">0.6307</td><td class="num ok">0.6602</td></tr>
+<tr><td class="num">8</td><td class="num">620</td><td class="num">10,117</td><td class="num muted">34.33</td><td class="num muted">35.51</td><td class="num">1.181</td><td class="num">0.5359</td><td class="num">0.6277</td><td class="num ok">0.6562</td></tr>
+<tr><td class="num">9</td><td class="num">626</td><td class="num">10,652</td><td class="num muted">34.16</td><td class="num muted">35.08</td><td class="num">0.924</td><td class="num">0.5623</td><td class="num">0.6196</td><td class="num ok">0.6386</td></tr>
+</tbody></table></div>
+<div class="panel"><p>eGeMAPS beats WavLM on <strong>10 of 10 seeds</strong>. Paired difference <strong>-0.02693</strong> (95% CI [-0.03172, -0.02151]) &mdash; the interval excludes zero, and it excludes it on the <em>losing</em> side for the SSL model.</p><p class="small muted">Encoders registered: <code>HeAR</code>, <code>WavLM-base+</code>, <code>Whisper-small-enc</code>; encoders actually run: <code>WavLM-base+</code>, <code>eGeMAPS(baseline)</code>. Scope stated in the artifact: HeAR and Whisper not extracted on this host; COUGHVID excluded per F2. A registered-but-unrun encoder is a hole in the family, not a free pass &mdash; it is why the falsifier is not formally closed.</p></div>
+<div class="panel"><h3>The matching is checked, not assumed</h3><p>Age matching at a &plusmn;3.0-year tolerance collapses the age-only AUC to <strong>0.5534</strong> and leaves a mean age gap of <strong>0.7732 years</strong>. The artifact records <code>matching_worked = True</code>. Without that collapse the comparison beneath it would be meaningless, so it is measured every run rather than assumed once.</p></div>
+<h2>Reproduction provenance</h2>
+<div class="tablewrap"><table><tbody>
+<tr><td class="muted">artifact</td><td><code>autoresearch_results/V1_ssl_vs_handcrafted.json</code> &middot; <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/autoresearch_results/V1_ssl_vs_handcrafted.json">view raw</a> &middot; last written 2026-07-28 16:05 UTC</td></tr>
+<tr><td class="muted">objective</td><td><code>ROC-AUC vs clinical labels (JUDGE-FREE)</code></td></tr>
+<tr><td class="muted">wall clock</td><td class="num">499.7 s (0.14 h)</td></tr>
+<tr><td class="muted">written up as</td><td>F7 in <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/FINDINGS.md">FINDINGS.md</a></td></tr>
+</tbody></table></div>
+<h2>What this page does not have</h2>
+<div class="panel debt"><p><strong>No 7-step reasoning entry exists for this run.</strong> The sibling convention renders Diagnosis &middot; Citations &middot; Hypothesis &middot; Prediction &middot; Verdict &middot; Learning on every per-experiment page, sourced from a <code>reasoning_annotations.json</code>. This program never wrote one, and neither does it keep an append-only <code>experiment_log.jsonl</code>; the run history is the set of artifact files listed on the <a href="index.html">run ledger</a>, ordered only by their write time. The pre-registered prediction for this run does exist &mdash; it is on the <a href="../../hypotheses/V1.html">V1 hypothesis page</a>, recorded before the run. Everything else on that convention&rsquo;s checklist is absent here and is shown as absent rather than quietly dropped.</p></div>
+<footer><p>Generated by <code>scripts/build_experiment_pages.py</code> from <code>autoresearch_results/V1_ssl_vs_handcrafted.json</code>. Never hand-edited; every number on this page is read from that file.</p><p>Built 2026-08-08 14:50 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div></body></html>

@@ -1,31 +1,46 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>V5 — Zero-shot audio-LLMs as a leakage-free reference point</title>
+<title>V5 &mdash; Zero-shot audio-LLMs as a leakage-free reference point</title>
 <style>
 :root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
 --muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
 font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 96px}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 96px}
 h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
 h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
 margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
 p{margin:0 0 14px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
-font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
 padding:18px 22px;margin:14px 0}
-.panel h3{margin:0 0 8px;font-size:16px}
+.panel.debt{border-left:4px solid var(--warn)}
+.panel.pred{border-left:4px solid var(--accent)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
 .meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th{background:var(--panel2);text-align:left;padding:11px 13px;font-size:12px;
 letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-border-bottom:1px solid var(--line);white-space:nowrap}
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;
+cursor:pointer;user-select:none}
+th:hover{color:var(--fg)}
+th.sort-asc::after{content:" \25B2";color:var(--accent)}
+th.sort-desc::after{content:" \25BC";color:var(--accent)}
 td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:none}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -36,27 +51,72 @@ white-space:nowrap}
 .chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
 .chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
 .chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
-.hit{color:var(--ok);font-weight:600}.miss{color:var(--bad);font-weight:600}
+.hit,.ok{color:var(--ok);font-weight:600}.miss,.bad{color:var(--bad);font-weight:600}
+.warnc{color:var(--warn)}
+.filter{width:100%;max-width:340px;background:var(--panel2);border:1px solid var(--line);
+border-radius:8px;color:var(--fg);padding:9px 12px;font-size:14px;margin:0 0 12px}
+.filter:focus{outline:none;border-color:var(--accent)}
 footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
 color:var(--muted);font-size:13px}
 @media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:22px}td,th{padding:9px 10px}}
 </style>
 </head><body><div class="wrap">
-<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
-<h1>V5 — Zero-shot audio-LLMs as a leakage-free reference point</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A12 (control condition: `zero-shot audio-LLM`), paired across A3 values</span></p>
-<div class="panel"><h3>The claim</h3><p>The gap between a supervised probe and a zero-shot audio-LLM is a cheap, model-free estimate of how much leakage a protocol admits, because a zero-shot model has no training split and therefore cannot leak speaker identity, demographics, or preprocessing statistics.</p></div>
-<div class="panel"><h3>The published claim it audits</h3><p>Shahin, Ahmed, Epps, 2025 (<a href="https://arxiv.org/abs/2506.17351">arXiv:2506.17351</a>) report Qwen2-Audio zero-shot cognitive-impairment detection &quot;comparable to supervised methods&quot; and frame it as a convenience result, <strong>not</strong> as a measurement instrument. Cross-check required against Kabir &amp; Munira, 2026 (<a href="https://arxiv.org/abs/2605.24806">arXiv:2605.24806</a>): handcrafted features + a text LLM are more reliable than raw audio for low-resource languages, so the zero-shot reference must be reported in <strong>both</strong> input formats or it is language-confounded.</p></div>
-<div class="panel"><h3>Pre-registered falsifier</h3><p>Compute <code>Δ_leaky = AUC_sup(random_recording split) − AUC_zeroshot</code> and <code>Δ_honest = AUC_sup(speaker_disjoint + demographically_matched) − AUC_zeroshot</code>. <strong>If Δ_leaky ≈ Δ_honest (overlapping bootstrap CIs) on ≥ 2 of 3 datasets</strong>, the proposed leakage estimator is falsified — the gap tracks supervised capacity, not leakage. If <code>Δ_leaky ≫ Δ_honest</code> consistently across ≥ 3 datasets, the field gains a leakage audit that needs no re-splitting of the original data.</p></div>
-<div class="panel"><h3>Predicted effect (recorded before the run)</h3><p><code>Δ_leaky − Δ_honest</code> ∈ <strong>[0.08, 0.25] AUC</strong>, positive, on SVD and Coswara. Zero-shot absolute AUC is expected to be <strong>low (0.55–0.68)</strong> — the hypothesis is about the <em>gap</em>, not the zero-shot number.</p></div>
+<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a> &middot; <a href="../dashboard/experiments/index.html">run ledger</a></p>
+<h1>V5 &mdash; Zero-shot audio-LLMs as a leakage-free reference point</h1>
+<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">registered EVALUATION</span> <span class="chip">axis A12 (control condition: `zero-shot audio-LLM`), paired across A3 values</span> <span class="chip pend">no run</span></p>
+<div class="panel pred"><p class="small muted">Everything in this block was recorded in version control <em>before</em> any run. It is rendered above the result on purpose: a prediction a reader meets after the number it predicted is not a prediction.</p>
+<h3>The claim</h3><p>The gap between a supervised probe and a zero-shot audio-LLM is a cheap, model-free estimate of how much leakage a protocol admits, because a zero-shot model has no training split and therefore cannot leak speaker identity, demographics, or preprocessing statistics.</p>
+<h3>The published claim it audits</h3><p>Shahin, Ahmed, Epps, 2025 (<a href="https://arxiv.org/abs/2506.17351">arXiv:2506.17351</a>) report Qwen2-Audio zero-shot cognitive-impairment detection &quot;comparable to supervised methods&quot; and frame it as a convenience result, <strong>not</strong> as a measurement instrument. Cross-check required against Kabir &amp; Munira, 2026 (<a href="https://arxiv.org/abs/2605.24806">arXiv:2605.24806</a>): handcrafted features + a text LLM are more reliable than raw audio for low-resource languages, so the zero-shot reference must be reported in <strong>both</strong> input formats or it is language-confounded.</p>
+<h3>Pre-registered falsifier</h3><p>Compute <code>Δ_leaky = AUC_sup(random_recording split) − AUC_zeroshot</code> and <code>Δ_honest = AUC_sup(speaker_disjoint + demographically_matched) − AUC_zeroshot</code>. <strong>If Δ_leaky ≈ Δ_honest (overlapping bootstrap CIs) on ≥ 2 of 3 datasets</strong>, the proposed leakage estimator is falsified — the gap tracks supervised capacity, not leakage. If <code>Δ_leaky ≫ Δ_honest</code> consistently across ≥ 3 datasets, the field gains a leakage audit that needs no re-splitting of the original data.</p>
+<h3>Predicted effect (recorded before the run)</h3><p><code>Δ_leaky − Δ_honest</code> ∈ <strong>[0.08, 0.25] AUC</strong>, positive, on SVD and Coswara. Zero-shot absolute AUC is expected to be <strong>low (0.55–0.68)</strong> — the hypothesis is about the <em>gap</em>, not the zero-shot number.</p>
+</div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
 <tr><td class="muted">tier (as registered)</td><td><strong><code>SCREENING</code> at registration</strong> (n ≤ 3), with a pre-declared promotion condition: promote to <code>EVALUATION</code> at n = 10, m = 3 <strong>only if</strong> zero-shot throughput permits ≥ 10 full passes per dataset inside the foreground GPU windows available. If it does not, V5 ships as screening and is labelled as such — it is never re-described as a result.</td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>screening n ≤ 3 · promotion target m = <strong>3</strong> (3 datasets), n = <strong>10</strong> → 0.001953 ≤ 0.016667 ✓ (n = 8 would also satisfy m = 3)</td></tr>
 <tr><td class="muted">datasets</td><td>SVD · Coswara · COUGHVID</td></tr>
 <tr><td class="muted">cost</td><td><strong>The only real GPU cost in the registry.</strong> 4-bit Qwen2-Audio-7B inference; one foreground eval window per dataset, N capped per condition. Host RAM, not VRAM, is the binding constraint.</td></tr>
-<tr><td class="muted">registry status</td><td><strong>UNTESTED</strong></td></tr>
+<tr><td class="muted">min attainable paired p</td><td class="num">0.001953</td></tr>
+<tr><td class="muted">Holm-tightest threshold 0.05/m</td><td class="num">0.016667</td></tr>
+<tr><td class="muted">arithmetically satisfiable under R6</td><td>✓</td></tr>
+<tr><td class="muted">registry status</td><td>UNTESTED</td></tr>
 </tbody></table></div>
+<p class="small muted">Registry status is read from the <code>## Summary</code> table of <code>IDEA_TABLE.md</code>, which the author maintains as a set. The per-block status cells are maintained one at a time and disagree with it; one source of truth, and this is it.</p>
 <h2>Measured result</h2>
-<div class="panel"><p><span class="chip pend">UNTESTED</span> No artifact exists for this hypothesis yet. Under R7 a hypothesis whose falsifier has not been <em>executed</em> is UNTESTED and is never reported as supported. This page exists so that the prediction above is on the record <em>before</em> any result is, and so the debt is visible rather than absent.</p></div>
-<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p><strong>Not a medical device.</strong> Internal QA pass — independent external review pending.</p></footer></div></body></html>
+<div class="panel debt"><p><span class="chip pend">UNTESTED</span> No artifact exists for this hypothesis. Under R7 a hypothesis whose falsifier has not been <em>executed</em> is UNTESTED and is never reported as supported. This page exists so that the prediction above is on the record <em>before</em> any result is, and so the debt is visible rather than absent. It is counted as debt on the <a href="../index.html">master dashboard</a> and in the <a href="index.html">registry table</a>.</p></div>
+<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the declared artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p>Built 2026-08-08 14:48 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div><script>
+document.querySelectorAll('table[data-sortable]').forEach(function(t){
+  t.querySelectorAll('th').forEach(function(th,i){
+    th.addEventListener('click',function(){
+      var tb=t.tBodies[0],rows=Array.prototype.slice.call(tb.rows);
+      var dir=th.dataset.dir==='asc'?-1:1;
+      t.querySelectorAll('th').forEach(function(o){
+        delete o.dataset.dir;o.classList.remove('sort-asc','sort-desc');});
+      th.dataset.dir=dir===1?'asc':'desc';
+      th.classList.add(dir===1?'sort-asc':'sort-desc');
+      var numeric=function(s){return /\d/.test(s)&&!/[A-Za-z]/.test(s);};
+      rows.sort(function(a,b){
+        var x=a.cells[i].innerText.trim().split('\n')[0].trim();
+        var y=b.cells[i].innerText.trim().split('\n')[0].trim();
+        if(numeric(x)&&numeric(y)){
+          var nx=parseFloat(x.replace(/[^0-9.\-]/g,'')),ny=parseFloat(y.replace(/[^0-9.\-]/g,''));
+          if(!isNaN(nx)&&!isNaN(ny))return (nx-ny)*dir;
+        }
+        return x.localeCompare(y)*dir;
+      });
+      rows.forEach(function(r){tb.appendChild(r);});
+    });
+  });
+});
+document.querySelectorAll('input[data-filters]').forEach(function(inp){
+  inp.addEventListener('input',function(){
+    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase(),n=0;
+    Array.prototype.slice.call(t.tBodies[0].rows).forEach(function(r){
+      var hit=r.innerText.toLowerCase().indexOf(q)>-1;
+      r.style.display=hit?'':'none';if(hit)n++;
+    });
+    var c=document.getElementById(inp.dataset.count);
+    if(c)c.textContent=n+' of '+t.tBodies[0].rows.length+' shown';
+  });
+});
+</script></body></html>

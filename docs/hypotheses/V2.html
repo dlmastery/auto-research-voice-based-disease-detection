@@ -1,31 +1,46 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>V2 — Speaker-identity subspace ablation: how much of the &quot;disease&quot; signal is identity?</title>
+<title>V2 &mdash; Speaker-identity subspace ablation: how much of the &quot;disease&quot; signal is identity?</title>
 <style>
 :root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
 --muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
 font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 96px}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 96px}
 h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
 h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
 margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
 p{margin:0 0 14px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
-font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
 padding:18px 22px;margin:14px 0}
-.panel h3{margin:0 0 8px;font-size:16px}
+.panel.debt{border-left:4px solid var(--warn)}
+.panel.pred{border-left:4px solid var(--accent)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
 .meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th{background:var(--panel2);text-align:left;padding:11px 13px;font-size:12px;
 letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-border-bottom:1px solid var(--line);white-space:nowrap}
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;
+cursor:pointer;user-select:none}
+th:hover{color:var(--fg)}
+th.sort-asc::after{content:" \25B2";color:var(--accent)}
+th.sort-desc::after{content:" \25BC";color:var(--accent)}
 td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:none}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -36,39 +51,105 @@ white-space:nowrap}
 .chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
 .chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
 .chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
-.hit{color:var(--ok);font-weight:600}.miss{color:var(--bad);font-weight:600}
+.hit,.ok{color:var(--ok);font-weight:600}.miss,.bad{color:var(--bad);font-weight:600}
+.warnc{color:var(--warn)}
+.filter{width:100%;max-width:340px;background:var(--panel2);border:1px solid var(--line);
+border-radius:8px;color:var(--fg);padding:9px 12px;font-size:14px;margin:0 0 12px}
+.filter:focus{outline:none;border-color:var(--accent)}
 footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
 color:var(--muted);font-size:13px}
 @media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:22px}td,th{padding:9px 10px}}
 </style>
 </head><body><div class="wrap">
-<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
-<h1>V2 — Speaker-identity subspace ablation: how much of the &quot;disease&quot; signal is identity?</h1>
-<p class="sub"><span class="chip eval">EVALUATION</span> <span class="chip">EVALUATION</span> <span class="chip">axis A9 (`subspace_projection`), with its mandatory A12 controls</span></p>
-<div class="panel"><h3>The claim</h3><p>A large fraction of frozen-embedding disease discrimination lives in a low-rank speaker-identity subspace, and removing it collapses AUC further than a variance-matched random projection of the same rank does.</p></div>
-<div class="panel"><h3>The published claim it audits</h3><p>Yeh, Sun, Mahapatra, Chandra, Mower Provost, Sisman, 2026, <em>Who is Speaking or Who is Depressed? A Controlled Study of Speaker Leakage in Speech-Based Depression Detection</em> (<a href="https://arxiv.org/abs/2604.14354">arXiv:2604.14354</a>): speaker overlap significantly boosts performance, accuracy drops sharply on unseen speakers, and a DANN <strong>fails to close the gap</strong>; they conclude identity reliance is &quot;a property of current speech representations rather than a model-specific limitation.&quot; That paper establishes the effect by <em>measurement</em>. The mechanistic test — estimate the identity subspace, project it out, re-measure — has not been run, and their DANN result predicts it will be hard to remove.</p></div>
-<div class="panel"><h3>Pre-registered falsifier</h3><p>Two-sided, both pre-registered. <strong>(a)</strong> If projecting out the rank-k speaker subspace collapses disease AUC toward chance while a <strong>variance-matched</strong> same-rank random projection does not — i.e. <code>D(k) = AUC_rand(k) − AUC_spk(k)</code> has a Holm-corrected 95% CI excluding 0 and <code>AUC_spk(k)</code>&#x27;s CI includes 0.5 — the clinical-validity claim for that model/dataset pair is falsified. <strong>(b)</strong> Conversely, if <code>D(k)</code> is within the noise band for all k while <code>AUC_spk(k)</code> stays well above chance, the <em>hypothesis</em> is falsified and the audited result is <strong>strengthened</strong> — that becomes the positive control the field currently lacks.</p></div>
-<div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>At k = 16: <code>AUC_spk</code> drops <strong>0.10–0.25</strong> from <code>AUC_full</code>; the variance-matched random control drops <strong>&lt; 0.05</strong>; so <code>D(16)</code> ∈ <strong>[0.06, 0.22]</strong>, positive. Manipulation check: speaker-verification accuracy on the projected embeddings falls from ~0.90 to <strong>&lt; 0.30</strong>.</p></div>
+<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a> &middot; <a href="../dashboard/experiments/index.html">run ledger</a></p>
+<h1>V2 &mdash; Speaker-identity subspace ablation: how much of the &quot;disease&quot; signal is identity?</h1>
+<p class="sub"><span class="chip eval">CLAIM SUPPORTED</span> <span class="chip">registered EVALUATION</span> <span class="chip">axis A9 (`subspace_projection`), with its mandatory A12 controls</span> <span class="chip eval">2 run(s) on disk</span></p>
+<div class="panel pred"><p class="small muted">Everything in this block was recorded in version control <em>before</em> any run. It is rendered above the result on purpose: a prediction a reader meets after the number it predicted is not a prediction.</p>
+<h3>The claim</h3><p>A large fraction of frozen-embedding disease discrimination lives in a low-rank speaker-identity subspace, and removing it collapses AUC further than a variance-matched random projection of the same rank does.</p>
+<h3>The published claim it audits</h3><p>Yeh, Sun, Mahapatra, Chandra, Mower Provost, Sisman, 2026, <em>Who is Speaking or Who is Depressed? A Controlled Study of Speaker Leakage in Speech-Based Depression Detection</em> (<a href="https://arxiv.org/abs/2604.14354">arXiv:2604.14354</a>): speaker overlap significantly boosts performance, accuracy drops sharply on unseen speakers, and a DANN <strong>fails to close the gap</strong>; they conclude identity reliance is &quot;a property of current speech representations rather than a model-specific limitation.&quot; That paper establishes the effect by <em>measurement</em>. The mechanistic test — estimate the identity subspace, project it out, re-measure — has not been run, and their DANN result predicts it will be hard to remove.</p>
+<h3>Pre-registered falsifier</h3><p>Two-sided, both pre-registered. <strong>(a)</strong> If projecting out the rank-k speaker subspace collapses disease AUC toward chance while a <strong>variance-matched</strong> same-rank random projection does not — i.e. <code>D(k) = AUC_rand(k) − AUC_spk(k)</code> has a Holm-corrected 95% CI excluding 0 and <code>AUC_spk(k)</code>&#x27;s CI includes 0.5 — the clinical-validity claim for that model/dataset pair is falsified. <strong>(b)</strong> Conversely, if <code>D(k)</code> is within the noise band for all k while <code>AUC_spk(k)</code> stays well above chance, the <em>hypothesis</em> is falsified and the audited result is <strong>strengthened</strong> — that becomes the positive control the field currently lacks.</p>
+<h3>Predicted effect (recorded before the run)</h3><p>At k = 16: <code>AUC_spk</code> drops <strong>0.10–0.25</strong> from <code>AUC_full</code>; the variance-matched random control drops <strong>&lt; 0.05</strong>; so <code>D(16)</code> ∈ <strong>[0.06, 0.22]</strong>, positive. Manipulation check: speaker-verification accuracy on the projected embeddings falls from ~0.90 to <strong>&lt; 0.30</strong>.</p>
+</div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
 <tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>14</strong> (7 ranks k ∈ {1,2,4,8,16,32,64} × 2 corpora) · n = <strong>10</strong> → 0.001953 ≤ 0.05/14 = 0.003571 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>SVD (≥ 2 vocalisations/speaker, 2,043 speakers) · Coswara (9 streams/participant). <strong>COUGHVID is excluded</strong> — no speaker identifiers, so the subspace cannot be estimated.</td></tr>
 <tr><td class="muted">cost</td><td>Pure linear algebra on cached embeddings — but &quot;free&quot; was wrong: the confirmatory run took <strong>4h15m</strong> on CPU (21 <code>auc_cv</code> calls per repeat × 10 repeats on a 28,509 × 1536 matrix). Cheap in concept, not in wall-clock.</td></tr>
-<tr><td class="muted">registry status</td><td><strong>RUN 2026-07-28 → [F4](FINDINGS.md). CLAIM SUPPORTED; FALSIFIER DID NOT FIRE.</strong> D positive with CI excluding 0 at all 7 ranks against both controls, and at every rank the speaker subspace removes <em>less</em> variance than top-k PCA yet costs <em>more</em> AUC — identity accounts for <strong>24–39%</strong> of above-chance headroom. But the falsifier also required <code>AUC_spk</code> to include 0.5, and at k=64 it is 0.5398 — near chance, not chance. So identity is a large direction-specific component, <strong>not the whole signal</strong>, and the &quot;clinical-validity falsified&quot; conclusion does not follow. Shuffle control passes (D 0.0921 → 0.0016). Manipulation check remains WEAK (speaker-ID 0.278 → 0.193 vs a predicted 0.90 → &lt;0.30).</td></tr>
+<tr><td class="muted">min attainable paired p</td><td class="num">0.001953</td></tr>
+<tr><td class="muted">Holm-tightest threshold 0.05/m</td><td class="num">0.003571</td></tr>
+<tr><td class="muted">arithmetically satisfiable under R6</td><td>✓</td></tr>
+<tr><td class="muted">registry status</td><td><strong>CLAIM SUPPORTED, falsifier did NOT fire</strong> — see F4</td></tr>
 </tbody></table></div>
+<p class="small muted">Registry status is read from the <code>## Summary</code> table of <code>IDEA_TABLE.md</code>, which the author maintains as a set. The per-block status cells are maintained one at a time and disagree with it; one source of truth, and this is it.</p>
 <h2>Measured result</h2>
-<div class="panel"><p><span class="chip eval">EVALUATION</span> n = 10 repeats against a pre-registered family of m = 14: min attainable paired p = 0.001953 &le; Holm 0.05/m = 0.003571. Feasible.</p></div>
-<p class="meta">Artifact <code>autoresearch_results/V2_speaker_subspace.json</code> &middot; 28,509 recordings / 1,679 speakers &middot; 10 repeats &times; 5-fold speaker-disjoint &middot; objective ROC-AUC vs clinical labels (JUDGE-FREE)</p>
-<div class="panel"><h3 style="margin-top:0">Baseline</h3><p>Full-embedding disease AUC <strong>0.7382</strong>. Speaker-ID accuracy on unprojected embeddings <strong>0.2780</strong> (chance 0.0167).</p></div>
-<div class="tablewrap"><table><thead><tr><th>rank k</th><th>AUC after removing<br>SPEAKER subspace</th><th>AUC after removing<br>top-k PCA</th><th>AUC after removing<br>variance-matched</th><th>D vs top-k PCA [95% CI]</th><th>variance removed<br>spk / topk / matched</th><th>speaker-ID<br>after</th></tr></thead><tbody>
-<tr><td class="num"><strong>1</strong></td><td class="num">0.6755</td><td class="num">0.7320</td><td class="num">0.7363</td><td class="num hit">+0.0565 <span class="small muted">[0.056, 0.058]</span></td><td class="num small muted">0.206 / 0.345 / 0.271</td><td class="num">0.251</td></tr>
-<tr><td class="num"><strong>2</strong></td><td class="num">0.6739</td><td class="num">0.7302</td><td class="num">0.7320</td><td class="num hit">+0.0564 <span class="small muted">[0.055, 0.058]</span></td><td class="num small muted">0.261 / 0.616 / 0.345</td><td class="num">0.249</td></tr>
-<tr><td class="num"><strong>4</strong></td><td class="num">0.6446</td><td class="num">0.7189</td><td class="num">0.7199</td><td class="num hit">+0.0743 <span class="small muted">[0.072, 0.078]</span></td><td class="num small muted">0.451 / 0.718 / 0.678</td><td class="num">0.234</td></tr>
-<tr><td class="num"><strong>8</strong></td><td class="num">0.6104</td><td class="num">0.7025</td><td class="num">0.7113</td><td class="num hit">+0.0921 <span class="small muted">[0.090, 0.094]</span></td><td class="num small muted">0.700 / 0.812 / 0.798</td><td class="num">0.207</td></tr>
-<tr><td class="num"><strong>16</strong></td><td class="num">0.5959</td><td class="num">0.6692</td><td class="num">0.6747</td><td class="num hit">+0.0734 <span class="small muted">[0.071, 0.076]</span></td><td class="num small muted">0.819 / 0.879 / 0.874</td><td class="num">0.193</td></tr>
-<tr><td class="num"><strong>32</strong></td><td class="num">0.5661</td><td class="num">0.6529</td><td class="num">0.6531</td><td class="num hit">+0.0869 <span class="small muted">[0.085, 0.088]</span></td><td class="num small muted">0.893 / 0.926 / 0.924</td><td class="num">0.189</td></tr>
-<tr><td class="num"><strong>64</strong></td><td class="num">0.5398</td><td class="num">0.6287</td><td class="num">0.6295</td><td class="num hit">+0.0888 <span class="small muted">[0.086, 0.091]</span></td><td class="num small muted">0.940 / 0.959 / 0.958</td><td class="num">0.187</td></tr>
+<div class="panel"><p><span class="chip eval">EVALUATION</span> n = 10 repeats against the pre-registered family (m = <strong>14</strong> (7 ranks k ∈ {1,2,4,8,16,32,64} × 2 corpora) · n = <strong>10</strong> → 0.001953 ≤ 0.05/14 = 0.003571 ✓): min attainable paired p = 0.001953 &le; Holm 0.05/m = 0.003571. Feasible. Feasibility is a property of the design, not of the result &mdash; it says what this run could have shown.</p></div>
+<div class="panel"><h3><a href="../dashboard/experiments/run-v2-shuffle-control.html">Label-shuffle negative control for the V2 subspace ablation</a></h3>
+<p><span class="chip pend">CONTROL</span> <span class="chip">CONTROL PASSES -- effect vanishes under shuffling</span> <span class="chip">n = 3 &times; 5 folds</span> <span class="chip screen">SCOPE-LIMITED</span></p>
+<div class="grid">
+<div class="stat"><div class="n">0.5069</div><div class="k">full-embedding disease AUC (shuffled labels)</div></div>
+<div class="stat"><div class="n">0.5047</div><div class="k">AUC after removing the speaker subspace (k=8)</div></div>
+<div class="stat"><div class="n">+0.0017</div><div class="k">difference</div><div class="s"> <span class="small muted">95% CI [0.00153, 0.00201]</span></div></div>
+<div class="stat"><div class="n">1,679</div><div class="k">speakers</div><div class="s">28,509 recordings</div></div>
+</div>
+<p class="small muted">Artifact <code>autoresearch_results/V2_speaker_subspace_SHUFFLE.json</code> &middot; written 2026-07-28 21:11 UTC &middot; <a href="../dashboard/experiments/run-v2-shuffle-control.html">full run page &rarr;</a> &middot; written up as F4 in <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/FINDINGS.md">FINDINGS.md</a></p></div>
+<div class="panel"><h3><a href="../dashboard/experiments/run-v2-speaker-subspace.html">Speaker-identity subspace ablation against variance-matched controls</a></h3>
+<p><span class="chip eval">EVALUATION</span> <span class="chip">CLAIM SUPPORTED -- falsifier did NOT fire</span> <span class="chip">n = 10 &times; 5 folds</span> <span class="chip screen">SCOPE-LIMITED</span></p>
+<div class="grid">
+<div class="stat"><div class="n">0.7382</div><div class="k">full-embedding disease AUC (real labels)</div></div>
+<div class="stat"><div class="n">0.6104</div><div class="k">AUC after removing the speaker subspace (k=8)</div></div>
+<div class="stat"><div class="n">+0.0921</div><div class="k">difference</div><div class="s"> <span class="small muted">95% CI [0.08977, 0.09433]</span></div></div>
+<div class="stat"><div class="n">1,679</div><div class="k">speakers</div><div class="s">28,509 recordings</div></div>
+</div>
+<p class="small muted">Artifact <code>autoresearch_results/V2_speaker_subspace.json</code> &middot; written 2026-07-28 10:59 UTC &middot; <a href="../dashboard/experiments/run-v2-speaker-subspace.html">full run page &rarr;</a> &middot; written up as F4 in <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/FINDINGS.md">FINDINGS.md</a></p></div>
+<h2>Full detail from the primary artifact</h2>
+<p class="small muted">Rendered from <code>autoresearch_results/V2_speaker_subspace.json</code>. Every other run for this hypothesis, including controls, has its own page linked above.</p>
+<h2>Rank sweep &mdash; the subspace against variance-matched controls</h2>
+<div class="tablewrap"><table><thead><tr><th>rank k</th><th>AUC, speaker subspace removed</th><th>AUC, top-k PCA removed</th><th>AUC, variance-matched removed</th><th>D vs top-k [95% CI]</th><th>variance removed spk / topk / matched</th><th>speaker-ID after</th></tr></thead><tbody>
+<tr><td class="num"><strong>1</strong></td><td class="num">0.6755</td><td class="num">0.7320</td><td class="num">0.7363</td><td class="num ok">+0.0565 <span class="small muted">[0.056, 0.058]</span></td><td class="num small muted">0.206 / 0.345 / 0.271</td><td class="num">0.251</td></tr>
+<tr><td class="num"><strong>2</strong></td><td class="num">0.6739</td><td class="num">0.7302</td><td class="num">0.7320</td><td class="num ok">+0.0564 <span class="small muted">[0.055, 0.058]</span></td><td class="num small muted">0.261 / 0.616 / 0.345</td><td class="num">0.249</td></tr>
+<tr><td class="num"><strong>4</strong></td><td class="num">0.6446</td><td class="num">0.7189</td><td class="num">0.7199</td><td class="num ok">+0.0743 <span class="small muted">[0.072, 0.078]</span></td><td class="num small muted">0.451 / 0.718 / 0.678</td><td class="num">0.234</td></tr>
+<tr><td class="num"><strong>8</strong></td><td class="num">0.6104</td><td class="num">0.7025</td><td class="num">0.7113</td><td class="num ok">+0.0921 <span class="small muted">[0.090, 0.094]</span></td><td class="num small muted">0.700 / 0.812 / 0.798</td><td class="num">0.207</td></tr>
+<tr><td class="num"><strong>16</strong></td><td class="num">0.5959</td><td class="num">0.6692</td><td class="num">0.6747</td><td class="num ok">+0.0734 <span class="small muted">[0.071, 0.076]</span></td><td class="num small muted">0.819 / 0.879 / 0.874</td><td class="num">0.193</td></tr>
+<tr><td class="num"><strong>32</strong></td><td class="num">0.5661</td><td class="num">0.6529</td><td class="num">0.6531</td><td class="num ok">+0.0869 <span class="small muted">[0.085, 0.088]</span></td><td class="num small muted">0.893 / 0.926 / 0.924</td><td class="num">0.189</td></tr>
+<tr><td class="num"><strong>64</strong></td><td class="num">0.5398</td><td class="num">0.6287</td><td class="num">0.6295</td><td class="num ok">+0.0888 <span class="small muted">[0.086, 0.091]</span></td><td class="num small muted">0.940 / 0.959 / 0.958</td><td class="num">0.187</td></tr>
 </tbody></table></div>
-<p class="small muted">Both controls are built from the data's own principal axes and remove <em>at least as much variance</em> as the speaker subspace, so a positive D cannot be explained by "more signal was deleted". A uniformly random subspace was tried first and rejected: at k=16 it reached only 0.350 of the variance against the speaker subspace's 0.818, which would have compared two different-sized interventions.</p>
-<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p><strong>Not a medical device.</strong> Internal QA pass — independent external review pending.</p></footer></div></body></html>
+<p class="small muted">Both controls are built from the data's own principal axes and remove <em>at least as much variance</em> as the speaker subspace, so a positive D cannot be explained by &quot;more signal was deleted&quot;.</p>
+<h2>Per-repeat full-embedding AUC</h2>
+<div class="panel"><p class="num">0.7372 &middot; 0.7391 &middot; 0.7393 &middot; 0.7383 &middot; 0.7388 &middot; 0.7386 &middot; 0.7372 &middot; 0.7361 &middot; 0.7388 &middot; 0.7383</p><p class="small muted">Mean 0.7382 over 10 repeats. Speaker-ID accuracy on unprojected embeddings 0.2780 against a chance rate of 0.0167 &mdash; the manipulation check, and it is WEAK: mean-pooled WavLM is not an x-vector, so the identity subspace estimated here is a partial one.</p></div>
+<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the declared artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p>Built 2026-08-08 14:48 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div><script>
+document.querySelectorAll('table[data-sortable]').forEach(function(t){
+  t.querySelectorAll('th').forEach(function(th,i){
+    th.addEventListener('click',function(){
+      var tb=t.tBodies[0],rows=Array.prototype.slice.call(tb.rows);
+      var dir=th.dataset.dir==='asc'?-1:1;
+      t.querySelectorAll('th').forEach(function(o){
+        delete o.dataset.dir;o.classList.remove('sort-asc','sort-desc');});
+      th.dataset.dir=dir===1?'asc':'desc';
+      th.classList.add(dir===1?'sort-asc':'sort-desc');
+      var numeric=function(s){return /\d/.test(s)&&!/[A-Za-z]/.test(s);};
+      rows.sort(function(a,b){
+        var x=a.cells[i].innerText.trim().split('\n')[0].trim();
+        var y=b.cells[i].innerText.trim().split('\n')[0].trim();
+        if(numeric(x)&&numeric(y)){
+          var nx=parseFloat(x.replace(/[^0-9.\-]/g,'')),ny=parseFloat(y.replace(/[^0-9.\-]/g,''));
+          if(!isNaN(nx)&&!isNaN(ny))return (nx-ny)*dir;
+        }
+        return x.localeCompare(y)*dir;
+      });
+      rows.forEach(function(r){tb.appendChild(r);});
+    });
+  });
+});
+document.querySelectorAll('input[data-filters]').forEach(function(inp){
+  inp.addEventListener('input',function(){
+    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase(),n=0;
+    Array.prototype.slice.call(t.tBodies[0].rows).forEach(function(r){
+      var hit=r.innerText.toLowerCase().indexOf(q)>-1;
+      r.style.display=hit?'':'none';if(hit)n++;
+    });
+    var c=document.getElementById(inp.dataset.count);
+    if(c)c.textContent=n+' of '+t.tBodies[0].rows.length+' shown';
+  });
+});
+</script></body></html>

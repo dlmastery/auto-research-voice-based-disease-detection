@@ -1,31 +1,46 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>V1 — &quot;SSL beats handcrafted features&quot; may be an artifact of leaky protocols</title>
+<title>V1 &mdash; &quot;SSL beats handcrafted features&quot; may be an artifact of leaky protocols</title>
 <style>
 :root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
 --muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
 font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 96px}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 96px}
 h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
 h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
 margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
 p{margin:0 0 14px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
-font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
 padding:18px 22px;margin:14px 0}
-.panel h3{margin:0 0 8px;font-size:16px}
+.panel.debt{border-left:4px solid var(--warn)}
+.panel.pred{border-left:4px solid var(--accent)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
 .meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th{background:var(--panel2);text-align:left;padding:11px 13px;font-size:12px;
 letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-border-bottom:1px solid var(--line);white-space:nowrap}
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;
+cursor:pointer;user-select:none}
+th:hover{color:var(--fg)}
+th.sort-asc::after{content:" \25B2";color:var(--accent)}
+th.sort-desc::after{content:" \25BC";color:var(--accent)}
 td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:none}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -36,27 +51,98 @@ white-space:nowrap}
 .chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
 .chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
 .chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
-.hit{color:var(--ok);font-weight:600}.miss{color:var(--bad);font-weight:600}
+.hit,.ok{color:var(--ok);font-weight:600}.miss,.bad{color:var(--bad);font-weight:600}
+.warnc{color:var(--warn)}
+.filter{width:100%;max-width:340px;background:var(--panel2);border:1px solid var(--line);
+border-radius:8px;color:var(--fg);padding:9px 12px;font-size:14px;margin:0 0 12px}
+.filter:focus{outline:none;border-color:var(--accent)}
 footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
 color:var(--muted);font-size:13px}
 @media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:22px}td,th{padding:9px 10px}}
 </style>
 </head><body><div class="wrap">
-<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
-<h1>V1 — &quot;SSL beats handcrafted features&quot; may be an artifact of leaky protocols</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A5 (representation), with A3 pinned at the strict value; the *leaky* comparison at A3 = `random_recording` is the paired reference condition</span></p>
-<div class="panel"><h3>The claim</h3><p>Under simultaneously speaker-disjoint <em>and</em> demographically balanced splits, frozen SSL/health embeddings do not reliably beat eGeMAPS.</p></div>
-<div class="panel"><h3>The published claim it audits</h3><p>SpeechDx ranks Whisper-enc (MRR 0.44) &gt; Qwen3-TTS-Tokenizer (0.40) &gt; WavLM (0.38) and states &quot;no current representation generalizes reliably across the clinical speech landscape&quot; — Bhalla, Kieu, Merchant, de Lara, Mariakakis, 2026, <em>SpeechDx: A Multi-Task Benchmark for Clinical Speech AI</em> (<a href="https://arxiv.org/abs/2606.17339">arXiv:2606.17339</a>). The audited proposition is the field&#x27;s <em>derived</em> habit of treating SSL &gt; handcrafted as settled; SpeechDx itself already qualifies it, and the head-to-head against eGeMAPS under both controls simultaneously has not been run with seed statistics.</p></div>
-<div class="panel"><h3>Pre-registered falsifier</h3><p>If eGeMAPS lands <strong>within 2σ_seed</strong> of the best of {HeAR, WavLM-base+, Whisper-small-enc} on <strong>≥ 2 of 3 corpora</strong> under <code>A3 = speaker_disjoint + demographically_matched</code>, <code>A4 = fit_per_fold</code>, the &quot;SSL wins&quot; claim is falsified for this task family.</p></div>
-<div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>eGeMAPS trails the best SSL encoder by <strong>0.02–0.06 AUC</strong> on SVD (a real but small gap) and by <strong>&lt; 0.02</strong> — i.e. inside the noise band — on Coswara and COUGHVID. Direction: the gap <em>shrinks</em> by ≥ 0.03 AUC relative to the same comparison under <code>A3 = random_recording</code>.</p></div>
+<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a> &middot; <a href="../dashboard/experiments/index.html">run ledger</a></p>
+<h1>V1 &mdash; &quot;SSL beats handcrafted features&quot; may be an artifact of leaky protocols</h1>
+<p class="sub"><span class="chip eval">CLAIM SUPPORTED</span> <span class="chip">registered EVALUATION</span> <span class="chip">axis A5 (representation), with A3 pinned at the strict value; the *leaky* comparison at A3 = `random_recording` is the paired reference condition</span> <span class="chip eval">1 run(s) on disk</span></p>
+<div class="panel pred"><p class="small muted">Everything in this block was recorded in version control <em>before</em> any run. It is rendered above the result on purpose: a prediction a reader meets after the number it predicted is not a prediction.</p>
+<h3>The claim</h3><p>Under simultaneously speaker-disjoint <em>and</em> demographically balanced splits, frozen SSL/health embeddings do not reliably beat eGeMAPS.</p>
+<h3>The published claim it audits</h3><p>SpeechDx ranks Whisper-enc (MRR 0.44) &gt; Qwen3-TTS-Tokenizer (0.40) &gt; WavLM (0.38) and states &quot;no current representation generalizes reliably across the clinical speech landscape&quot; — Bhalla, Kieu, Merchant, de Lara, Mariakakis, 2026, <em>SpeechDx: A Multi-Task Benchmark for Clinical Speech AI</em> (<a href="https://arxiv.org/abs/2606.17339">arXiv:2606.17339</a>). The audited proposition is the field&#x27;s <em>derived</em> habit of treating SSL &gt; handcrafted as settled; SpeechDx itself already qualifies it, and the head-to-head against eGeMAPS under both controls simultaneously has not been run with seed statistics.</p>
+<h3>Pre-registered falsifier</h3><p>If eGeMAPS lands <strong>within 2σ_seed</strong> of the best of {HeAR, WavLM-base+, Whisper-small-enc} on <strong>≥ 2 of 3 corpora</strong> under <code>A3 = speaker_disjoint + demographically_matched</code>, <code>A4 = fit_per_fold</code>, the &quot;SSL wins&quot; claim is falsified for this task family.</p>
+<h3>Predicted effect (recorded before the run)</h3><p>eGeMAPS trails the best SSL encoder by <strong>0.02–0.06 AUC</strong> on SVD (a real but small gap) and by <strong>&lt; 0.02</strong> — i.e. inside the noise band — on Coswara and COUGHVID. Direction: the gap <em>shrinks</em> by ≥ 0.03 AUC relative to the same comparison under <code>A3 = random_recording</code>.</p>
+</div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
 <tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>9</strong> (3 encoders × 3 corpora, each vs eGeMAPS) · n = <strong>10</strong> → 0.001953 ≤ 0.05/9 = 0.005556 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>SVD · Coswara · COUGHVID</td></tr>
 <tr><td class="muted">cost</td><td>openSMILE is CPU-only; embeddings extracted once and cached. No GPU beyond one extraction pass per encoder.</td></tr>
-<tr><td class="muted">registry status</td><td><strong>UNTESTED</strong></td></tr>
+<tr><td class="muted">min attainable paired p</td><td class="num">0.001953</td></tr>
+<tr><td class="muted">Holm-tightest threshold 0.05/m</td><td class="num">0.005556</td></tr>
+<tr><td class="muted">arithmetically satisfiable under R6</td><td>✓</td></tr>
+<tr><td class="muted">registry status</td><td><strong>CLAIM SUPPORTED on SVD</strong> — matching works (age 0.874→0.553); <strong>eGeMAPS 0.6496 BEATS WavLM 0.6227</strong>, CI [−0.032, −0.022], 10/10 seeds. Not formally closed (falsifier wants ≥2 corpora) — see F7</td></tr>
 </tbody></table></div>
+<p class="small muted">Registry status is read from the <code>## Summary</code> table of <code>IDEA_TABLE.md</code>, which the author maintains as a set. The per-block status cells are maintained one at a time and disagree with it; one source of truth, and this is it.</p>
 <h2>Measured result</h2>
-<div class="panel"><p><span class="chip pend">UNTESTED</span> No artifact exists for this hypothesis yet. Under R7 a hypothesis whose falsifier has not been <em>executed</em> is UNTESTED and is never reported as supported. This page exists so that the prediction above is on the record <em>before</em> any result is, and so the debt is visible rather than absent.</p></div>
-<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p><strong>Not a medical device.</strong> Internal QA pass — independent external review pending.</p></footer></div></body></html>
+<div class="panel"><p><span class="chip eval">EVALUATION</span> n = 10 repeats against the pre-registered family (m = <strong>9</strong> (3 encoders × 3 corpora, each vs eGeMAPS) · n = <strong>10</strong> → 0.001953 ≤ 0.05/9 = 0.005556 ✓): min attainable paired p = 0.001953 &le; Holm 0.05/m = 0.005556. Feasible. Feasibility is a property of the design, not of the result &mdash; it says what this run could have shown.</p></div>
+<div class="panel"><h3><a href="../dashboard/experiments/run-v1-ssl-vs-handcrafted.html">SSL vs handcrafted features under age-matched speaker-disjoint splits</a></h3>
+<p><span class="chip eval">EVALUATION</span> <span class="chip">SSL DOES NOT BEAT HANDCRAFTED</span> <span class="chip">n = 10 &times; 5 folds</span> <span class="chip screen">SCOPE-LIMITED</span></p>
+<div class="grid">
+<div class="stat"><div class="n">0.6496</div><div class="k">mean ROC-AUC, eGeMAPS (age-matched)</div></div>
+<div class="stat"><div class="n">0.6227</div><div class="k">mean ROC-AUC, WavLM (same folds)</div></div>
+<div class="stat"><div class="n">-0.0269</div><div class="k">difference</div><div class="s"> <span class="small muted">95% CI [-0.03172, -0.02151]</span></div></div>
+<div class="stat"><div class="n">613</div><div class="k">speakers</div><div class="s">recording count not in artifact</div></div>
+</div>
+<p class="small muted">Artifact <code>autoresearch_results/V1_ssl_vs_handcrafted.json</code> &middot; written 2026-07-28 16:05 UTC &middot; <a href="../dashboard/experiments/run-v1-ssl-vs-handcrafted.html">full run page &rarr;</a> &middot; written up as F7 in <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/FINDINGS.md">FINDINGS.md</a></p></div>
+<h2>Full detail from the primary artifact</h2>
+<p class="small muted">Rendered from <code>autoresearch_results/V1_ssl_vs_handcrafted.json</code>. Every other run for this hypothesis, including controls, has its own page linked above.</p>
+<h2>Per-seed detail &mdash; every repeat, not a summary</h2>
+<div class="tablewrap"><table><thead><tr><th>seed</th><th>speakers</th><th>recordings</th><th>age healthy</th><th>age patho</th><th>age gap</th><th>AUC age only</th><th>AUC WavLM</th><th>AUC eGeMAPS</th></tr></thead><tbody>
+<tr><td class="num">0</td><td class="num">616</td><td class="num">10,243</td><td class="num muted">34.32</td><td class="num muted">35.21</td><td class="num">0.893</td><td class="num">0.5655</td><td class="num">0.6151</td><td class="num ok">0.6392</td></tr>
+<tr><td class="num">1</td><td class="num">610</td><td class="num">10,402</td><td class="num muted">34.43</td><td class="num muted">34.96</td><td class="num">0.531</td><td class="num">0.5585</td><td class="num">0.6253</td><td class="num ok">0.6335</td></tr>
+<tr><td class="num">2</td><td class="num">616</td><td class="num">10,200</td><td class="num muted">34.20</td><td class="num muted">35.04</td><td class="num">0.839</td><td class="num">0.5474</td><td class="num">0.6240</td><td class="num ok">0.6539</td></tr>
+<tr><td class="num">3</td><td class="num">608</td><td class="num">10,682</td><td class="num muted">34.51</td><td class="num muted">35.14</td><td class="num">0.632</td><td class="num">0.5787</td><td class="num">0.6307</td><td class="num ok">0.6718</td></tr>
+<tr><td class="num">4</td><td class="num">608</td><td class="num">10,160</td><td class="num muted">34.25</td><td class="num muted">35.13</td><td class="num">0.882</td><td class="num">0.5684</td><td class="num">0.6217</td><td class="num ok">0.6519</td></tr>
+<tr><td class="num">5</td><td class="num">610</td><td class="num">9,579</td><td class="num muted">34.08</td><td class="num muted">34.84</td><td class="num">0.760</td><td class="num">0.5292</td><td class="num">0.6139</td><td class="num ok">0.6444</td></tr>
+<tr><td class="num">6</td><td class="num">610</td><td class="num">10,427</td><td class="num muted">34.41</td><td class="num muted">35.08</td><td class="num">0.670</td><td class="num">0.5490</td><td class="num">0.6183</td><td class="num ok">0.6466</td></tr>
+<tr><td class="num">7</td><td class="num">608</td><td class="num">9,968</td><td class="num muted">34.41</td><td class="num muted">34.83</td><td class="num">0.420</td><td class="num">0.5391</td><td class="num">0.6307</td><td class="num ok">0.6602</td></tr>
+<tr><td class="num">8</td><td class="num">620</td><td class="num">10,117</td><td class="num muted">34.33</td><td class="num muted">35.51</td><td class="num">1.181</td><td class="num">0.5359</td><td class="num">0.6277</td><td class="num ok">0.6562</td></tr>
+<tr><td class="num">9</td><td class="num">626</td><td class="num">10,652</td><td class="num muted">34.16</td><td class="num muted">35.08</td><td class="num">0.924</td><td class="num">0.5623</td><td class="num">0.6196</td><td class="num ok">0.6386</td></tr>
+</tbody></table></div>
+<div class="panel"><p>eGeMAPS beats WavLM on <strong>10 of 10 seeds</strong>. Paired difference <strong>-0.02693</strong> (95% CI [-0.03172, -0.02151]) &mdash; the interval excludes zero, and it excludes it on the <em>losing</em> side for the SSL model.</p><p class="small muted">Encoders registered: <code>HeAR</code>, <code>WavLM-base+</code>, <code>Whisper-small-enc</code>; encoders actually run: <code>WavLM-base+</code>, <code>eGeMAPS(baseline)</code>. Scope stated in the artifact: HeAR and Whisper not extracted on this host; COUGHVID excluded per F2. A registered-but-unrun encoder is a hole in the family, not a free pass &mdash; it is why the falsifier is not formally closed.</p></div>
+<div class="panel"><h3>The matching is checked, not assumed</h3><p>Age matching at a &plusmn;3.0-year tolerance collapses the age-only AUC to <strong>0.5534</strong> and leaves a mean age gap of <strong>0.7732 years</strong>. The artifact records <code>matching_worked = True</code>. Without that collapse the comparison beneath it would be meaningless, so it is measured every run rather than assumed once.</p></div>
+<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the declared artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p>Built 2026-08-08 14:48 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div><script>
+document.querySelectorAll('table[data-sortable]').forEach(function(t){
+  t.querySelectorAll('th').forEach(function(th,i){
+    th.addEventListener('click',function(){
+      var tb=t.tBodies[0],rows=Array.prototype.slice.call(tb.rows);
+      var dir=th.dataset.dir==='asc'?-1:1;
+      t.querySelectorAll('th').forEach(function(o){
+        delete o.dataset.dir;o.classList.remove('sort-asc','sort-desc');});
+      th.dataset.dir=dir===1?'asc':'desc';
+      th.classList.add(dir===1?'sort-asc':'sort-desc');
+      var numeric=function(s){return /\d/.test(s)&&!/[A-Za-z]/.test(s);};
+      rows.sort(function(a,b){
+        var x=a.cells[i].innerText.trim().split('\n')[0].trim();
+        var y=b.cells[i].innerText.trim().split('\n')[0].trim();
+        if(numeric(x)&&numeric(y)){
+          var nx=parseFloat(x.replace(/[^0-9.\-]/g,'')),ny=parseFloat(y.replace(/[^0-9.\-]/g,''));
+          if(!isNaN(nx)&&!isNaN(ny))return (nx-ny)*dir;
+        }
+        return x.localeCompare(y)*dir;
+      });
+      rows.forEach(function(r){tb.appendChild(r);});
+    });
+  });
+});
+document.querySelectorAll('input[data-filters]').forEach(function(inp){
+  inp.addEventListener('input',function(){
+    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase(),n=0;
+    Array.prototype.slice.call(t.tBodies[0].rows).forEach(function(r){
+      var hit=r.innerText.toLowerCase().indexOf(q)>-1;
+      r.style.display=hit?'':'none';if(hit)n++;
+    });
+    var c=document.getElementById(inp.dataset.count);
+    if(c)c.textContent=n+' of '+t.tBodies[0].rows.length+' shown';
+  });
+});
+</script></body></html>

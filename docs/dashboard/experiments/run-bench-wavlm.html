@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>run-bench-wavlm &mdash; WavLM-base+ on full-corpus SVD vs its own confound battery</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:26px;line-height:1.28;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:18px 22px;margin:14px 0}
+.panel.debt{border-left:4px solid var(--warn)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
+.meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--panel2);text-align:left;padding:10px 13px;font-size:11.5px;
+letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warnc{color:var(--warn)}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:21px}td,th{padding:9px 10px}}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../../index.html">&larr; dashboard</a> &middot; <a href="index.html">all runs</a></p>
+<h1>WavLM-base+ on full-corpus SVD vs its own confound battery</h1>
+<p class="sub"><span class="chip eval">EVALUATION</span> <span class="chip bad">NOT CLEARED</span> <span class="chip screen">SCOPE-LIMITED</span> <span class="chip">svd</span> <span class="chip">wavlm</span></p>
+<div class="panel debt"><p><strong>Scope caveat.</strong> This run is a pilot slice -- 1,679 of the 13,535 speakers measured elsewhere on svd. It may satisfy the repeat contract and still be a narrower measurement than a later run on the same corpus; both facts are shown because either alone would mislead.</p></div>
+<div class="grid">
+<div class="stat"><div class="n">0.8650</div><div class="k">speaker-level ROC-AUC, ens_rank3</div><div class="s">95% CI [0.847, 0.881]</div></div>
+<div class="stat"><div class="n">0.8649</div><div class="k">confound bar (age_sex_duration_rms)</div></div>
+<div class="stat"><div class="n">n = 8</div><div class="k">repeats &times; 5 folds</div><div class="s">n=8 repeats</div></div>
+<div class="stat"><div class="n">1,679</div><div class="k">speakers</div><div class="s">28,509 recordings</div></div>
+</div>
+<h2>Power contract (R6)</h2>
+<div class="panel"><p>Paired Wilcoxon over 8 repeats gives a minimum attainable p of <strong>0.007812</strong> = 2/2<sup>8</sup>, against a Holm-tightest threshold of <strong>0.025000</strong> = 0.05/2 for the pre-registered family. <span class="ok">Feasible.</span> This is arithmetic on the design, computed before the data: it says what the run <em>could</em> have shown, not what it did.</p></div>
+<h2>Every head and every confound baseline</h2>
+<div class="tablewrap"><table><thead><tr><th>head / baseline</th><th>speaker AUC</th><th>95% CI</th><th>recording AUC</th><th>UAR</th><th>ECE</th><th>per-repeat mean &plusmn; std</th><th>verdict</th></tr></thead><tbody>
+<tr><td><code>logreg</code></td><td class="num"><strong>0.8671</strong></td><td class="num muted">[0.850, 0.883] <span class="small">n_boot=2000</span></td><td class="num">0.7438</td><td class="num">0.6830</td><td class="num">0.145</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>ens_rank3</code></td><td class="num"><strong>0.8650</strong></td><td class="num muted">[0.847, 0.881] <span class="small">n_boot=2000</span></td><td class="num">0.7443</td><td class="num">0.7676</td><td class="num">0.157</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_only</code></td><td class="num"><strong>0.8642</strong></td><td class="num muted">[0.846, 0.882] <span class="small">n_boot=2000</span></td><td class="num">0.8737</td><td class="num">0.7976</td><td class="num">0.075</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>sex_only</code></td><td class="num"><strong>0.5027</strong></td><td class="num muted">[0.474, 0.532] <span class="small">n_boot=2000</span></td><td class="num">0.4898</td><td class="num">0.5000</td><td class="num">0.067</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_sex</code></td><td class="num"><strong>0.8646</strong></td><td class="num muted">[0.847, 0.882] <span class="small">n_boot=2000</span></td><td class="num">0.8743</td><td class="num">0.8045</td><td class="num">0.087</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>duration_only</code></td><td class="num"><strong>0.5021</strong></td><td class="num muted">[0.474, 0.531] <span class="small">n_boot=2000</span></td><td class="num">0.4724</td><td class="num">0.5000</td><td class="num">0.068</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>intensity_rms_only</code></td><td class="num"><strong>0.5206</strong></td><td class="num muted">[0.492, 0.549] <span class="small">n_boot=2000</span></td><td class="num">0.5121</td><td class="num">0.5000</td><td class="num">0.068</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_sex_duration_rms</code></td><td class="num"><strong>0.8649</strong></td><td class="num muted">[0.847, 0.882] <span class="small">n_boot=2000</span></td><td class="num">0.8747</td><td class="num">0.8032</td><td class="num">0.090</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip screen">THE BAR</span></td></tr>
+</tbody></table></div>
+<p class="small muted">ECE is expected calibration error: the gap between stated confidence and observed frequency. It is reported here because clinical usability is a probability question, not a ranking question (CLAUDE.md &sect;4.3). A head can rank well and still be badly calibrated &mdash; compare the ensemble's ECE against the plain logistic head.</p>
+<h2>Margin against the confound bar, per head</h2>
+<div class="tablewrap"><table><thead><tr><th>head</th><th>recording-level delta [95% CI]</th><th>speaker-level delta [95% CI]</th><th>paired Wilcoxon over repeats</th><th>cleared?</th></tr></thead><tbody>
+<tr><td><code>logreg</code></td><td class="num">-0.1310 <span class="small muted">[-0.147, -0.115], p&gt;0 = 0.0000</span></td><td class="num">+0.0022 <span class="small muted">[-0.015, 0.020], p&gt;0 = 0.5845</span></td><td class="num">W = 0.0, p = 0.007812</td><td><span class='bad'>NO</span></td></tr>
+<tr><td><code>ens_rank3</code></td><td class="num">-0.1305 <span class="small muted">[-0.147, -0.114], p&gt;0 = 0.0000</span></td><td class="num">+0.0001 <span class="small muted">[-0.017, 0.018], p&gt;0 = 0.5030</span></td><td class="num">W = 0.0, p = 0.007812</td><td><span class='bad'>NO</span></td></tr>
+</tbody></table></div>
+<h2>Per-repeat traces</h2>
+<div class="tablewrap"><table><thead><tr><th>head / baseline</th><th>AUC per repeated partition</th></tr></thead><tbody>
+<tr><td><code>logreg</code></td><td class="num small">0.7386 &middot; 0.7382 &middot; 0.7367 &middot; 0.7413 &middot; 0.7380 &middot; 0.7355 &middot; 0.7395 &middot; 0.7367</td></tr>
+<tr><td><code>ens_rank3</code></td><td class="num small">0.7386 &middot; 0.7379 &middot; 0.7374 &middot; 0.7411 &middot; 0.7382 &middot; 0.7359 &middot; 0.7397 &middot; 0.7369</td></tr>
+<tr><td><code>confound::age_only</code></td><td class="num small">0.8744 &middot; 0.8741 &middot; 0.8738 &middot; 0.8744 &middot; 0.8745 &middot; 0.8740 &middot; 0.8732 &middot; 0.8745</td></tr>
+<tr><td><code>confound::sex_only</code></td><td class="num small">0.5293 &middot; 0.5261 &middot; 0.5097 &middot; 0.5277 &middot; 0.5285 &middot; 0.5249 &middot; 0.5285 &middot; 0.5218</td></tr>
+<tr><td><code>confound::age_sex</code></td><td class="num small">0.8751 &middot; 0.8743 &middot; 0.8732 &middot; 0.8754 &middot; 0.8751 &middot; 0.8746 &middot; 0.8735 &middot; 0.8751</td></tr>
+<tr><td><code>confound::duration_only</code></td><td class="num small">0.4859 &middot; 0.4920 &middot; 0.4908 &middot; 0.4936 &middot; 0.4919 &middot; 0.4836 &middot; 0.4924 &middot; 0.4901</td></tr>
+<tr><td><code>confound::intensity_rms_only</code></td><td class="num small">0.5090 &middot; 0.5114 &middot; 0.5129 &middot; 0.5138 &middot; 0.5119 &middot; 0.5110 &middot; 0.5104 &middot; 0.5125</td></tr>
+<tr><td><code>confound::age_sex_duration_rms</code></td><td class="num small">0.8752 &middot; 0.8744 &middot; 0.8733 &middot; 0.8753 &middot; 0.8751 &middot; 0.8748 &middot; 0.8736 &middot; 0.8751</td></tr>
+</tbody></table></div>
+<p class="small muted">The spread across repeated speaker-disjoint partitions is the empirical noise band. A delta smaller than this spread is not a result whatever its point estimate says.</p>
+<h2>Reproduction provenance</h2>
+<div class="tablewrap"><table><tbody>
+<tr><td class="muted">artifact</td><td><code>autoresearch_results/bench_svd_wavlm_mean_std.json</code> &middot; <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/autoresearch_results/bench_svd_wavlm_mean_std.json">view raw</a> &middot; last written 2026-07-28 04:47 UTC</td></tr>
+<tr><td class="muted">command</td><td><code>run_benchmark.py --corpus svd --backbone wavlm --head logreg --folds 5 --repeats 8</code></td></tr>
+<tr><td class="muted">git_sha</td><td><code>5cab307b744df840d8a16ac305c47192e2ab0aaf</code></td></tr>
+<tr><td class="muted">config_hash</td><td><code>815673703168e601</code></td></tr>
+<tr><td class="muted">generated_utc</td><td><code>2026-07-28T04:47:05Z</code></td></tr>
+<tr><td class="muted">embedding_content_hash</td><td><code>b2bea8e432783ff4c137d640aea10459092311b73a7a30a7b41a252806c80e6c</code></td></tr>
+<tr><td class="muted">wall clock</td><td class="num">1,282.4 s (0.36 h)</td></tr>
+<tr><td class="muted">written up as</td><td>F2, F3 in <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/FINDINGS.md">FINDINGS.md</a></td></tr>
+</tbody></table></div>
+<h2>What this page does not have</h2>
+<div class="panel debt"><p><strong>No 7-step reasoning entry exists for this run.</strong> The sibling convention renders Diagnosis &middot; Citations &middot; Hypothesis &middot; Prediction &middot; Verdict &middot; Learning on every per-experiment page, sourced from a <code>reasoning_annotations.json</code>. This program never wrote one, and neither does it keep an append-only <code>experiment_log.jsonl</code>; the run history is the set of artifact files listed on the <a href="index.html">run ledger</a>, ordered only by their write time. The pre-registered prediction for this run does exist &mdash; it is on the hypothesis registry, but this run predates the registry and has no pre-registered prediction of its own. Everything else on that convention&rsquo;s checklist is absent here and is shown as absent rather than quietly dropped.</p></div>
+<footer><p>Generated by <code>scripts/build_experiment_pages.py</code> from <code>autoresearch_results/bench_svd_wavlm_mean_std.json</code>. Never hand-edited; every number on this page is read from that file.</p><p>Built 2026-08-08 14:50 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div></body></html>

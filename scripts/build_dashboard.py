@@ -31,11 +31,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_common import (  # noqa: E402
+    BLOB, REPO_URL, anchor_find, composite_spec, findings, idea_summary, leak_gate,
+    load_runs, mtime_utc, runs_by_hypothesis, status_class, status_short,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 ASSETS = DOCS / "assets"
-
-REPO_URL = "https://github.com/eranti/auto-research-voice-based-disease-detection"
 
 # --------------------------------------------------------------------------- #
 # source registry -- every one of these is REQUIRED; a missing file is fatal
@@ -55,7 +59,34 @@ SOURCES = {
     "novelty": ROOT / "audits" / "NOVELTY_CRITIQUE.md",
     "benchmark_py": ROOT / "src" / "voicehealth" / "benchmark.py",
     "svd_meta": ROOT / "data" / "raw" / "svd_meta" / "voice_data.csv",
+    "composite": ROOT / "COMPOSITE.md",
+    "bench_svd_full": ROOT / "autoresearch_results" / "bench_svd_wavlm_mean_std.json",
+    "v1": ROOT / "autoresearch_results" / "V1_ssl_vs_handcrafted.json",
+    "v2": ROOT / "autoresearch_results" / "V2_speaker_subspace.json",
+    "coswara_meta": ROOT / "autoresearch_results" / "acquisition" / "coswara_meta_stats.json",
 }
+
+# The audit documents. Each is a real review with a verdict; none of them was linked
+# from any published surface, which is the one place a reader would look for the
+# program's own criticism of itself.
+AUDITS = [
+    ("DATA_SPLIT_AUDIT.md", "Data-split audit",
+     "SVD conditional pass (screening only) &middot; Coswara FAIL &middot; COUGHVID HARD FAIL"),
+    ("IMPL_CRITIC.md", "Implementation critic",
+     "one INVALIDATES-RESULTS defect (embedding cache key omits labels), 5 biases, "
+     "and an empty <code>tests/</code> &mdash; no rung-0 UNIT layer"),
+    ("SCI_CRITIC.md", "Scientific critic",
+     "the composite fingerprint re-executes, but the composite is implemented nowhere; "
+     "F1's 0.871 is on 1,853 speakers and was quoted against a 49-speaker slice"),
+    ("NOVELTY_CRITIQUE.md", "Novelty critique",
+     "the loop is not novel (arXiv:2606.20394); the domain survives under exactly one "
+     "framing &mdash; audit engine, not detector factory"),
+    ("PRIOR_AUTORESEARCH_REPOS.md", "Prior-program archaeology",
+     "7 sibling programs replayed from their own logs; one ran 0 experiments across 324 "
+     "scaffolded tasks"),
+    ("README.md", "Audit index + circularity disclosure",
+     "leads with the single most serious defect found across all audits"),
+]
 
 CORPORA = ["svd", "coughvid", "coswara"]
 for _c in CORPORA:
@@ -553,6 +584,8 @@ th{position:sticky;top:0;background:var(--panel2);text-align:left;padding:12px 1
 font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
 border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
 th:hover{color:var(--fg)}
+th.sort-asc::after{content:" \\25B2";color:var(--accent)}
+th.sort-desc::after{content:" \\25BC";color:var(--accent)}
 td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:none}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -590,8 +623,10 @@ document.querySelectorAll('table[data-sortable]').forEach(function(t){
     th.addEventListener('click',function(){
       var tb=t.tBodies[0],rows=Array.prototype.slice.call(tb.rows);
       var dir=th.dataset.dir==='asc'?-1:1;
-      t.querySelectorAll('th').forEach(function(o){delete o.dataset.dir;});
+      t.querySelectorAll('th').forEach(function(o){
+        delete o.dataset.dir;o.classList.remove('sort-asc','sort-desc');});
       th.dataset.dir=dir===1?'asc':'desc';
+      th.classList.add(dir===1?'sort-asc':'sort-desc');
       // numeric compare only when BOTH cells are numbers with no words in them,
       // otherwise "PROCESS-2" would sort as -2
       var numeric=function(s){return /\\d/.test(s)&&!/[A-Za-z]/.test(s);};
@@ -609,14 +644,91 @@ document.querySelectorAll('table[data-sortable]').forEach(function(t){
   });
 });
 document.querySelectorAll('input[data-filters]').forEach(function(inp){
-  inp.addEventListener('input',function(){
-    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase();
-    Array.prototype.slice.call(t.tBodies[0].rows).forEach(function(r){
-      r.style.display=r.innerText.toLowerCase().indexOf(q)>-1?'':'none';
+  var run=function(){
+    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase(),n=0;
+    var rows=Array.prototype.slice.call(t.tBodies[0].rows);
+    rows.forEach(function(r){
+      var hit=r.innerText.toLowerCase().indexOf(q)>-1;
+      r.style.display=hit?'':'none';if(hit)n++;
     });
-  });
+    var c=document.getElementById(inp.dataset.count);
+    if(c)c.textContent=n+' of '+rows.length+' rows shown';
+  };
+  inp.addEventListener('input',run);run();
 });
 """
+
+
+def hero_numbers() -> dict:
+    """Every number in the four-step narrative, read from the artifact that produced it.
+
+    This block used to be hand-typed into the generator's string. That is the exact
+    failure the rest of this file exists to prevent (R1: no orphan numbers) -- and it
+    cost real accuracy: the sections beneath the panel were never updated to match it,
+    so the page carried a full-corpus headline above a 49-speaker scoreboard.
+    """
+    full = read_json("bench_svd_full")
+    v1 = read_json("v1")
+    v2 = read_json("v2")
+
+    rec = full["recording_level"]
+    bar_key = full["margins_vs_confound"]["confound_bar_name"]
+    audio_head = full["margins_vs_confound"]["best_audio_head"]
+
+    # identity's share of the above-chance headroom, from the ranks where the
+    # difference against the variance-matched control excludes zero.
+    head = v2["auc_full_mean"] - 0.5
+    shares = [r["D_vs_pca_topk"] / head for r in v2["rows"]
+              if r.get("D_vs_pca_topk_excludes_zero")]
+    if not shares:
+        sys.exit("FATAL: no V2 rank has D_vs_pca_topk_excludes_zero -- the four-step "
+                 "narrative's identity-share claim has no support in the artifact")
+
+    return {
+        "age_rec_auc": rec[bar_key]["roc_auc"],
+        "audio_rec_auc": rec[audio_head]["roc_auc"],
+        "audio_head": audio_head,
+        "bar_name": bar_key.replace("confound::", ""),
+        "n_speakers_full": full["dataset"]["n_speakers"],
+        "n_repeats_full": full["config"]["n_repeats"],
+        "identity_lo": min(shares), "identity_hi": max(shares),
+        "v2_full": v2["auc_full_mean"], "v2_repeats": v2["repeats"],
+        "matched_age_auc": v1["mean_auc_age_only"],
+        "matched_gap": v1["mean_age_gap"],
+        "egemaps": v1["mean_auc_egemaps"], "wavlm": v1["mean_auc_wavlm"],
+        "v1_delta": v1["wavlm_minus_egemaps"], "v1_ci": v1["wavlm_minus_egemaps_ci95"],
+        "v1_repeats": v1["repeats"],
+        "v1_wins": sum(1 for r in v1["repeats_detail"]
+                       if r["auc_egemaps"] > r["auc_wavlm"]),
+        "v1_n": len(v1["repeats_detail"]),
+        "survives": max(v1["mean_auc_egemaps"], v1["mean_auc_wavlm"]),
+    }
+
+
+def preprocessing_disagreement() -> dict | None:
+    """Compare the SVD row of the hand-maintained PREPROCESSING_STATUS.md against the
+    machine-written summary.json it describes.
+
+    The markdown was last written 2026-07-25 and still says 667 files / 49 speakers;
+    the JSON beside it says 61,170 / 1,679. The old dashboard narrated the markdown in
+    one panel and the JSON in the next, so two adjacent elements contradicted each
+    other with nothing marking either as stale. An input that disagrees with its own
+    machine-written summary is a finding about the inputs, and it is rendered as one.
+    """
+    text = read_text("preprocessing")
+    row = anchor_find(text, r"(?m)^\|\s*SVD\s*\|(.+)$", "data/PREPROCESSING_STATUS.md")
+    cells = [strip_md(c) for c in row.group(1).split("|")]
+    nums = [re.sub(r"[^\d]", "", c) for c in cells]
+    claimed = {"found": nums[0], "decoded": nums[1], "speakers": nums[3]}
+    actual = read_json("summary_svd")
+    if (str(actual["files_decoded"]) == claimed["decoded"]
+            and str(actual["n_speakers"]) == claimed["speakers"]):
+        return None
+    return {
+        "claimed": claimed, "actual": actual,
+        "md_written": mtime_utc(require("preprocessing")),
+        "json_written": mtime_utc(require("summary_svd")),
+    }
 
 
 def tier_chip(tier: str) -> str:
@@ -639,6 +751,7 @@ def build_html() -> str:
     sha = git_sha()
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
+    full = read_json("bench_svd_full")
     spk = bench["speaker_level"]
     rec = bench["recording_level"]
     mvc = bench["margins_vs_confound"]
@@ -649,10 +762,17 @@ def build_html() -> str:
 
     # ---- status counters (all from artifacts) ------------------------------ #
     n_findings = count_findings()
-    bench_artifacts = sorted((ROOT / "autoresearch_results").glob("bench_*.json"))
     log = ROOT / "autoresearch_results" / "experiment_log.jsonl"
     n_log = len(log.read_text(encoding="utf-8").splitlines()) if log.exists() else 0
     decoded_total = sum(c["decoded"] for c in corpora)
+
+    coswara_total = f'{read_json("coswara_meta")["n_rows"]:,}'
+    runs = load_runs()
+    by_hyp = runs_by_hypothesis(runs)
+    n_eval_runs = sum(1 for r in runs if r["tier"] == "EVALUATION")
+    summary = idea_summary()
+    n_untested = sum(1 for h in hyps if not by_hyp.get(h["id"]))
+    cs = composite_spec()
 
     out = []
     A = out.append
@@ -661,25 +781,46 @@ def build_html() -> str:
 
     # ---------------- header ----------------
     A("<h1>Voice-Health Claim Audit &mdash; transparency dashboard</h1>")
+    hn = hero_numbers()
     A('<div class="panel" style="border-left:4px solid var(--ok)">'
       "<h3 style='margin-top:0'>The result, in four steps</h3>"
       "<p>Each step removes something the model was getting for free, and asks what "
-      "survives.</p>"
-      "<ol><li><strong>F1/F3</strong> — patient <strong>age alone</strong> reaches "
-      "<strong>0.8737</strong> rec-AUC; WavLM reaches 0.7438. The audio model loses to one "
-      "demographic variable.</li>"
-      "<li><strong>F4</strong> — projecting out the speaker-identity subspace costs WavLM "
-      "<em>more</em> AUC than removing <em>more</em> variance any other way: "
-      "<strong>24–39%</strong> of its discrimination is <em>who is speaking</em>.</li>"
-      "<li><strong>F7a</strong> — with age matched to a <strong>0.77-year</strong> gap, "
-      "age-only collapses <strong>0.8737 → 0.5534</strong>. The confound is genuinely "
-      "removed, not assumed away.</li>"
-      "<li><strong>F7b</strong> — on that matched subset <strong>eGeMAPS 0.6496 beats "
-      "WavLM 0.6227</strong> (CI [−0.032, −0.022], 10/10 seeds). "
+      "survives. Every number here is read from the artifact named beside it.</p>"
+      "<ol>"
+      f"<li><strong>F1/F3</strong> &mdash; patient <strong>{hn['bar_name'].replace('_', ' ')}"
+      f"</strong> reaches <strong>{hn['age_rec_auc']:.4f}</strong> recording-level AUC; "
+      f"WavLM (<code>{html.escape(hn['audio_head'])}</code>) reaches "
+      f"<strong>{hn['audio_rec_auc']:.4f}</strong>. The audio model loses to one demographic "
+      f"variable. <span class=\"small muted\">n={hn['n_repeats_full']} repeats &times; 5 folds "
+      f"on {hn['n_speakers_full']:,} speakers &middot; "
+      "<code>bench_svd_wavlm_mean_std.json</code></span></li>"
+      f"<li><strong>F4</strong> &mdash; projecting out the speaker-identity subspace costs "
+      "WavLM <em>more</em> AUC than removing <em>more</em> variance any other way: "
+      f"<strong>{hn['identity_lo'] * 100:.0f}&ndash;{hn['identity_hi'] * 100:.0f}%</strong> of "
+      "its above-chance headroom is <em>who is speaking</em>. "
+      f"<span class=\"small muted\">n={hn['v2_repeats']} &middot; "
+      "<code>V2_speaker_subspace.json</code>, shares computed over the ranks whose CI "
+      "excludes zero</span></li>"
+      f"<li><strong>F7a</strong> &mdash; with age matched to a "
+      f"<strong>{hn['matched_gap']:.2f}-year</strong> gap, age-only collapses "
+      f"<strong>{hn['age_rec_auc']:.4f} &rarr; {hn['matched_age_auc']:.4f}</strong>. The "
+      "confound is genuinely removed, not assumed away. "
+      f"<span class=\"small muted\">n={hn['v1_repeats']} &middot; "
+      "<code>V1_ssl_vs_handcrafted.json</code></span></li>"
+      f"<li><strong>F7b</strong> &mdash; on that matched subset <strong>eGeMAPS "
+      f"{hn['egemaps']:.4f} beats WavLM {hn['wavlm']:.4f}</strong> "
+      f"(paired difference {hn['v1_delta']:+.4f}, 95% CI "
+      f"[{hn['v1_ci'][0]:.3f}, {hn['v1_ci'][1]:.3f}], {hn['v1_wins']}/{hn['v1_n']} seeds). "
       "<strong>88 handcrafted features beat 1536 learned ones.</strong></li></ol>"
-      "<p>What survives once demographics and identity are stripped is "
-      "<strong>AUC ≈ 0.65</strong> — real, well above chance, far below the ~0.85 the "
-      "literature reports here, and nowhere near clinical usefulness.</p></div>")
+      f"<p>What survives once demographics and identity are stripped is "
+      f"<strong>AUC &asymp; {hn['survives']:.2f}</strong> &mdash; real, well above chance, "
+      "far below the ~0.85 the literature reports here, and nowhere near clinical "
+      "usefulness.</p>"
+      '<p class="small muted">Each step links to the run that produced it: '
+      '<a href="dashboard/experiments/run-bench-wavlm.html">bench-wavlm</a> &middot; '
+      '<a href="dashboard/experiments/run-v2-speaker-subspace.html">v2-speaker-subspace</a> '
+      '&middot; <a href="dashboard/experiments/run-v1-ssl-vs-handcrafted.html">'
+      "v1-ssl-vs-handcrafted</a>.</p></div>")
     A('<p class="thesis">An autonomous, pre-registered audit harness that systematically '
       "re-tests published voice-health classification claims for speaker leakage, acquisition "
       "confounds, and cross-corpus collapse &mdash; publishing a transparent ledger of which "
@@ -695,6 +836,26 @@ def build_html() -> str:
       "from a file in this repository; nothing is hand-entered (R1: no orphan numbers, "
       "R2: the agent never states a metric it did not read from an artifact).</p>")
     A('<p class="meta">Not a medical device. No diagnosis, no clinical claim.</p>')
+    A('<div class="panel"><h3 style="margin-top:0">The three tiers of this site</h3>'
+      "<p>This page is the master. Every claim on it drills down twice, and each tier is "
+      "generated from the same declared artifacts, so the three cannot disagree.</p><ul>"
+      '<li><strong>Master</strong> (here) &mdash; the four-step result, the run ledger, the '
+      "findings ledger, the corpus and scoreboard tables, the audits, and the source "
+      "provenance.</li>"
+      '<li><strong><a href="hypotheses/index.html">Per-hypothesis registry</a></strong> '
+      f"&mdash; {len(hyps)} pre-registered hypotheses, each with its claim, falsifier and "
+      "predicted effect rendered <em>above</em> any result. "
+      f'<span class="warnc">{n_untested} of {len(hyps)} have never been executed and are '
+      "carried as visible debt.</span></li>"
+      '<li><strong><a href="dashboard/experiments/index.html">Per-run ledger</a></strong> '
+      f"&mdash; {len(runs)} artifact-backed runs, one page each, rendering the artifact in "
+      "full: every interval, the power arithmetic, and the reproduction provenance. These "
+      "pages also state what they <em>lack</em> &mdash; there is no 7-step reasoning entry "
+      "and no <code>experiment_log.jsonl</code> in this repository.</li>"
+      '<li><strong><a href="datasets.html">The dataset landscape</a></strong> &mdash; the '
+      "25 corpora the field uses, scored on whether a result on each could mean "
+      "anything.</li>"
+      "</ul></div>")
 
     # ---------------- background: what the data is, what it can support -------
     bg = load_background()
@@ -811,29 +972,62 @@ def build_html() -> str:
     # ---------------- status at a glance ----------------
     A("<h2>Status at a glance</h2>")
     A('<div class="grid g4">')
+    fnd = findings()
+    tiers = {}
+    for f in fnd:
+        tiers[f["tier"]] = tiers.get(f["tier"], 0) + 1
+    tier_line = " &middot; ".join(f"{v} {k.lower()}" for k, v in sorted(tiers.items()))
     A(f'<div class="stat"><div class="n">{n_findings}</div><div class="k">findings</div>'
-      f'<div class="s">F1, screening-tier, metadata-only &mdash; see below</div></div>')
-    A(f'<div class="stat"><div class="n">{len(bench_artifacts)}</div>'
-      f'<div class="k">benchmark runs with artifacts</div>'
-      f'<div class="s">{html.escape(bench_artifacts[0].name) if bench_artifacts else "none"}'
-      f' &middot; experiment_log.jsonl rows: {n_log}</div></div>')
+      f'<div class="s">{tier_line} &mdash; see the ledger below</div></div>')
+    A(f'<div class="stat"><div class="n">{len(runs)}</div>'
+      f'<div class="k">artifact-backed runs</div>'
+      f'<div class="s">{n_eval_runs} at EVALUATION tier &middot; '
+      f'<code>experiment_log.jsonl</code> rows: {n_log} (the file does not exist; the run '
+      "ledger is assembled from the artifacts themselves)</div></div>")
     A(f'<div class="stat"><div class="n">{len(corpora)}</div><div class="k">corpora decoded</div>'
       f'<div class="s">{decoded_total:,} files at 16&nbsp;kHz mono &mdash; but see the corpus '
       "table for what each one can support</div></div>")
-    A(f'<div class="stat"><div class="n">{len(hyps)}</div><div class="k">hypotheses registered'
-      "</div><div class=\"s\">all UNTESTED: a hypothesis whose falsifier has not been executed "
-      "is never SUPPORTED (R7)</div></div>")
+    A(f'<div class="stat"><div class="n">{len(hyps)}'
+      f'<span class="warnc"> &minus; {n_untested}</span></div>'
+      '<div class="k">hypotheses registered &minus; never executed</div>'
+      f'<div class="s"><strong class="warnc">{n_untested} of {len(hyps)} have no run at '
+      "all.</strong> A hypothesis whose falsifier has not been executed is never SUPPORTED "
+      '(R7); it is counted here as debt. <a href="hypotheses/index.html">registry &rarr;</a>'
+      "</div></div>")
     A("</div>")
 
+    dis = preprocessing_disagreement()
+    if dis:
+        A('<div class="panel" style="border-left:4px solid var(--warn)">'
+          "<h3 style='margin-top:0' class=\"warnc\">Two inputs disagree about the same "
+          "corpus</h3>"
+          f'<p><code>data/PREPROCESSING_STATUS.md</code> (hand-maintained, last written '
+          f'{html.escape(dis["md_written"])}) states SVD at '
+          f'<strong>{html.escape(dis["claimed"]["decoded"])}</strong> decoded files from '
+          f'<strong>{html.escape(dis["claimed"]["speakers"])}</strong> speakers. '
+          f'<code>data/interim/svd/summary.json</code> (machine-written, '
+          f'{html.escape(dis["json_written"])}) states '
+          f'<strong>{dis["actual"]["files_decoded"]:,}</strong> decoded from '
+          f'<strong>{dis["actual"]["n_speakers"]:,}</strong> speakers.</p>'
+          "<p>Every count on this page comes from the JSON. The markdown is stale and is "
+          "flagged rather than narrated &mdash; an earlier build of this page rendered the "
+          "markdown in one panel and the JSON in the next, so two adjacent elements "
+          "contradicted each other with nothing marking either. This panel is generated by "
+          "a comparison, so it disappears on its own once the markdown is refreshed.</p>"
+          "</div>")
+
     A('<div class="panel"><h3>What is blocked right now</h3><ul>')
-    A("<li><strong>The full SVD download is in progress.</strong> 20 of 72 pathology archives "
-      "are on disk and they are the smallest ones; the 52 missing archives hold "
-      "<strong>1,344 pathological sessions from 1,010 speakers</strong>. Until they land, every "
-      f"audio number on SVD is measured on {n_spk} speakers and is screening-tier by "
-      "construction. <span class=\"small muted\">(data/PREPROCESSING_STATUS.md)</span></li>")
+    A(f"<li><strong>SVD is decoded but not complete.</strong> "
+      f'{corpora[0]["decoded"]:,} of {corpora[0]["found"]:,} found files decoded, covering '
+      f'<strong>{corpora[0]["speakers"]:,} speakers</strong> against the '
+      f'<strong>{f1["n_speakers"]:,}</strong> the distributed metadata lists &mdash; so '
+      f'{f1["n_speakers"] - corpora[0]["speakers"]:,} speakers have metadata but no audio on '
+      "this host, and no audio result covers them. "
+      '<span class="small muted">(data/interim/svd/summary.json vs '
+      "F1_demographic_baseline.json)</span></li>")
     A(f"<li><strong>Coswara audio is partially decoded.</strong> "
       f"{corpora[2]['decoded']:,} of {corpora[2]['found']:,} found files, "
-      f"{corpora[2]['speakers']} of 2,746 participants &mdash; the host has ~15&nbsp;GB free "
+      f"{corpora[2]['speakers']} of {coswara_total} participants &mdash; the host has ~15&nbsp;GB free "
       "disk and the decoder stops cleanly rather than filling the volume. "
       '<span class="small muted">(data/interim/coswara/summary.json)</span></li>')
     A('<li class="bad"><strong>COUGHVID can never support an evaluation claim.</strong> '
@@ -904,10 +1098,12 @@ def build_html() -> str:
     A("</div>")
 
     # ---------------- E1: first measured benchmark ----------------
-    A("<h2>First measured audio benchmark &mdash; a negative result</h2>")
+    A("<h2>First measured audio benchmark &mdash; a negative result, since superseded</h2>")
     A('<div class="panel">')
-    A(f"<h3>eGeMAPS on the decoded SVD slice does not clear its own age bar</h3>")
-    A(f'<p class="meta">{tier_chip("SCREENING")} '
+    A(f"<h3>eGeMAPS on the decoded SVD pilot slice does not clear its own age bar</h3>")
+    A(f'<p class="meta">{tier_chip("EVALUATION")} '
+      f'<span class="chip screen">SCOPE-LIMITED &mdash; {n_spk} of '
+      f'{full["dataset"]["n_speakers"]:,} speakers</span> '
       f'<span class="chip bad">CONFOUND BAR NOT CLEARED</span> &middot; artifact '
       f'<code>autoresearch_results/bench_svd_egemaps.json</code> &middot; config hash '
       f'<code>{bench["config_hash"]}</code> &middot; run commit '
@@ -962,13 +1158,18 @@ def build_html() -> str:
       f'{mvc["per_head"][best]["speaker_level_delta_auc"]["hi"]:.3f}]). '
       f'<strong>All {len(bench["verdicts"])} heads are NOT CLEARED.</strong> '
       "On this slice, eGeMAPS carries no demonstrated signal above patient age.</p>")
-    A(f'<p class="warnc"><strong>What this does NOT claim.</strong> This is '
-      f'{n_spk} speakers, which the preprocessing status file already flags as '
-      "screening-tier: a speaker-disjoint test fold holds ~10 people and the 95% CI on any "
-      "accuracy is roughly &plusmn;15&nbsp;pp &mdash; visible in the intervals above. It is "
-      "<em>not</em> evidence that eGeMAPS fails on full SVD, and it is not comparable to the "
-      "published UAR 85.22, which is a different metric on the full 2,225-session corpus. "
-      "It is a null on a small slice, reported because nulls are reported (R8).</p>")
+    A(f'<p class="warnc"><strong>What this does NOT claim, and what has since '
+      f'superseded it.</strong> This is {n_spk} speakers &mdash; a speaker-disjoint test '
+      "fold holds about ten people and the 95% CI on any accuracy is roughly "
+      "&plusmn;15&nbsp;pp, visible in the intervals above. It satisfies the repeat "
+      f'contract ({bench["config"]["n_repeats"]} repeats) and is still a narrow slice; '
+      "both facts are stated because either alone would mislead. It is <em>not</em> "
+      "evidence that eGeMAPS fails on full SVD. The same corpus has since been measured at "
+      f'<strong>{full["dataset"]["n_speakers"]:,} speakers</strong> with a different '
+      f'representation &mdash; see <a href="dashboard/experiments/run-bench-wavlm.html">'
+      "run-bench-wavlm</a>, which reaches the same verdict against the same bar. This "
+      "section is kept rather than deleted because a superseded null that is quietly "
+      "removed is indistinguishable from one that was never run (R8).</p>")
     A('<figure><img src="assets/confound_vs_sota.png" alt="Bar chart of measured confound '
       'baselines against the audio model and the published SVD target">'
       "<figcaption>Every bar is a measured speaker-level AUC read from "
@@ -997,30 +1198,52 @@ def build_html() -> str:
             sota += f'<br><span class="small">'\
                     f'<a href="https://arxiv.org/abs/{row["cite"]}">arXiv:{row["cite"]}</a></span>'
         if ds.startswith("SVD"):
-            ours = (f'<span class="num">UAR {spk[best]["uar"]:.4f}</span> / '
-                    f'<span class="num">AUC {spk[best]["roc_auc"]:.4f}</span>'
-                    f'<br><span class="small muted">{bench_n}, eGeMAPS <code>{best}</code>, '
-                    f'speaker-level</span> {tier_chip("SCREENING")}')
+            # "Ours" is the WIDEST measured slice, not the first one measured. The pilot is
+            # shown beneath it rather than in place of it: an earlier build put the
+            # 49-speaker pilot in this cell while the panel above it quoted the
+            # full-corpus run, so the page's own scoreboard contradicted its headline.
+            fspk = full["speaker_level"]
+            fmvc = full["margins_vs_confound"]
+            fbest = fmvc["best_audio_head"]
+            fds = full["dataset"]
+            ours = (f'<span class="num">UAR {fspk[fbest]["uar"]:.4f}</span> / '
+                    f'<span class="num">AUC {fspk[fbest]["roc_auc"]:.4f}</span>'
+                    f'<br><span class="small muted">n={fds["n_recordings"]:,} recordings / '
+                    f'{fds["n_speakers"]:,} speakers, {full["config"]["n_repeats"]} repeats '
+                    f'&times; {full["config"]["n_folds"]} folds, WavLM '
+                    f'<code>{fbest}</code>, speaker-level</span> {tier_chip("EVALUATION")}'
+                    f'<br><span class="small muted">superseded pilot: eGeMAPS '
+                    f'<code>{best}</code> AUC {spk[best]["roc_auc"]:.4f} on {bench_n} '
+                    "&mdash; same corpus, 3% of the speakers</span>")
             margin = ('<span class="nm">not comparable</span><br>'
-                      '<span class="small muted">published UAR is the full 2,225-session '
-                      'corpus; ours is the decoded pilot slice</span>')
-            cbar = (f'<span class="num">{mvc["confound_bar_auc_speaker"]:.4f}</span> AUC'
-                    f'<br><span class="small muted">age only, same run</span>'
+                      '<span class="small muted">the published figure is UAR; ours is '
+                      "ROC-AUC. Different metrics are not differenced here.</span>")
+            cbar = (f'<span class="num">{fmvc["confound_bar_auc_speaker"]:.4f}</span> AUC'
+                    f'<br><span class="small muted">'
+                    f'{html.escape(fmvc["confound_bar_name"].replace("confound::", ""))}, '
+                    "same folds, same run</span>"
                     f'<br><span class="num">{f1["auc_age_sex_speaker_disjoint"]:.4f}</span> AUC'
-                    f'<br><span class="small muted">age+sex, metadata, full corpus (F1)</span>')
-            dd = mvc["per_head"][best]["speaker_level_delta_auc"]
+                    f'<br><span class="small muted">age+sex, metadata only, full corpus '
+                    "(F1)</span>")
+            dd = fmvc["per_head"][fbest]["speaker_level_delta_auc"]
             cmargin = (f'<span class="num">{dd["delta"]:+.4f}</span> AUC<br>'
                        f'<span class="small muted">95% CI [{dd["lo"]:.3f}, {dd["hi"]:.3f}] '
-                       f"&mdash; includes 0</span><br>"
+                       + ("&mdash; includes 0"
+                          if dd["lo"] <= 0 <= dd["hi"] else "&mdash; excludes 0")
+                       + "</span><br>"
                        f'<span class="chip bad">NOT CLEARED</span>')
             disj = '<span class="ok">YES &mdash; SprecherID</span>'
-            status = '<span class="chip screen">SCREENING / NEGATIVE</span>'
+            status = ('<span class="chip eval">EVALUATION</span> '
+                      '<span class="chip bad">NEGATIVE</span>')
         elif ds.startswith("Coswara"):
             ours, margin, cmargin = NOT_MEASURED, NOT_MEASURED, NOT_MEASURED
             cbar = NOT_MEASURED
+            cw = read_json("coswara_meta")
+            n_blank = cw["returning_user_field_rU"].get("", 0)
             disj = ('<span class="ok">YES &mdash; participant id</span><br>'
                     '<span class="small muted">submission-disjoint, not person-disjoint: '
-                    "returning-user flag is missing for 680 of 2,746</span>")
+                    f'the returning-user flag is blank for {n_blank:,} of '
+                    f'{cw["n_rows"]:,}</span>')
             status = '<span class="chip pend">PENDING</span>'
         elif ds.startswith("PROCESS-2"):
             ours, margin, cbar, cmargin = NOT_MEASURED, NOT_MEASURED, NOT_MEASURED, NOT_MEASURED
@@ -1073,8 +1296,110 @@ def build_html() -> str:
       "<code>data/ACQUISITION_STATUS.md</code>; licences from "
       "<code>corpus/SURVEY_datasets.md</code>. SVD and Coswara are partial acquisitions "
       "&mdash; the speaker counts here are what is decoded on this host, not corpus totals "
-      "(SVD: 1,853 speakers exist, 49 decoded; Coswara: 2,746 exist, "
-      f"{corpora[2]['speakers']} decoded).</p>")
+      f"(SVD: {f1['n_speakers']:,} speakers exist in the distributed metadata, "
+      f"{corpora[0]['speakers']:,} decoded; Coswara: "
+      f"{coswara_total} exist, {corpora[2]['speakers']} decoded). Both totals are read, "
+      "not typed: the SVD figure comes from <code>F1_demographic_baseline.json</code> and "
+      "the Coswara figure from "
+      "<code>autoresearch_results/acquisition/coswara_meta_stats.json</code>.</p>")
+
+    # ---------------- run ledger ----------------
+    A("<h2>Run ledger &mdash; every artifact-backed run</h2>")
+    A('<p class="small muted">There is no <code>experiment_log.jsonl</code> in this '
+      "repository, so this table is assembled from the result artifacts themselves through "
+      "a <em>declared</em> registry in <code>scripts/build_common.py</code>: a run that is "
+      "renamed, deleted, or added without being declared fails the build. That gate exists "
+      "because three executed hypotheses once sat on disk for days while every published "
+      "surface reported them UNTESTED. Every row carries its n and its tier; click a "
+      "column header to sort, type to filter, click a run to open its full page.</p>")
+    A('<input class="filter" data-filters="runs" data-count="runcount" '
+      'placeholder="filter runs...">')
+    A('<p class="small muted" id="runcount"></p>')
+    A('<div class="tablewrap"><table id="runs" data-sortable><thead><tr>'
+      "<th>run</th><th>tier</th><th>n</th><th>corpus / representation</th>"
+      "<th>headline metric</th><th>reference bar</th><th>verdict</th>"
+      "<th>hypothesis</th><th>finding</th><th>written</th></tr></thead><tbody>")
+    for r in runs:
+        cls = {"EVALUATION": "eval", "SCREENING": "screen", "CONTROL": "pend"}[r["tier"]]
+        bar = (f'{r["bar"]:.4f}' if r.get("bar") is not None
+               else html.escape(str(r.get("bar_text", "—"))))
+        A(f'<tr><td><a href="dashboard/experiments/{html.escape(r["id"])}.html">'
+          f'<strong>{html.escape(r["id"].replace("run-", ""))}</strong></a><br>'
+          f'<span class="small muted">{html.escape(r["title"])}</span></td>'
+          f'<td><span class="chip {cls}">{html.escape(r["tier"])}</span>'
+          + ('<br><span class="chip screen">SCOPE-LIMITED</span>' if r["scope"] else "")
+          + f'</td><td class="num">{r["n_repeats"]}<br>'
+          f'<span class="small muted">&times;{r["n_folds"]} folds</span></td>'
+          f'<td class="small">{html.escape(r["corpus"])}<br>'
+          f'<span class="muted">{html.escape(r["backbone"])}</span></td>'
+          f'<td class="num"><strong>{r["headline"]:.4f}</strong><br>'
+          f'<span class="small muted">{html.escape(r["headline_label"])}</span></td>'
+          f'<td class="num">{bar}<br>'
+          f'<span class="small muted">{html.escape(r["bar_label"])}</span></td>'
+          f'<td class="small">{html.escape(r["verdict"])}</td>'
+          + (f'<td><a href="hypotheses/{html.escape(r["hypothesis"])}.html">'
+             f'{html.escape(r["hypothesis"])}</a></td>' if r["hypothesis"]
+             else '<td class="muted small">predates the registry</td>')
+          + f'<td class="small">{html.escape(r["finding"]) or "—"}</td>'
+          f'<td class="small muted">{html.escape(r["mtime"])}</td></tr>')
+    A("</tbody></table></div>")
+    A('<p class="small muted">No row is highlighted as a champion, because this program '
+      "has no champion. <code>COMPOSITE.md</code> defines a Goodhart-resistant composite "
+      f'(<code>{html.escape(cs["name"])} v{html.escape(cs["version"])}</code>, fingerprint '
+      f'<code>{html.escape(cs["fingerprint"][:16])}…</code>) whose implementation location '
+      f'<code>{html.escape(cs["impl_path"])}</code> '
+      + ("exists" if cs["implemented"] else
+         "<strong>does not exist</strong>, so no composite is computed for any row and no "
+         "row can be ranked against another")
+      + '. Ranking these runs by a number that was never computed would be exactly the '
+      "kind of orphan number the rest of this page refuses to print. "
+      '<a href="dashboard/experiments/index.html">Run ledger page &rarr;</a></p>')
+
+    # ---------------- findings ledger ----------------
+    A("<h2>Findings ledger</h2>")
+    A('<p class="small muted">One row per <code>## Fn</code> section of '
+      "<code>FINDINGS.md</code>, with the tier the finding claims for itself and the "
+      "artifact it points at. Nulls, partials and blocked results appear here at the same "
+      "prominence as positives (R8) &mdash; four of these seven are negative or "
+      "partial.</p>")
+    A('<div class="tablewrap"><table data-sortable><thead><tr><th>id</th><th>finding</th>'
+      "<th>tier</th><th>artifact</th><th>run page</th></tr></thead><tbody>")
+    art_to_run = {r["artifact"]: r for r in runs}
+    for f in fnd:
+        tcls = {"EVALUATION": "eval", "CERTIFIED": "eval", "PARTIAL": "screen",
+                "SCREENING": "screen"}.get(f["tier"], "pend")
+        art = f["artifact"]
+        run = art_to_run.get(Path(art).name) if art else None
+        A(f'<tr><td><strong>{html.escape(f["id"])}</strong></td>'
+          f'<td class="small">{md_inline(f["title"])}<br>'
+          f'<span class="small muted">{html.escape(f["tier_raw"])[:190]}</span></td>'
+          f'<td><span class="chip {tcls}">{html.escape(f["tier"])}</span></td>'
+          + (f'<td class="small"><a href="{BLOB}/{html.escape(art)}"><code>'
+             f'{html.escape(art)}</code></a></td>' if art
+             else f"<td class=\"small\">{NOT_MEASURED}</td>")
+          + (f'<td class="small"><a href="dashboard/experiments/'
+             f'{html.escape(run["id"])}.html">{html.escape(run["id"].replace("run-", ""))}'
+             "</a></td>" if run else '<td class="small muted">no single run artifact</td>')
+          + "</tr>")
+    A("</tbody></table></div>")
+
+    # ---------------- audits ----------------
+    A("<h2>Audits &mdash; this program's criticism of itself</h2>")
+    A('<p class="small muted">Six review documents, none of which was linked from any '
+      "published surface before now. They are listed with their verdicts rather than their "
+      "titles, because a link labelled &ldquo;audit&rdquo; that hides an "
+      "INVALIDATES-RESULTS finding is worse than no link. Implementer, critic and judge "
+      "share a model family (R5/R16), so none of these is external validation.</p>")
+    A('<div class="tablewrap"><table><thead><tr><th>document</th><th>what it found</th>'
+      "</tr></thead><tbody>")
+    for fn, title, verdict in AUDITS:
+        p = ROOT / "audits" / fn
+        if not p.exists():
+            sys.exit(f"FATAL: audit document declared but missing: audits/{fn}")
+        A(f'<tr><td><a href="{BLOB}/audits/{fn}"><strong>{html.escape(title)}</strong></a>'
+          f'<br><span class="small muted"><code>audits/{fn}</code> &middot; '
+          f'{mtime_utc(p)}</span></td><td class="small">{verdict}</td></tr>')
+    A("</tbody></table></div>")
 
     # ---------------- hypotheses ----------------
     A("<h2>Hypothesis registry</h2>")
@@ -1087,23 +1412,43 @@ def build_html() -> str:
       "falsifier has not been <em>executed</em> is UNTESTED, never SUPPORTED (R7). "
       "Tier and family size are pre-registered in version control before the sweep; "
       "reclassifying a loser as screening afterwards is HARKing and is a blocker.</p>")
-    A('<input class="filter" data-filters="hyps" placeholder="filter hypotheses...">')
+    A(f'<p class="warnc"><strong>{n_untested} of {len(hyps)} registered hypotheses have '
+      "never been executed.</strong> They are rows in this table with an UNTESTED chip and "
+      "a run count of zero, not omissions &mdash; the prediction is on the record and the "
+      "run is the debt.</p>")
+    A('<input class="filter" data-filters="hyps" data-count="hypcount" '
+      'placeholder="filter hypotheses...">')
+    A('<p class="small muted" id="hypcount"></p>')
     A('<div class="tablewrap"><table id="hyps" data-sortable><thead><tr>'
       "<th>id</th><th>claim</th><th>falsifier</th><th>required n</th><th>tier</th>"
-      "<th>datasets</th><th>status</th></tr></thead><tbody>")
+      "<th>runs on disk</th><th>status</th></tr></thead><tbody>")
     for h in hyps:
         fals = h["falsifier"]
         if len(fals) > 420:
             fals = fals[:417].rsplit(" ", 1)[0] + "..."
-        A(f'<tr><td><strong>{html.escape(h["id"])}</strong><br>'
+        # STATUS comes from the Summary table, not from the per-block Status cell. The
+        # per-block cells are edited one at a time and already disagree with the Summary
+        # (V1's block still reads UNTESTED while the Summary reads CLAIM SUPPORTED).
+        st = summary.get(h["id"], {}).get("status", "UNTESTED")
+        hruns = by_hyp.get(h["id"], [])
+        if hruns:
+            rl = "<br>".join(
+                f'<a href="dashboard/experiments/{html.escape(r["id"])}.html">'
+                f'{html.escape(r["id"].replace("run-", ""))}</a> '
+                f'<span class="small muted">n={r["n_repeats"]}</span>' for r in hruns)
+        else:
+            rl = '<span class="muted small">none</span>'
+        A(f'<tr><td><a href="hypotheses/{html.escape(h["id"])}.html">'
+          f'<strong>{html.escape(h["id"])}</strong></a><br>'
           f'<span class="small muted">{md_inline(h["title"])}</span></td>'
           f'<td class="small">{md_inline(h["claim"])}</td>'
           f'<td class="small">{md_inline(fals)}</td>'
           f'<td class="num">{html.escape(h["n_req"])}<br>'
           f'<span class="small muted">{md_inline(h["mn"])}</span></td>'
           f'<td>{tier_chip(h["tier"])}</td>'
-          f'<td class="small">{md_inline(h["datasets"])}</td>'
-          f'<td><span class="chip pend">{html.escape(h["status"])}</span></td></tr>')
+          f"<td class=\"small\">{rl}</td>"
+          f'<td><span class="chip {status_class(st)}">{html.escape(status_short(st))}</span>'
+          f'<br><span class="small muted">{md_inline(st)[:200]}</span></td></tr>')
     A("</tbody></table></div>")
 
     # ---------------- traps ----------------
@@ -1120,16 +1465,51 @@ def build_html() -> str:
           f'<td class="small">{md_inline(t["rule"])}</td></tr>')
     A("</tbody></table></div>")
 
+    # ---------------- source provenance ----------------
+    A("<h2>Sources rendered on this page, and when each was last written</h2>")
+    A('<p class="small muted">Every panel above is built from one of these files. The '
+      "write times are shown because an input older than the run it describes is how a "
+      "page ends up narrating a superseded state &mdash; the disagreement panel near the "
+      "top is generated by exactly that comparison.</p>")
+    A('<div class="tablewrap"><table data-sortable><thead><tr><th>source</th>'
+      "<th>bytes</th><th>last written (UTC)</th></tr></thead><tbody>")
+    prov_keys = ["f1_json", "bench_svd_full", "bench_svd", "v1", "v2", "findings",
+                 "idea_table", "composite", "survey_datasets", "acquisition",
+                 "preprocessing", "summary_svd", "summary_coswara", "summary_coughvid",
+                 "coswara_meta", "svd_meta"]
+    for k in prov_keys:
+        p = SOURCES[k]
+        rel = str(p.relative_to(ROOT)).replace(chr(92), "/")
+        A(f'<tr><td><a href="{BLOB}/{rel}"><code>{html.escape(rel)}</code></a></td>'
+          f'<td class="num muted">{p.stat().st_size:,}</td>'
+          f'<td class="num small">{mtime_utc(p)}</td></tr>')
+    A("</tbody></table></div>")
+
     # ---------------- footer ----------------
     A("<footer>")
     A(f'<p>Repository: <a href="{REPO_URL}">{REPO_URL}</a> &middot; built {built} &middot; '
-      f"commit <code>{html.escape(sha)}</code></p>")
-    A("<p>Sources rendered on this page: "
-      + ", ".join(f"<code>{html.escape(str(p.relative_to(ROOT)).replace(chr(92), '/'))}</code>"
-                  for p in [SOURCES[k] for k in
-                            ("f1_json", "bench_svd", "findings", "idea_table",
-                             "survey_datasets", "acquisition", "preprocessing")])
-      + ", and <code>data/interim/&lt;corpus&gt;/summary.json</code>.</p>")
+      f'commit <code>{html.escape(sha)}</code> &middot; '
+      f'<a href="{BLOB}/scripts/build_dashboard.py">the generator that wrote this page</a>'
+      "</p>")
+    A(f'<p>Composite specification <code>{html.escape(cs["name"])} '
+      f'v{html.escape(cs["version"])}</code>, SHA-256 fingerprint over the specification '
+      f'(not the code): <code>{html.escape(cs["fingerprint"])}</code>. Formula: '
+      f'<code>{html.escape(cs["formula"])}</code>. Null policy: '
+      f'<code>{html.escape(cs["null_policy"])}</code>. '
+      + ("Implemented at "
+         f'<code>{html.escape(cs["impl_path"])}</code>.' if cs["implemented"] else
+         '<strong class="warnc">The specification is implemented nowhere</strong> '
+         f'&mdash; <code>{html.escape(cs["impl_path"])}</code> does not exist, so no '
+         "composite is computed for any run, no row on this page carries one, and nothing "
+         "here is ranked by one. The fingerprint is published so that a future "
+         "implementation can be checked against the specification that was pinned before "
+         "it; it is not evidence of a live gate. This is the finding of "
+         f'<a href="{BLOB}/audits/SCI_CRITIC.md">audits/SCI_CRITIC.md</a>.')
+      + "</p>")
+    A('<p>Page tiers: this master page &rarr; '
+      '<a href="hypotheses/index.html">per-hypothesis registry</a> &rarr; '
+      '<a href="dashboard/experiments/index.html">per-run ledger</a>. Also here: '
+      '<a href="datasets.html">the dataset landscape</a>.</p>')
     A("<p><strong>Not a medical device.</strong> This program produces no diagnosis and makes "
       "no clinical claim. No PHI is committed; no restricted corpus is redistributed. "
       "Internal QA pass &mdash; independent external review pending.</p>")
@@ -1162,6 +1542,15 @@ def main() -> None:
 
     if "not yet measured" not in html_text:
         sys.exit("FATAL: no 'not yet measured' cell rendered -- a placeholder number leaked in")
+
+    # BUILD-TIME GATES. A check that must be remembered will eventually be skipped, so
+    # both of these run on every build and fail it rather than warn.
+    #   1. no literal markdown syntax may reach the page;
+    #   2. the dead `github.com/eranti/...` remote must never come back -- it was the
+    #      single "go to the source" link on a transparency dashboard, and it 404'd.
+    leak_gate([out])
+    if "github.com/eranti/" in html_text:
+        sys.exit("FATAL: the dead github.com/eranti/... remote is rendered on the page")
 
     print("=== dashboard rebuilt ===")
     print(f"  {out}  ({len(html_text):,} bytes)")

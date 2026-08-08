@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run ledger</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:26px;line-height:1.28;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:18px 22px;margin:14px 0}
+.panel.debt{border-left:4px solid var(--warn)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
+.meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--panel2);text-align:left;padding:10px 13px;font-size:11.5px;
+letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warnc{color:var(--warn)}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:21px}td,th{padding:9px 10px}}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../../index.html">&larr; dashboard</a></p>
+<h1>Run ledger &mdash; every artifact-backed run</h1>
+<p class="sub">8 runs, newest first. Each has a page rendering its artifact in full: every metric, every interval, the power arithmetic, and the reproduction provenance. There is no <code>experiment_log.jsonl</code> in this repository, so this ledger is assembled from the artifact files themselves &mdash; a declared registry, not a directory listing, so a renamed or undeclared artifact fails the build instead of vanishing from the page.</p>
+<div class="tablewrap"><table><thead><tr><th>run</th><th>tier</th><th>n</th><th>corpus / backbone</th><th>headline</th><th>verdict</th><th>hypothesis</th><th>finding</th><th>written</th></tr></thead><tbody>
+<tr><td><a href="run-v2-shuffle-control.html"><strong>run-v2-shuffle-control</strong></a><br><span class="small muted">Label-shuffle negative control for the V2 subspace ablation</span></td><td><span class="chip pend">CONTROL</span><br><span class="chip screen">SCOPE-LIMITED</span></td><td class="num">3&times;5</td><td class="small">svd<br><span class="muted">wavlm</span></td><td class="num">0.5069<br><span class="small muted">full-embedding disease AUC (shuffled labels)</span></td><td><span class="chip eval">CONTROL PASSES -- effect vanishes under shuffling</span></td><td><a href="../../hypotheses/V2.html">V2</a></td><td class="small">F4</td><td class="small muted">2026-07-28 21:11 UTC</td></tr>
+<tr><td><a href="run-v1-ssl-vs-handcrafted.html"><strong>run-v1-ssl-vs-handcrafted</strong></a><br><span class="small muted">SSL vs handcrafted features under age-matched speaker-disjoint splits</span></td><td><span class="chip eval">EVALUATION</span><br><span class="chip screen">SCOPE-LIMITED</span></td><td class="num">10&times;5</td><td class="small">svd<br><span class="muted">see artifact</span></td><td class="num">0.6496<br><span class="small muted">mean ROC-AUC, eGeMAPS (age-matched)</span></td><td><span class="chip bad">SSL DOES NOT BEAT HANDCRAFTED</span></td><td><a href="../../hypotheses/V1.html">V1</a></td><td class="small">F7</td><td class="small muted">2026-07-28 16:05 UTC</td></tr>
+<tr><td><a href="run-v6-preprocessing-leakage.html"><strong>run-v6-preprocessing-leakage</strong></a><br><span class="small muted">Scaler-fit-before-split leakage, measured on embeddings</span></td><td><span class="chip eval">EVALUATION</span><br><span class="chip screen">SCOPE-LIMITED</span></td><td class="num">10&times;5</td><td class="small">svd<br><span class="muted">see artifact</span></td><td class="num">0.0042<br><span class="small muted">max |delta AUC| across the cells that ran</span></td><td><span class="chip bad">PARTIAL -- near-null reproduced; falsifier NOT evaluable</span></td><td><a href="../../hypotheses/V6.html">V6</a></td><td class="small">F5</td><td class="small muted">2026-07-28 14:03 UTC</td></tr>
+<tr><td><a href="run-v7-silence-shortcut.html"><strong>run-v7-silence-shortcut</strong></a><br><span class="small muted">Silence-only features across three corpora -- the Clever-Hans probe</span></td><td><span class="chip eval">EVALUATION</span></td><td class="num">10&times;5</td><td class="small">svd<br><span class="muted">see artifact</span></td><td class="num">0.5264<br><span class="small muted">highest silence-only AUC of 4 cells (coughvid)</span></td><td><span class="chip bad">PARTIAL -- shortcut does NOT generalise</span></td><td><a href="../../hypotheses/V7.html">V7</a></td><td class="small">F6</td><td class="small muted">2026-07-28 12:56 UTC</td></tr>
+<tr><td><a href="run-v2-speaker-subspace.html"><strong>run-v2-speaker-subspace</strong></a><br><span class="small muted">Speaker-identity subspace ablation against variance-matched controls</span></td><td><span class="chip eval">EVALUATION</span><br><span class="chip screen">SCOPE-LIMITED</span></td><td class="num">10&times;5</td><td class="small">svd<br><span class="muted">wavlm</span></td><td class="num">0.7382<br><span class="small muted">full-embedding disease AUC (real labels)</span></td><td><span class="chip bad">CLAIM SUPPORTED -- falsifier did NOT fire</span></td><td><a href="../../hypotheses/V2.html">V2</a></td><td class="small">F4</td><td class="small muted">2026-07-28 10:59 UTC</td></tr>
+<tr><td><a href="run-bench-wavlm.html"><strong>run-bench-wavlm</strong></a><br><span class="small muted">WavLM-base+ on full-corpus SVD vs its own confound battery</span></td><td><span class="chip eval">EVALUATION</span><br><span class="chip screen">SCOPE-LIMITED</span></td><td class="num">8&times;5</td><td class="small">svd<br><span class="muted">wavlm</span></td><td class="num">0.8650<br><span class="small muted">speaker-level ROC-AUC, ens_rank3</span></td><td><span class="chip bad">NOT CLEARED</span></td><td class="muted small">none &mdash; predates the registry</td><td class="small">F2, F3</td><td class="small muted">2026-07-28 04:47 UTC</td></tr>
+<tr><td><a href="run-bench-egemaps.html"><strong>run-bench-egemaps</strong></a><br><span class="small muted">eGeMAPS on the decoded SVD pilot slice vs its own confound battery</span></td><td><span class="chip eval">EVALUATION</span><br><span class="chip screen">SCOPE-LIMITED</span></td><td class="num">10&times;5</td><td class="small">svd<br><span class="muted">egemaps</span></td><td class="num">0.7983<br><span class="small muted">speaker-level ROC-AUC, gbt</span></td><td><span class="chip bad">NOT CLEARED</span></td><td class="muted small">none &mdash; predates the registry</td><td class="small"><span class='muted'>none</span></td><td class="small muted">2026-07-25 23:55 UTC</td></tr>
+<tr><td><a href="run-f1-demographics.html"><strong>run-f1-demographics</strong></a><br><span class="small muted">SVD demographic baseline -- age and sex only, no audio</span></td><td><span class="chip screen">SCREENING</span><br><span class="chip screen">SCOPE-LIMITED</span></td><td class="num">0&times;5</td><td class="small">svd<br><span class="muted">metadata only</span></td><td class="num">0.8709<br><span class="small muted">ROC-AUC, age alone</span></td><td><span class="chip eval">CONFOUND ESTABLISHED</span></td><td class="muted small">none &mdash; predates the registry</td><td class="small">F1</td><td class="small muted">2026-07-25 21:28 UTC</td></tr>
+</tbody></table></div>
+<footer><p>Generated 2026-08-08 14:50 UTC by <code>scripts/build_experiment_pages.py</code> &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div></body></html>

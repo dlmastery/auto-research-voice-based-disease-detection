@@ -1,31 +1,46 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>V6 — Preprocessing-fit leakage is corpus-specific and cannot be assumed small</title>
+<title>V6 &mdash; Preprocessing-fit leakage is corpus-specific and cannot be assumed small</title>
 <style>
 :root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
 --muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
 font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 96px}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 96px}
 h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
 h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
 margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
 p{margin:0 0 14px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
-font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
 padding:18px 22px;margin:14px 0}
-.panel h3{margin:0 0 8px;font-size:16px}
+.panel.debt{border-left:4px solid var(--warn)}
+.panel.pred{border-left:4px solid var(--accent)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
 .meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th{background:var(--panel2);text-align:left;padding:11px 13px;font-size:12px;
 letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-border-bottom:1px solid var(--line);white-space:nowrap}
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;
+cursor:pointer;user-select:none}
+th:hover{color:var(--fg)}
+th.sort-asc::after{content:" \25B2";color:var(--accent)}
+th.sort-desc::after{content:" \25BC";color:var(--accent)}
 td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:none}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -36,27 +51,92 @@ white-space:nowrap}
 .chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
 .chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
 .chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
-.hit{color:var(--ok);font-weight:600}.miss{color:var(--bad);font-weight:600}
+.hit,.ok{color:var(--ok);font-weight:600}.miss,.bad{color:var(--bad);font-weight:600}
+.warnc{color:var(--warn)}
+.filter{width:100%;max-width:340px;background:var(--panel2);border:1px solid var(--line);
+border-radius:8px;color:var(--fg);padding:9px 12px;font-size:14px;margin:0 0 12px}
+.filter:focus{outline:none;border-color:var(--accent)}
 footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
 color:var(--muted);font-size:13px}
 @media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:22px}td,th{padding:9px 10px}}
 </style>
 </head><body><div class="wrap">
-<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a></p>
-<h1>V6 — Preprocessing-fit leakage is corpus-specific and cannot be assumed small</h1>
-<p class="sub"><span class="chip pend">UNTESTED</span> <span class="chip">EVALUATION</span> <span class="chip">axis A4 (preprocessing-fit scope), A3 pinned at `speaker_disjoint`</span></p>
-<div class="panel"><h3>The claim</h3><p>The inflation from fitting the scaler/normaliser before splitting varies by an order of magnitude across corpora, so &quot;we scaled before splitting but it&#x27;s a small effect&quot; is not defensible on an unmeasured corpus.</p></div>
-<div class="panel"><h3>The published claim it audits</h3><p><em>Feature scaling induced data leakage quantification in machine learning-based voice pathology detection</em>, <em>Applied Soft Computing</em> (<code>S1568494626007970</code>): 1,000 repetitions per configuration; effect <strong>−0.14 to +0.14 pp on SVD</strong> but <strong>−8.3 to +7.8 pp on VOICED</strong>. Leakage can <em>degrade</em> as well as inflate. This is a published measurement on two corpora; the audited proposition is its generalisation to the corpora this program actually uses, and to <em>embedding</em> features rather than handcrafted ones.</p></div>
-<div class="panel"><h3>Pre-registered falsifier</h3><p>If the <code>fit_on_all</code> − <code>fit_per_fold</code> AUC difference has a 95% CI contained within ±0.01 AUC on <strong>all</strong> of SVD, Coswara, COUGHVID for <strong>both</strong> eGeMAPS and a frozen SSL representation, the &quot;corpus-specific magnitude&quot; claim is falsified for this pipeline family and preprocessing scope can be de-prioritised as an audit axis.</p></div>
-<div class="panel"><h3>Predicted effect (recorded before the run)</h3><p>Effect <strong>&lt; 0.01 AUC on SVD</strong> (reproducing the published near-null) and <strong>&gt; 0.03 AUC on at least one</strong> of Coswara/COUGHVID; sign not predicted (the published result shows both directions).</p></div>
+<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="index.html">all hypotheses</a> &middot; <a href="../dashboard/experiments/index.html">run ledger</a></p>
+<h1>V6 &mdash; Preprocessing-fit leakage is corpus-specific and cannot be assumed small</h1>
+<p class="sub"><span class="chip screen">PARTIAL</span> <span class="chip">registered EVALUATION</span> <span class="chip">axis A4 (preprocessing-fit scope), A3 pinned at `speaker_disjoint`</span> <span class="chip eval">1 run(s) on disk</span></p>
+<div class="panel pred"><p class="small muted">Everything in this block was recorded in version control <em>before</em> any run. It is rendered above the result on purpose: a prediction a reader meets after the number it predicted is not a prediction.</p>
+<h3>The claim</h3><p>The inflation from fitting the scaler/normaliser before splitting varies by an order of magnitude across corpora, so &quot;we scaled before splitting but it&#x27;s a small effect&quot; is not defensible on an unmeasured corpus.</p>
+<h3>The published claim it audits</h3><p><em>Feature scaling induced data leakage quantification in machine learning-based voice pathology detection</em>, <em>Applied Soft Computing</em> (<code>S1568494626007970</code>): 1,000 repetitions per configuration; effect <strong>−0.14 to +0.14 pp on SVD</strong> but <strong>−8.3 to +7.8 pp on VOICED</strong>. Leakage can <em>degrade</em> as well as inflate. This is a published measurement on two corpora; the audited proposition is its generalisation to the corpora this program actually uses, and to <em>embedding</em> features rather than handcrafted ones.</p>
+<h3>Pre-registered falsifier</h3><p>If the <code>fit_on_all</code> − <code>fit_per_fold</code> AUC difference has a 95% CI contained within ±0.01 AUC on <strong>all</strong> of SVD, Coswara, COUGHVID for <strong>both</strong> eGeMAPS and a frozen SSL representation, the &quot;corpus-specific magnitude&quot; claim is falsified for this pipeline family and preprocessing scope can be de-prioritised as an audit axis.</p>
+<h3>Predicted effect (recorded before the run)</h3><p>Effect <strong>&lt; 0.01 AUC on SVD</strong> (reproducing the published near-null) and <strong>&gt; 0.03 AUC on at least one</strong> of Coswara/COUGHVID; sign not predicted (the published result shows both directions).</p>
+</div>
 <h2>Power and scope</h2>
 <div class="tablewrap"><table><tbody>
 <tr><td class="muted">tier (as registered)</td><td><code>EVALUATION</code></td></tr>
 <tr><td class="muted">family size m / seeds n</td><td>m = <strong>6</strong> (3 corpora × 2 representations) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td></tr>
 <tr><td class="muted">datasets</td><td>SVD · Coswara · COUGHVID</td></tr>
 <tr><td class="muted">cost</td><td>Free — re-fits a scaler on cached features.</td></tr>
-<tr><td class="muted">registry status</td><td><strong>UNTESTED</strong></td></tr>
+<tr><td class="muted">min attainable paired p</td><td class="num">0.001953</td></tr>
+<tr><td class="muted">Holm-tightest threshold 0.05/m</td><td class="num">0.008333</td></tr>
+<tr><td class="muted">arithmetically satisfiable under R6</td><td>✓</td></tr>
+<tr><td class="muted">registry status</td><td><strong>PARTIAL — SVD near-null reproduced on embeddings; falsifier NOT evaluable</strong> — see F5</td></tr>
 </tbody></table></div>
+<p class="small muted">Registry status is read from the <code>## Summary</code> table of <code>IDEA_TABLE.md</code>, which the author maintains as a set. The per-block status cells are maintained one at a time and disagree with it; one source of truth, and this is it.</p>
 <h2>Measured result</h2>
-<div class="panel"><p><span class="chip pend">UNTESTED</span> No artifact exists for this hypothesis yet. Under R7 a hypothesis whose falsifier has not been <em>executed</em> is UNTESTED and is never reported as supported. This page exists so that the prediction above is on the record <em>before</em> any result is, and so the debt is visible rather than absent.</p></div>
-<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p><strong>Not a medical device.</strong> Internal QA pass — independent external review pending.</p></footer></div></body></html>
+<div class="panel"><p><span class="chip eval">EVALUATION</span> n = 10 repeats against the pre-registered family (m = <strong>6</strong> (3 corpora × 2 representations) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓): min attainable paired p = 0.001953 &le; Holm 0.05/m = 0.008333. Feasible. Feasibility is a property of the design, not of the result &mdash; it says what this run could have shown.</p></div>
+<div class="panel"><h3><a href="../dashboard/experiments/run-v6-preprocessing-leakage.html">Scaler-fit-before-split leakage, measured on embeddings</a></h3>
+<p><span class="chip eval">EVALUATION</span> <span class="chip">PARTIAL -- near-null reproduced; falsifier NOT evaluable</span> <span class="chip">n = 10 &times; 5 folds</span> <span class="chip screen">SCOPE-LIMITED</span></p>
+<div class="grid">
+<div class="stat"><div class="n">0.0042</div><div class="k">max |delta AUC| across the cells that ran</div></div>
+<div class="stat"><div class="n">3 / 6</div><div class="k">cells run / cells pre-registered</div></div>
+<div class="stat"><div class="n">1,679</div><div class="k">speakers</div><div class="s">28,509 recordings</div></div>
+</div>
+<p class="small muted">Artifact <code>autoresearch_results/V6_preprocessing_leakage.json</code> &middot; written 2026-07-28 14:03 UTC &middot; <a href="../dashboard/experiments/run-v6-preprocessing-leakage.html">full run page &rarr;</a> &middot; written up as F5 in <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/FINDINGS.md">FINDINGS.md</a></p></div>
+<h2>Full detail from the primary artifact</h2>
+<p class="small muted">Rendered from <code>autoresearch_results/V6_preprocessing_leakage.json</code>. Every other run for this hypothesis, including controls, has its own page linked above.</p>
+<h2>Pre-registered cells &mdash; including the ones that did not run</h2>
+<div class="tablewrap"><table><thead><tr><th>corpus</th><th>backbone</th><th>recordings</th><th>speakers</th><th>AUC, scaler fit on ALL</th><th>AUC, scaler fit per fold</th><th>delta (leak - honest)</th><th>95% CI on delta</th><th>status</th></tr></thead><tbody>
+<tr><td>svd</td><td>wavlm</td><td class="num">28,509</td><td class="num">1,679</td><td class="num">0.7382</td><td class="num">0.7382</td><td class="num">0.00004</td><td class="num small muted">[0.0000, 0.0001]</td><td><span class="chip eval">RUN</span></td></tr>
+<tr><td>svd</td><td>egemaps</td><td class="num">667</td><td class="num">49</td><td class="num">0.5315</td><td class="num">0.5357</td><td class="num">-0.00418</td><td class="num small muted">[-0.0063, -0.0022]</td><td><span class="chip eval">RUN</span></td></tr>
+<tr><td>coswara</td><td>wavlm</td><td class="num">610</td><td class="num">72</td><td class="num">0.4929</td><td class="num">0.4906</td><td class="num">0.00236</td><td class="num small muted">[0.0004, 0.0048]</td><td><span class="chip eval">RUN</span></td></tr>
+<tr><td>coswara</td><td>egemaps</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td><span class="chip pend">NOT RUN -- no cached embeddings</span></td></tr>
+<tr><td>coughvid</td><td>wavlm</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td><span class="chip pend">NOT RUN -- no cached embeddings</span></td></tr>
+<tr><td>coughvid</td><td>egemaps</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td><span class="chip pend">NOT RUN -- no cached embeddings</span></td></tr>
+</tbody></table></div>
+<div class="panel debt"><p><strong>3 of 6 pre-registered cells ran.</strong> The unrun cells are the corpus-specificity arm &mdash; the part of this hypothesis that is actually novel. The near-null reproduced on SVD is a reproduction of the audited paper's point, not the new claim, so the falsifier is <em>not evaluable</em> and the finding is PARTIAL. Artifact self-report: <code>all_within_pm_0.01 = True</code>.</p></div>
+<footer><p>Generated by <code>scripts/build_hypothesis_pages.py</code> from <code>IDEA_TABLE.md</code> and the declared artifacts in <code>autoresearch_results/</code>. Never hand-edited.</p><p>Built 2026-08-08 14:48 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div><script>
+document.querySelectorAll('table[data-sortable]').forEach(function(t){
+  t.querySelectorAll('th').forEach(function(th,i){
+    th.addEventListener('click',function(){
+      var tb=t.tBodies[0],rows=Array.prototype.slice.call(tb.rows);
+      var dir=th.dataset.dir==='asc'?-1:1;
+      t.querySelectorAll('th').forEach(function(o){
+        delete o.dataset.dir;o.classList.remove('sort-asc','sort-desc');});
+      th.dataset.dir=dir===1?'asc':'desc';
+      th.classList.add(dir===1?'sort-asc':'sort-desc');
+      var numeric=function(s){return /\d/.test(s)&&!/[A-Za-z]/.test(s);};
+      rows.sort(function(a,b){
+        var x=a.cells[i].innerText.trim().split('\n')[0].trim();
+        var y=b.cells[i].innerText.trim().split('\n')[0].trim();
+        if(numeric(x)&&numeric(y)){
+          var nx=parseFloat(x.replace(/[^0-9.\-]/g,'')),ny=parseFloat(y.replace(/[^0-9.\-]/g,''));
+          if(!isNaN(nx)&&!isNaN(ny))return (nx-ny)*dir;
+        }
+        return x.localeCompare(y)*dir;
+      });
+      rows.forEach(function(r){tb.appendChild(r);});
+    });
+  });
+});
+document.querySelectorAll('input[data-filters]').forEach(function(inp){
+  inp.addEventListener('input',function(){
+    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase(),n=0;
+    Array.prototype.slice.call(t.tBodies[0].rows).forEach(function(r){
+      var hit=r.innerText.toLowerCase().indexOf(q)>-1;
+      r.style.display=hit?'':'none';if(hit)n++;
+    });
+    var c=document.getElementById(inp.dataset.count);
+    if(c)c.textContent=n+' of '+t.tBodies[0].rows.length+' shown';
+  });
+});
+</script></body></html>

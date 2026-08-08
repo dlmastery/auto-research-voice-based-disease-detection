@@ -8,24 +8,39 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
 font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 96px}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 96px}
 h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
 h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
 margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
 p{margin:0 0 14px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
-font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
 padding:18px 22px;margin:14px 0}
-.panel h3{margin:0 0 8px;font-size:16px}
+.panel.debt{border-left:4px solid var(--warn)}
+.panel.pred{border-left:4px solid var(--accent)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
 .meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th{background:var(--panel2);text-align:left;padding:11px 13px;font-size:12px;
 letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-border-bottom:1px solid var(--line);white-space:nowrap}
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;
+cursor:pointer;user-select:none}
+th:hover{color:var(--fg)}
+th.sort-asc::after{content:" \25B2";color:var(--accent)}
+th.sort-desc::after{content:" \25BC";color:var(--accent)}
 td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:none}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -36,23 +51,69 @@ white-space:nowrap}
 .chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
 .chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
 .chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
-.hit{color:var(--ok);font-weight:600}.miss{color:var(--bad);font-weight:600}
+.hit,.ok{color:var(--ok);font-weight:600}.miss,.bad{color:var(--bad);font-weight:600}
+.warnc{color:var(--warn)}
+.filter{width:100%;max-width:340px;background:var(--panel2);border:1px solid var(--line);
+border-radius:8px;color:var(--fg);padding:9px 12px;font-size:14px;margin:0 0 12px}
+.filter:focus{outline:none;border-color:var(--accent)}
 footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
 color:var(--muted);font-size:13px}
 @media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:22px}td,th{padding:9px 10px}}
 </style>
 </head><body><div class="wrap">
-<p class="meta"><a href="../index.html">&larr; dashboard</a></p>
+<p class="meta"><a href="../index.html">&larr; dashboard</a> &middot; <a href="../dashboard/experiments/index.html">run ledger</a></p>
 <h1>Hypothesis registry</h1>
-<p class="sub">7 registered · <strong>1</strong> with a at EVALUATION tier · 6 not yet. A hypothesis whose falsifier has not been executed is never reported as supported.</p>
-<div class="tablewrap"><table><thead><tr><th>id</th><th>claim</th><th>tier</th><th>m / n</th><th>status</th></tr></thead><tbody>
-<tr><td><a href="V1.html"><strong>V1</strong></a><br><span class="small muted">&quot;SSL beats handcrafted features&quot; may be an artifact of leaky</span></td><td class="small">Under simultaneously speaker-disjoint <em>and</em> demographically balanced splits, frozen SSL/health embeddings do not reliably beat eGeMAPS.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>9</strong> (3 encoders × 3 corpora, each vs eGeMAPS) · n = <strong>10</strong> → 0.001953 ≤ 0.05/9 = 0.005556 ✓</td><td><span class="chip pend">UNTESTED</span></td></tr>
-<tr><td><a href="V2.html"><strong>V2</strong></a><br><span class="small muted">Speaker-identity subspace ablation: how much of the &quot;disease&quot</span></td><td class="small">A large fraction of frozen-embedding disease discrimination lives in a low-rank speaker-identity subspace, and removing it collapses AUC further than a variance-matched random projection of the same rank does.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>14</strong> (7 ranks k ∈ {1,2,4,8,16,32,64} × 2 corpora) · n = <strong>10</strong> → 0.001953 ≤ 0.05/14 = 0.003571 ✓</td><td><span class="chip eval">EVALUATION</span></td></tr>
-<tr><td><a href="V3.html"><strong>V3</strong></a><br><span class="small muted">Where does health-specific pretraining actually cross general-purpose </span></td><td class="small">Health-acoustic pretraining buys sample-efficiency, not ceiling: HeAR leads at small labelled-set size and is overtaken by Whisper-enc as n grows.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>42</strong> (2 contrasts {HeAR vs Whisper-enc, HeAR vs WavLM} × 7 sizes × 3 tasks) · n = <strong>12</strong> → 0.000488 ≤ 0.05/42 = 0.001190 ✓</td><td><span class="chip pend">UNTESTED</span></td></tr>
-<tr><td><a href="V4.html"><strong>V4</strong></a><br><span class="small muted">Does calibration degrade *with* distribution shift, or independently o</span></td><td class="small">Calibration error does <strong>not</strong> track AUC collapse under corpus shift, so model confidence is unusable as an out-of-domain detector.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>6</strong> (3 corpus pairings × {raw, temperature-scaled}) · n = <strong>10</strong> → 0.001953 ≤ 0.05/6 = 0.008333 ✓</td><td><span class="chip pend">UNTESTED</span></td></tr>
-<tr><td><a href="V5.html"><strong>V5</strong></a><br><span class="small muted">Zero-shot audio-LLMs as a leakage-free reference point</span></td><td class="small">The gap between a supervised probe and a zero-shot audio-LLM is a cheap, model-free estimate of how much leakage a protocol admits, because a zero-shot model has no training split and therefore cannot leak speaker identity, demographics, or preprocessing stati</td><td class="small">EVALUATION</td><td class="small num">screening n ≤ 3 · promotion target m = <strong>3</strong> (3 datasets), n = <strong>10</strong> → 0.001953 ≤ 0.016667 ✓ (n = 8 would also satisfy m = 3)</td><td><span class="chip pend">UNTESTED</span></td></tr>
-<tr><td><a href="V6.html"><strong>V6</strong></a><br><span class="small muted">Preprocessing-fit leakage is corpus-specific and cannot be assumed sma</span></td><td class="small">The inflation from fitting the scaler/normaliser before splitting varies by an order of magnitude across corpora, so &quot;we scaled before splitting but it&#x27;s a small effect&quot; is not defensible on an unmeasured corpus.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>6</strong> (3 corpora × 2 representations) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td><td><span class="chip pend">UNTESTED</span></td></tr>
-<tr><td><a href="V7.html"><strong>V7</strong></a><br><span class="small muted">The Clever-Hans silence shortcut beyond the Pitt corpus</span></td><td class="small">Non-phonatory signal alone (silence/pause structure, recording-level duration and intensity statistics) achieves a substantial fraction of headline performance on voice-health corpora outside the one where the effect was first documented.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>6</strong> (3 corpora × 2 shortcut feature sets) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td><td><span class="chip pend">UNTESTED</span></td></tr>
+<p class="sub"><strong>7</strong> registered &middot; <strong>4</strong> with at least one run on disk (<strong>4</strong> reaching EVALUATION tier) &middot; <strong class="warnc">3 never executed</strong>. A hypothesis whose falsifier has not been executed is never reported as supported, and is counted here as debt rather than omitted.</p>
+<div class="grid">
+<div class="stat"><div class="n">7</div><div class="k">registered</div><div class="s">pre-registered in version control before any sweep</div></div>
+<div class="stat"><div class="n">4</div><div class="k">at EVALUATION tier</div><div class="s">n &ge; 8 repeats against a pre-registered family</div></div>
+<div class="stat"><div class="n warnc">3</div><div class="k">never executed</div><div class="s">visible debt: the prediction is on the record, the run is not</div></div>
+</div>
+<input class="filter" data-filters="hyps" data-count="hypcount" placeholder="filter hypotheses...">
+<p class="small muted" id="hypcount"></p>
+<div class="tablewrap"><table id="hyps" data-sortable><thead><tr><th>id</th><th>claim</th><th>tier</th><th>m / n</th><th>runs</th><th>status</th></tr></thead><tbody>
+<tr><td><a href="V1.html"><strong>V1</strong></a><br><span class="small muted">&quot;SSL beats handcrafted features&quot; may be an artifact of leaky</span></td><td class="small">Under simultaneously speaker-disjoint <em>and</em> demographically balanced splits, frozen SSL/health embeddings do not reliably beat eGeMAPS.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>9</strong> (3 encoders × 3 corpora, each vs eGeMAPS) · n = <strong>10</strong> → 0.001953 ≤ 0.05/9 = 0.005556 ✓</td><td class="small"><a href="../dashboard/experiments/run-v1-ssl-vs-handcrafted.html">v1-ssl-vs-handcrafted</a> <span class="small muted">n=10</span></td><td><span class="chip eval">CLAIM SUPPORTED</span></td></tr>
+<tr><td><a href="V2.html"><strong>V2</strong></a><br><span class="small muted">Speaker-identity subspace ablation: how much of the &quot;disease&quot</span></td><td class="small">A large fraction of frozen-embedding disease discrimination lives in a low-rank speaker-identity subspace, and removing it collapses AUC further than a variance-matched random projection of the same rank does.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>14</strong> (7 ranks k ∈ {1,2,4,8,16,32,64} × 2 corpora) · n = <strong>10</strong> → 0.001953 ≤ 0.05/14 = 0.003571 ✓</td><td class="small"><a href="../dashboard/experiments/run-v2-shuffle-control.html">v2-shuffle-control</a> <span class="small muted">n=3</span><br><a href="../dashboard/experiments/run-v2-speaker-subspace.html">v2-speaker-subspace</a> <span class="small muted">n=10</span></td><td><span class="chip eval">CLAIM SUPPORTED</span></td></tr>
+<tr><td><a href="V3.html"><strong>V3</strong></a><br><span class="small muted">Where does health-specific pretraining actually cross general-purpose </span></td><td class="small">Health-acoustic pretraining buys sample-efficiency, not ceiling: HeAR leads at small labelled-set size and is overtaken by Whisper-enc as n grows.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>42</strong> (2 contrasts {HeAR vs Whisper-enc, HeAR vs WavLM} × 7 sizes × 3 tasks) · n = <strong>12</strong> → 0.000488 ≤ 0.05/42 = 0.001190 ✓</td><td class="small"><span class="muted small">none</span></td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><a href="V4.html"><strong>V4</strong></a><br><span class="small muted">Does calibration degrade *with* distribution shift, or independently o</span></td><td class="small">Calibration error does <strong>not</strong> track AUC collapse under corpus shift, so model confidence is unusable as an out-of-domain detector.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>6</strong> (3 corpus pairings × {raw, temperature-scaled}) · n = <strong>10</strong> → 0.001953 ≤ 0.05/6 = 0.008333 ✓</td><td class="small"><span class="muted small">none</span></td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><a href="V5.html"><strong>V5</strong></a><br><span class="small muted">Zero-shot audio-LLMs as a leakage-free reference point</span></td><td class="small">The gap between a supervised probe and a zero-shot audio-LLM is a cheap, model-free estimate of how much leakage a protocol admits, because a zero-shot model has no training split and therefore cannot leak speaker identity, demographics, or preprocessing statistics.</td><td class="small">EVALUATION</td><td class="small num">screening n ≤ 3 · promotion target m = <strong>3</strong> (3 datasets), n = <strong>10</strong> → 0.001953 ≤ 0.016667 ✓ (n = 8 would also satisfy m = 3)</td><td class="small"><span class="muted small">none</span></td><td><span class="chip pend">UNTESTED</span></td></tr>
+<tr><td><a href="V6.html"><strong>V6</strong></a><br><span class="small muted">Preprocessing-fit leakage is corpus-specific and cannot be assumed sma</span></td><td class="small">The inflation from fitting the scaler/normaliser before splitting varies by an order of magnitude across corpora, so &quot;we scaled before splitting but it&#x27;s a small effect&quot; is not defensible on an unmeasured corpus.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>6</strong> (3 corpora × 2 representations) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td><td class="small"><a href="../dashboard/experiments/run-v6-preprocessing-leakage.html">v6-preprocessing-leakage</a> <span class="small muted">n=10</span></td><td><span class="chip screen">PARTIAL</span></td></tr>
+<tr><td><a href="V7.html"><strong>V7</strong></a><br><span class="small muted">The Clever-Hans silence shortcut beyond the Pitt corpus</span></td><td class="small">Non-phonatory signal alone (silence/pause structure, recording-level duration and intensity statistics) achieves a substantial fraction of headline performance on voice-health corpora outside the one where the effect was first documented.</td><td class="small">EVALUATION</td><td class="small num">m = <strong>6</strong> (3 corpora × 2 shortcut feature sets) · n = <strong>10</strong> → 0.001953 ≤ 0.008333 ✓</td><td class="small"><a href="../dashboard/experiments/run-v7-silence-shortcut.html">v7-silence-shortcut</a> <span class="small muted">n=10</span></td><td><span class="chip screen">PARTIAL</span></td></tr>
 </tbody></table></div>
-<footer><p>Generated 2026-07-28 16:06 UTC from <code>IDEA_TABLE.md</code>.</p></footer>
-</div></body></html>
+<p class="small muted">Click a column header to sort; type to filter. Status is read from the <code>## Summary</code> table of <code>IDEA_TABLE.md</code>; runs are the artifacts declared in <code>scripts/build_common.py</code>, so a completed run that no generator knows about fails the build rather than disappearing from this column.</p>
+<footer><p>Generated 2026-08-08 14:48 UTC from <code>IDEA_TABLE.md</code> &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p>Composite spec <code>VOICE_AUDIT_COMPOSITE v1.0.0</code> fingerprint <code>37e745ed9b0bb4bd8803b16a2cdb3448611bdbebdebdbcb4dccf1d1f2db7da9a</code> &mdash; <strong class="warnc">NOT implemented</strong> (<code>src/voiceaudit/composite.py</code> does not exist), so no composite score is computed or shown anywhere in this repository.</p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div><script>
+document.querySelectorAll('table[data-sortable]').forEach(function(t){
+  t.querySelectorAll('th').forEach(function(th,i){
+    th.addEventListener('click',function(){
+      var tb=t.tBodies[0],rows=Array.prototype.slice.call(tb.rows);
+      var dir=th.dataset.dir==='asc'?-1:1;
+      t.querySelectorAll('th').forEach(function(o){
+        delete o.dataset.dir;o.classList.remove('sort-asc','sort-desc');});
+      th.dataset.dir=dir===1?'asc':'desc';
+      th.classList.add(dir===1?'sort-asc':'sort-desc');
+      var numeric=function(s){return /\d/.test(s)&&!/[A-Za-z]/.test(s);};
+      rows.sort(function(a,b){
+        var x=a.cells[i].innerText.trim().split('\n')[0].trim();
+        var y=b.cells[i].innerText.trim().split('\n')[0].trim();
+        if(numeric(x)&&numeric(y)){
+          var nx=parseFloat(x.replace(/[^0-9.\-]/g,'')),ny=parseFloat(y.replace(/[^0-9.\-]/g,''));
+          if(!isNaN(nx)&&!isNaN(ny))return (nx-ny)*dir;
+        }
+        return x.localeCompare(y)*dir;
+      });
+      rows.forEach(function(r){tb.appendChild(r);});
+    });
+  });
+});
+document.querySelectorAll('input[data-filters]').forEach(function(inp){
+  inp.addEventListener('input',function(){
+    var t=document.getElementById(inp.dataset.filters),q=inp.value.toLowerCase(),n=0;
+    Array.prototype.slice.call(t.tBodies[0].rows).forEach(function(r){
+      var hit=r.innerText.toLowerCase().indexOf(q)>-1;
+      r.style.display=hit?'':'none';if(hit)n++;
+    });
+    var c=document.getElementById(inp.dataset.count);
+    if(c)c.textContent=n+' of '+t.tBodies[0].rows.length+' shown';
+  });
+});
+</script></body></html>

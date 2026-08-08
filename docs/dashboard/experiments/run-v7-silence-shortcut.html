@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>run-v7-silence-shortcut &mdash; Silence-only features across three corpora -- the Clever-Hans probe</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:26px;line-height:1.28;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:18px 22px;margin:14px 0}
+.panel.debt{border-left:4px solid var(--warn)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
+.meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--panel2);text-align:left;padding:10px 13px;font-size:11.5px;
+letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warnc{color:var(--warn)}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:21px}td,th{padding:9px 10px}}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../../index.html">&larr; dashboard</a> &middot; <a href="index.html">all runs</a> &middot; <a href="../../hypotheses/V7.html">hypothesis V7</a></p>
+<h1>Silence-only features across three corpora -- the Clever-Hans probe</h1>
+<p class="sub"><span class="chip eval">EVALUATION</span> <span class="chip bad">PARTIAL -- shortcut does NOT generalise</span> <span class="chip">svd</span> <span class="chip">see artifact</span></p>
+<div class="grid">
+<div class="stat"><div class="n">0.5264</div><div class="k">highest silence-only AUC of 4 cells (coughvid)</div><div class="s">95% CI [0.525, 0.528]</div></div>
+<div class="stat"><div class="n">4 / 6</div><div class="k">cells run / cells pre-registered</div></div>
+<div class="stat"><div class="n">n = 10</div><div class="k">repeats &times; 5 folds</div><div class="s">n=10 repeats</div></div>
+<div class="stat"><div class="n">13,535</div><div class="k">speakers</div><div class="s">28,509 recordings</div></div>
+</div>
+<h2>Power contract (R6)</h2>
+<div class="panel"><p>Paired Wilcoxon over 10 repeats gives a minimum attainable p of <strong>0.001953</strong> = 2/2<sup>10</sup>, against a Holm-tightest threshold of <strong>0.008333</strong> = 0.05/6 for the pre-registered family. <span class="ok">Feasible.</span> This is arithmetic on the design, computed before the data: it says what the run <em>could</em> have shown, not what it did.</p></div>
+<h2>Pre-registered cells &mdash; including the ones that did not run</h2>
+<div class="tablewrap"><table><thead><tr><th>corpus</th><th>features</th><th>recordings</th><th>speakers</th><th>AUC</th><th>95% CI</th><th>AUC directionless</th><th>status</th></tr></thead><tbody>
+<tr><td>svd</td><td>silence_only</td><td class="num">28,509</td><td class="num">1,679</td><td class="num">0.5136</td><td class="num small muted">[0.5104, 0.5174]</td><td class="num">0.5136</td><td><span class="chip eval">RUN</span></td></tr>
+<tr><td>svd</td><td>duration_intensity_only</td><td class="num">28,509</td><td class="num">1,679</td><td class="num">0.5048</td><td class="num small muted">[0.5020, 0.5077]</td><td class="num">0.5048</td><td><span class="chip eval">RUN</span></td></tr>
+<tr><td>coswara</td><td>silence_only</td><td class="num">610</td><td class="num">72</td><td class="num">0.4854</td><td class="num small muted">[0.4668, 0.5037]</td><td class="num">0.5146</td><td><span class="chip eval">RUN</span></td></tr>
+<tr><td>coswara</td><td>duration_intensity_only</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td><span class="chip pend">NOT RUN -- no data</span></td></tr>
+<tr><td>coughvid</td><td>silence_only</td><td class="num">13,535</td><td class="num">13,535</td><td class="num">0.5264</td><td class="num small muted">[0.5251, 0.5277]</td><td class="num">0.5264</td><td><span class="chip eval">RUN</span></td></tr>
+<tr><td>coughvid</td><td>duration_intensity_only</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td class="muted small">not yet measured</td><td><span class="chip pend">NOT RUN -- no data</span></td></tr>
+</tbody></table></div>
+<div class="panel debt"><p><strong>4 of 6 pre-registered cells ran</strong>, and the artifact reports its own limitation in a field: <code>falsifier_fully_evaluable = False</code>. <code>all_below_0.60 = True</code>. The corpora measured here are sustained vowels and coughs; Pitt, where the audited shortcut was found, is spontaneous speech in which pause structure carries cognitive load. So this is <em>not</em> evidence that the Pitt effect was spurious &mdash; it is evidence that the shortcut does not transfer to these acoustic conditions.</p></div>
+<h2>Reproduction provenance</h2>
+<div class="tablewrap"><table><tbody>
+<tr><td class="muted">artifact</td><td><code>autoresearch_results/V7_silence_shortcut.json</code> &middot; <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/autoresearch_results/V7_silence_shortcut.json">view raw</a> &middot; last written 2026-07-28 12:56 UTC</td></tr>
+<tr><td class="muted">objective</td><td><code>ROC-AUC (JUDGE-FREE)</code></td></tr>
+<tr><td class="muted">audited</td><td><code>arXiv:2406.07410</code></td></tr>
+<tr><td class="muted">wall clock</td><td class="num">78.3 s (0.02 h)</td></tr>
+<tr><td class="muted">written up as</td><td>F6 in <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/FINDINGS.md">FINDINGS.md</a></td></tr>
+</tbody></table></div>
+<h2>What this page does not have</h2>
+<div class="panel debt"><p><strong>No 7-step reasoning entry exists for this run.</strong> The sibling convention renders Diagnosis &middot; Citations &middot; Hypothesis &middot; Prediction &middot; Verdict &middot; Learning on every per-experiment page, sourced from a <code>reasoning_annotations.json</code>. This program never wrote one, and neither does it keep an append-only <code>experiment_log.jsonl</code>; the run history is the set of artifact files listed on the <a href="index.html">run ledger</a>, ordered only by their write time. The pre-registered prediction for this run does exist &mdash; it is on the <a href="../../hypotheses/V7.html">V7 hypothesis page</a>, recorded before the run. Everything else on that convention&rsquo;s checklist is absent here and is shown as absent rather than quietly dropped.</p></div>
+<footer><p>Generated by <code>scripts/build_experiment_pages.py</code> from <code>autoresearch_results/V7_silence_shortcut.json</code>. Never hand-edited; every number on this page is read from that file.</p><p>Built 2026-08-08 14:50 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div></body></html>

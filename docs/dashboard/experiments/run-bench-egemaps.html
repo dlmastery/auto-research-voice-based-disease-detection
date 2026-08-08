@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>run-bench-egemaps &mdash; eGeMAPS on the decoded SVD pilot slice vs its own confound battery</title>
+<style>
+:root{--bg:#0d1017;--panel:#12151b;--panel2:#171b24;--line:#232936;--fg:#e6e9ef;
+--muted:#98a2b8;--accent:#7e9cff;--warn:#ffd166;--bad:#ff6b6b;--ok:#5ddba4;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:26px;line-height:1.28;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+margin:48px 0 12px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:9px}
+h3{font-size:16px;margin:0 0 8px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1b2130;border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+font-size:.86em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+word-break:break-all}
+pre{background:#0a0d13;border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+overflow-x:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:18px 22px;margin:14px 0}
+.panel.debt{border-left:4px solid var(--warn)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:27px;font-weight:650;letter-spacing:-.02em;line-height:1.15;
+font-variant-numeric:tabular-nums}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+margin-top:7px}
+.stat .s{color:var(--muted);font-size:12.5px;margin-top:7px}
+.meta{color:var(--muted);font-size:13px}.small{font-size:13px}.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--panel2);text-align:left;padding:10px 13px;font-size:11.5px;
+letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+white-space:nowrap}
+.chip.eval{border-color:#1f5b45;color:var(--ok);background:#0e2119}
+.chip.screen{border-color:#6b5518;color:var(--warn);background:#241d0c}
+.chip.bad{border-color:#6b2222;color:var(--bad);background:#2a1313}
+.chip.pend{border-color:#2f3a52;color:#9fb0d0;background:#151b28}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warnc{color:var(--warn)}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+color:var(--muted);font-size:13px}
+@media (max-width:640px){.wrap{padding:22px 14px 72px}h1{font-size:21px}td,th{padding:9px 10px}}
+</style></head><body><div class="wrap">
+<p class="meta"><a href="../../index.html">&larr; dashboard</a> &middot; <a href="index.html">all runs</a></p>
+<h1>eGeMAPS on the decoded SVD pilot slice vs its own confound battery</h1>
+<p class="sub"><span class="chip eval">EVALUATION</span> <span class="chip bad">NOT CLEARED</span> <span class="chip screen">SCOPE-LIMITED</span> <span class="chip">svd</span> <span class="chip">egemaps</span></p>
+<div class="panel debt"><p><strong>Scope caveat.</strong> This run is a pilot slice -- 49 of the 13,535 speakers measured elsewhere on svd. It may satisfy the repeat contract and still be a narrower measurement than a later run on the same corpus; both facts are shown because either alone would mislead.</p></div>
+<div class="grid">
+<div class="stat"><div class="n">0.7983</div><div class="k">speaker-level ROC-AUC, gbt</div><div class="s">95% CI [0.663, 0.925]</div></div>
+<div class="stat"><div class="n">0.7086</div><div class="k">confound bar (age_only)</div></div>
+<div class="stat"><div class="n">n = 10</div><div class="k">repeats &times; 5 folds</div><div class="s">n=10 repeats</div></div>
+<div class="stat"><div class="n">49</div><div class="k">speakers</div><div class="s">667 recordings</div></div>
+</div>
+<h2>Power contract (R6)</h2>
+<div class="panel"><p>Paired Wilcoxon over 10 repeats gives a minimum attainable p of <strong>0.001953</strong> = 2/2<sup>10</sup>, against a Holm-tightest threshold of <strong>0.010000</strong> = 0.05/5 for the pre-registered family. <span class="ok">Feasible.</span> This is arithmetic on the design, computed before the data: it says what the run <em>could</em> have shown, not what it did.</p></div>
+<h2>Every head and every confound baseline</h2>
+<div class="tablewrap"><table><thead><tr><th>head / baseline</th><th>speaker AUC</th><th>95% CI</th><th>recording AUC</th><th>UAR</th><th>ECE</th><th>per-repeat mean &plusmn; std</th><th>verdict</th></tr></thead><tbody>
+<tr><td><code>logreg</code></td><td class="num"><strong>0.6172</strong></td><td class="num muted">[0.437, 0.777] <span class="small">n_boot=2000</span></td><td class="num">0.5709</td><td class="num">0.6560</td><td class="num">0.204</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>linsvm</code></td><td class="num"><strong>0.5259</strong></td><td class="num muted">[0.353, 0.697] <span class="small">n_boot=2000</span></td><td class="num">0.5314</td><td class="num">0.5250</td><td class="num">0.088</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>mlp</code></td><td class="num"><strong>0.6310</strong></td><td class="num muted">[0.460, 0.791] <span class="small">n_boot=2000</span></td><td class="num">0.5958</td><td class="num">0.6560</td><td class="num">0.209</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>gbt</code></td><td class="num"><strong>0.7983</strong></td><td class="num muted">[0.663, 0.925] <span class="small">n_boot=2000</span></td><td class="num">0.6910</td><td class="num">0.6655</td><td class="num">0.152</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><code>ens_rank3</code></td><td class="num"><strong>0.7190</strong></td><td class="num muted">[0.566, 0.855] <span class="small">n_boot=2000</span></td><td class="num">0.6394</td><td class="num">0.6448</td><td class="num">0.186</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip bad">NOT CLEARED</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_only</code></td><td class="num"><strong>0.7086</strong></td><td class="num muted">[0.533, 0.874] <span class="small">n_boot=2000</span></td><td class="num">0.7027</td><td class="num">0.6716</td><td class="num">0.244</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip screen">THE BAR</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>sex_only</code></td><td class="num"><strong>0.4569</strong></td><td class="num muted">[0.286, 0.630] <span class="small">n_boot=2000</span></td><td class="num">0.4552</td><td class="num">0.6336</td><td class="num">0.282</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_sex</code></td><td class="num"><strong>0.6776</strong></td><td class="num muted">[0.495, 0.853] <span class="small">n_boot=2000</span></td><td class="num">0.6725</td><td class="num">0.7138</td><td class="num">0.188</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>duration_only</code></td><td class="num"><strong>0.4414</strong></td><td class="num muted">[0.283, 0.606] <span class="small">n_boot=2000</span></td><td class="num">0.4149</td><td class="num">0.5000</td><td class="num">0.012</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>intensity_rms_only</code></td><td class="num"><strong>0.5155</strong></td><td class="num muted">[0.359, 0.689] <span class="small">n_boot=2000</span></td><td class="num">0.4655</td><td class="num">0.5000</td><td class="num">0.087</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+<tr><td><span class="muted">confound</span> <code>age_sex_duration_rms</code></td><td class="num"><strong>0.6759</strong></td><td class="num muted">[0.495, 0.852] <span class="small">n_boot=2000</span></td><td class="num">0.6723</td><td class="num">0.7138</td><td class="num">0.179</td><td class="num muted">&mdash; &plusmn; &mdash;</td><td><span class="chip pend">baseline</span></td></tr>
+</tbody></table></div>
+<p class="small muted">ECE is expected calibration error: the gap between stated confidence and observed frequency. It is reported here because clinical usability is a probability question, not a ranking question (CLAUDE.md &sect;4.3). A head can rank well and still be badly calibrated &mdash; compare the ensemble's ECE against the plain logistic head.</p>
+<h2>Margin against the confound bar, per head</h2>
+<div class="tablewrap"><table><thead><tr><th>head</th><th>recording-level delta [95% CI]</th><th>speaker-level delta [95% CI]</th><th>paired Wilcoxon over repeats</th><th>cleared?</th></tr></thead><tbody>
+<tr><td><code>logreg</code></td><td class="num">-0.1318 <span class="small muted">[-0.289, 0.030], p&gt;0 = 0.0485</span></td><td class="num">-0.0914 <span class="small muted">[-0.286, 0.096], p&gt;0 = 0.1570</span></td><td class="num">W = 0.0, p = 0.001953</td><td><span class='bad'>NO</span></td></tr>
+<tr><td><code>linsvm</code></td><td class="num">-0.1713 <span class="small muted">[-0.334, -0.011], p&gt;0 = 0.0185</span></td><td class="num">-0.1828 <span class="small muted">[-0.372, 0.010], p&gt;0 = 0.0310</span></td><td class="num">W = 0.0, p = 0.001953</td><td><span class='bad'>NO</span></td></tr>
+<tr><td><code>mlp</code></td><td class="num">-0.1069 <span class="small muted">[-0.261, 0.051], p&gt;0 = 0.0835</span></td><td class="num">-0.0776 <span class="small muted">[-0.271, 0.097], p&gt;0 = 0.1945</span></td><td class="num">W = 0.0, p = 0.001953</td><td><span class='bad'>NO</span></td></tr>
+<tr><td><code>gbt</code></td><td class="num">-0.0117 <span class="small muted">[-0.159, 0.151], p&gt;0 = 0.4355</span></td><td class="num">+0.0897 <span class="small muted">[-0.076, 0.264], p&gt;0 = 0.8540</span></td><td class="num">W = 0.0, p = 0.001953</td><td><span class='bad'>NO</span></td></tr>
+<tr><td><code>ens_rank3</code></td><td class="num">-0.0633 <span class="small muted">[-0.218, 0.103], p&gt;0 = 0.2115</span></td><td class="num">+0.0103 <span class="small muted">[-0.171, 0.199], p&gt;0 = 0.5440</span></td><td class="num">W = 0.0, p = 0.001953</td><td><span class='bad'>NO</span></td></tr>
+</tbody></table></div>
+<h2>Per-repeat traces</h2>
+<div class="tablewrap"><table><thead><tr><th>head / baseline</th><th>AUC per repeated partition</th></tr></thead><tbody>
+<tr><td><code>logreg</code></td><td class="num small">0.5390 &middot; 0.5513 &middot; 0.6173 &middot; 0.5851 &middot; 0.5096 &middot; 0.5423 &middot; 0.5863 &middot; 0.5675 &middot; 0.5672 &middot; 0.5693</td></tr>
+<tr><td><code>linsvm</code></td><td class="num small">0.5184 &middot; 0.4929 &middot; 0.5335 &middot; 0.5010 &middot; 0.4607 &middot; 0.5067 &middot; 0.5743 &middot; 0.4460 &middot; 0.5423 &middot; 0.5484</td></tr>
+<tr><td><code>mlp</code></td><td class="num small">0.5948 &middot; 0.5779 &middot; 0.6311 &middot; 0.5945 &middot; 0.5330 &middot; 0.5920 &middot; 0.5835 &middot; 0.5611 &middot; 0.5718 &middot; 0.6069</td></tr>
+<tr><td><code>gbt</code></td><td class="num small">0.6633 &middot; 0.6958 &middot; 0.6822 &middot; 0.6899 &middot; 0.6169 &middot; 0.6558 &middot; 0.6781 &middot; 0.6667 &middot; 0.6811 &middot; 0.6463</td></tr>
+<tr><td><code>ens_rank3</code></td><td class="num small">0.6290 &middot; 0.6344 &middot; 0.6675 &middot; 0.6521 &middot; 0.5533 &middot; 0.5989 &middot; 0.6407 &middot; 0.5686 &middot; 0.6338 &middot; 0.6309</td></tr>
+<tr><td><code>confound::age_only</code></td><td class="num small">0.7230 &middot; 0.7110 &middot; 0.7119 &middot; 0.7163 &middot; 0.6990 &middot; 0.6901 &middot; 0.7099 &middot; 0.6913 &middot; 0.7182 &middot; 0.6924</td></tr>
+<tr><td><code>confound::sex_only</code></td><td class="num small">0.5311 &middot; 0.5752 &middot; 0.5377 &middot; 0.5835 &middot; 0.5568 &middot; 0.5581 &middot; 0.5602 &middot; 0.5630 &middot; 0.5690 &middot; 0.5615</td></tr>
+<tr><td><code>confound::age_sex</code></td><td class="num small">0.6849 &middot; 0.7005 &middot; 0.6835 &middot; 0.6987 &middot; 0.6267 &middot; 0.6859 &middot; 0.6991 &middot; 0.6661 &middot; 0.6516 &middot; 0.6593</td></tr>
+<tr><td><code>confound::duration_only</code></td><td class="num small">0.4697 &middot; 0.4916 &middot; 0.4990 &middot; 0.4955 &middot; 0.4939 &middot; 0.4862 &middot; 0.4967 &middot; 0.4820 &middot; 0.4916 &middot; 0.4936</td></tr>
+<tr><td><code>confound::intensity_rms_only</code></td><td class="num small">0.3965 &middot; 0.4404 &middot; 0.4701 &middot; 0.4911 &middot; 0.4288 &middot; 0.5025 &middot; 0.4814 &middot; 0.4224 &middot; 0.4843 &middot; 0.4741</td></tr>
+<tr><td><code>confound::age_sex_duration_rms</code></td><td class="num small">0.6760 &middot; 0.6958 &middot; 0.6833 &middot; 0.6950 &middot; 0.6254 &middot; 0.6872 &middot; 0.6976 &middot; 0.6574 &middot; 0.6496 &middot; 0.6593</td></tr>
+</tbody></table></div>
+<p class="small muted">The spread across repeated speaker-disjoint partitions is the empirical noise band. A delta smaller than this spread is not a result whatever its point estimate says.</p>
+<h2>Reproduction provenance</h2>
+<div class="tablewrap"><table><tbody>
+<tr><td class="muted">artifact</td><td><code>autoresearch_results/bench_svd_egemaps.json</code> &middot; <a href="https://github.com/dlmastery/auto-research-voice-based-disease-detection/blob/master/autoresearch_results/bench_svd_egemaps.json">view raw</a> &middot; last written 2026-07-25 23:55 UTC</td></tr>
+<tr><td class="muted">command</td><td><code>run_benchmark.py --corpus svd --backbone egemaps --head all --folds 5 --repeats 10</code></td></tr>
+<tr><td class="muted">git_sha</td><td><code>a640ceb19f59b474daa3daede4a81904cf9e60d2</code></td></tr>
+<tr><td class="muted">config_hash</td><td><code>3ffad10ed6634618</code></td></tr>
+<tr><td class="muted">generated_utc</td><td><code>2026-07-25T23:55:48Z</code></td></tr>
+<tr><td class="muted">embedding_content_hash</td><td><code>2f46ffc67d70edd20afac757be876ae7efa907423744d8b03d0a319eecac2ee7</code></td></tr>
+<tr><td class="muted">wall clock</td><td class="num">3,461.2 s (0.96 h)</td></tr>
+</tbody></table></div>
+<h2>What this page does not have</h2>
+<div class="panel debt"><p><strong>No 7-step reasoning entry exists for this run.</strong> The sibling convention renders Diagnosis &middot; Citations &middot; Hypothesis &middot; Prediction &middot; Verdict &middot; Learning on every per-experiment page, sourced from a <code>reasoning_annotations.json</code>. This program never wrote one, and neither does it keep an append-only <code>experiment_log.jsonl</code>; the run history is the set of artifact files listed on the <a href="index.html">run ledger</a>, ordered only by their write time. The pre-registered prediction for this run does exist &mdash; it is on the hypothesis registry, but this run predates the registry and has no pre-registered prediction of its own. Everything else on that convention&rsquo;s checklist is absent here and is shown as absent rather than quietly dropped.</p></div>
+<footer><p>Generated by <code>scripts/build_experiment_pages.py</code> from <code>autoresearch_results/bench_svd_egemaps.json</code>. Never hand-edited; every number on this page is read from that file.</p><p>Built 2026-08-08 14:50 UTC &middot; commit <code>dbf0abf9e074f5f5325e84c1a4ef051e782470aa</code></p><p><strong>Not a medical device.</strong> Internal QA pass &mdash; independent external review pending.</p></footer></div></body></html>
